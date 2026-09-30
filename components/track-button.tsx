@@ -21,5 +21,5 @@ export default function TrackButton({showId,title,compact=false}:{showId:number;
 
  if(tracked)return <div><button disabled style={{marginTop:compact?0:20,padding:compact?"9px 13px":"12px 18px",border:"1px solid var(--line)",borderRadius:10,background:"var(--panel)",color:"var(--muted)",fontWeight:800,cursor:"default"}}>✓ Tracked</button></div>;
 
- return <div><button onClick={track} disabled={busy||!checked} style={{marginTop:compact?0:20,padding:compact?"9px 13px":"12px 18px",border:0,borderRadius:10,background:"var(--accent)",fontWeight:800,opacity:busy||!checked?.7:1}}>{busy?"Saving…":"+ Track this show"}</button>{message==="Sign in to sync your shows."?<div className="muted" style={{marginTop:8}}>{message} <Link href="/login" className="accent">Sign in</Link></div>:message&&<div className="muted" style={{marginTop:8}}>{message}</div>}</div>
+ return <div><button onClick={track} disabled={busy||!checked} style={{marginTop:compact?0:20,padding:compact?"9px 13px":"12px 18px",border:0,borderRadius:10,background:"var(--accent)",fontWeight:800,opacity:(busy||!checked)?0.7:1}}>{busy?"Saving…":"+ Track this show"}</button>{message==="Sign in to sync your shows."?<div className="muted" style={{marginTop:8}}>{message} <Link href="/login" className="accent">Sign in</Link></div>:message&&<div className="muted" style={{marginTop:8}}>{message}</div>}</div>
 }
