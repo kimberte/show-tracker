@@ -133,7 +133,7 @@ export default function Home() {
           <Link className="nav-pill" href="/today">Today</Link>
           <Link className="nav-pill" href="/upcoming">Upcoming</Link>
           <Link className="nav-pill" href="/my-shows">My Shows</Link>
-          <Link className="nav-pill" href="/discover">Discover</Link>
+          <Link className="nav-pill" href="/discover">Discover</Link><Link className="nav-pill" href="/settings/notifications">Notifications</Link>
         </nav>
       </header>
 
