@@ -1,19 +1,256 @@
 "use client";
-import{useEffect,useMemo,useState}from"react";import Link from"next/link";import TrackButton from"@/components/track-button";
 
-type Show={id:number;name:string;premiered?:string|null;status?:string;genres?:string[];image?:{medium?:string;original?:string}|null;network?:{name:string}|null;webChannel?:{name:string}|null;summary?:string|null};
-const genres=["All","Drama","Comedy","Action","Thriller","Science-Fiction","Crime","Fantasy","Horror","Documentary","Animation"];
-function clean(t:string){return t.replace(/<[^>]*>/g,"").replace(/&nbsp;/g," ").trim()} function year(s:Show){return s.premiered?.slice(0,4)||""}
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import TrackButton from "@/components/track-button";
 
-export default function Discover(){
- const[shows,setShows]=useState<Show[]>([]);const[loading,setLoading]=useState(true);const[message,setMessage]=useState("");const[genre,setGenre]=useState("All");const[q,setQ]=useState("");const[visible,setVisible]=useState(48);
- useEffect(()=>{fetch("/api/discover").then(async r=>{if(!r.ok)throw new Error("Could not load shows.");return r.json()}).then(setShows).catch(e=>setMessage(e.message)).finally(()=>setLoading(false))},[]);
- useEffect(()=>setVisible(48),[genre,q]);
- const filtered=useMemo(()=>{const term=q.trim().toLowerCase();return shows.filter(s=>(genre==="All"||s.genres?.includes(genre))&&(!term||s.name.toLowerCase().includes(term)))},[shows,genre,q]);
- const displayed=filtered.slice(0,visible);
- return <main className="shell">
-  <header className="page-header"><div><Link href="/" className="muted">← Show Tracker</Link><div className="accent eyebrow">DISCOVER</div><h1 className="page-title">Find your next show.</h1><p className="muted page-subtitle">Browse currently airing shows and add them straight to your watch list.</p></div><nav className="top-nav"><Link className="nav-pill" href="/today">Today</Link><Link className="nav-pill" href="/upcoming">Upcoming</Link><Link className="nav-pill" href="/my-shows">My Shows</Link></nav></header>
-  <section className="discover-controls panel"><div className="discover-search"><input value={q} onChange={e=>setQ(e.target.value)} placeholder="Filter shows by name…" aria-label="Filter shows by name"/>{q&&<button className="clear-search" onClick={()=>setQ("")}>Clear</button>}</div><div className="genre-row">{genres.map(g=><button key={g} className={"genre-chip "+(genre===g?"active":"")} onClick={()=>setGenre(g)}>{g}</button>)}</div></section>
-  {loading?<section className="discover-grid">{Array.from({length:8}).map((_,i)=><div className="show-card skeleton-card" key={i}><div className="skeleton-poster"/><div className="skeleton-line"/><div className="skeleton-line short"/></div>)}</section>:message?<section className="panel empty-state"><h2>Discovery unavailable</h2><p className="muted">{message}</p></section>:filtered.length===0?<section className="panel empty-state"><h2>No shows found</h2><p className="muted">Try another title or genre.</p></section>:<section><div className="section-heading"><h2>{genre==="All"?"Currently airing":genre}</h2><span className="muted">{filtered.length} shows</span></div><div className="discover-grid">{displayed.map(s=><article className="show-card panel" key={s.id}><div className="poster-wrap">{s.image?.medium?<img src={s.image.medium} alt={s.name} loading="lazy"/>:<div className="poster-fallback">{s.name.slice(0,1)}</div>}<span className="status-badge">Running</span></div><div className="show-card-body"><h3>{s.name}</h3><p className="muted show-meta">{s.network?.name||s.webChannel?.name||"TV"}{year(s)?" · "+year(s):""}</p>{s.genres?.length?<div className="show-genres">{s.genres.slice(0,2).map(g=><span key={g}>{g}</span>)}</div>:null}{s.summary&&<p className="show-summary muted">{clean(s.summary).slice(0,105)}{clean(s.summary).length>105?"…":""}</p>}<div className="card-actions"><TrackButton showId={s.id} title={s.name} compact/><Link href={"/show/"+s.id} className="view-link">View →</Link></div></div></article>)}</div>{visible<filtered.length&&<div style={{display:"flex",justifyContent:"center",marginTop:22}}><button onClick={()=>setVisible(v=>v+48)} className="nav-pill" style={{cursor:"pointer",padding:"11px 18px"}}>Load more shows</button></div>}</section>}
- </main>
+type Show = {
+  id: number;
+  name: string;
+  premiered?: string | null;
+  status?: string;
+  genres?: string[];
+  image?: { medium?: string; original?: string } | null;
+  network?: { name: string } | null;
+  webChannel?: { name: string } | null;
+  summary?: string | null;
+  _discoverStatus?: string;
+  _nextAirdate?: string | null;
+  _nextAirtime?: string | null;
+};
+
+const genres = [
+  "All",
+  "Drama",
+  "Comedy",
+  "Action",
+  "Thriller",
+  "Science-Fiction",
+  "Crime",
+  "Fantasy",
+  "Horror",
+  "Documentary",
+  "Animation",
+];
+
+function clean(t: string) {
+  return t.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim();
+}
+
+function year(s: Show) {
+  return s.premiered?.slice(0, 4) || "";
+}
+
+function formatDate(value: string) {
+  return new Date(value + "T12:00:00").toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
+export default function Discover() {
+  const [shows, setShows] = useState<Show[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [message, setMessage] = useState("");
+  const [genre, setGenre] = useState("All");
+  const [q, setQ] = useState("");
+  const [sort, setSort] = useState("next");
+  const [visible, setVisible] = useState(48);
+
+  useEffect(() => {
+    fetch("/api/discover")
+      .then(async (r) => {
+        if (!r.ok) throw new Error("Could not load shows.");
+        return r.json();
+      })
+      .then(setShows)
+      .catch((e) => setMessage(e.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    setVisible(48);
+  }, [genre, q, sort]);
+
+  const filtered = useMemo(() => {
+    const term = q.trim().toLowerCase();
+
+    return shows
+      .filter(
+        (s) =>
+          (genre === "All" || s.genres?.includes(genre)) &&
+          (!term || s.name.toLowerCase().includes(term))
+      )
+      .sort((a, b) => {
+        if (sort === "name") return a.name.localeCompare(b.name);
+        if (sort === "newest") {
+          return (b.premiered || "").localeCompare(a.premiered || "");
+        }
+
+        return (
+          ((a._nextAirdate || "9999-99-99") + (a._nextAirtime || "")).localeCompare(
+            (b._nextAirdate || "9999-99-99") + (b._nextAirtime || "")
+          )
+        );
+      });
+  }, [shows, genre, q, sort]);
+
+  const displayed = filtered.slice(0, visible);
+
+  return (
+    <main className="shell">
+      <header className="page-header">
+        <div>
+          <Link href="/" className="muted">← Show Tracker</Link>
+          <div className="accent eyebrow">DISCOVER</div>
+          <h1 className="page-title">Find your next show.</h1>
+          <p className="muted page-subtitle">
+            Browse active shows and add them straight to your watch list.
+          </p>
+        </div>
+
+        <nav className="top-nav">
+          <Link className="nav-pill" href="/today">Today</Link>
+          <Link className="nav-pill" href="/upcoming">Upcoming</Link>
+          <Link className="nav-pill" href="/my-shows">My Shows</Link>
+        </nav>
+      </header>
+
+      <section className="discover-controls panel">
+        <div className="discover-search">
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Filter shows by name…"
+            aria-label="Filter shows by name"
+          />
+          {q && (
+            <button className="clear-search" onClick={() => setQ("")}>
+              Clear
+            </button>
+          )}
+        </div>
+
+        <div className="discover-toolbar">
+          <div className="genre-row">
+            {genres.map((g) => (
+              <button
+                key={g}
+                className={"genre-chip " + (genre === g ? "active" : "")}
+                onClick={() => setGenre(g)}
+              >
+                {g}
+              </button>
+            ))}
+          </div>
+
+          <label className="discover-sort">
+            <span className="muted">Sort</span>
+            <select value={sort} onChange={(e) => setSort(e.target.value)}>
+              <option value="next">Next airing</option>
+              <option value="name">A–Z</option>
+              <option value="newest">Newest shows</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      {loading ? (
+        <section className="discover-grid">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div className="show-card skeleton-card" key={i}>
+              <div className="skeleton-poster" />
+              <div className="skeleton-line" />
+              <div className="skeleton-line short" />
+            </div>
+          ))}
+        </section>
+      ) : message ? (
+        <section className="panel empty-state">
+          <h2>Discovery unavailable</h2>
+          <p className="muted">{message}</p>
+        </section>
+      ) : filtered.length === 0 ? (
+        <section className="panel empty-state">
+          <h2>No shows found</h2>
+          <p className="muted">Try another title or genre.</p>
+        </section>
+      ) : (
+        <section>
+          <div className="section-heading">
+            <h2>{genre === "All" ? "Active shows" : genre}</h2>
+            <span className="muted">{filtered.length} shows</span>
+          </div>
+
+          <div className="discover-grid">
+            {displayed.map((s) => (
+              <article className="show-card panel" key={s.id}>
+                <div className="poster-wrap">
+                  {s.image?.medium ? (
+                    <img src={s.image.medium} alt={s.name} loading="lazy" />
+                  ) : (
+                    <div className="poster-fallback">{s.name.slice(0, 1)}</div>
+                  )}
+
+                  <span className="status-badge">
+                    {s._discoverStatus || "Active"}
+                  </span>
+                </div>
+
+                <div className="show-card-body">
+                  <h3>{s.name}</h3>
+
+                  <p className="muted show-meta">
+                    {s.network?.name || s.webChannel?.name || "TV"}
+                    {year(s) ? " · " + year(s) : ""}
+                  </p>
+
+                  {s._nextAirdate && (
+                    <p className="show-next muted">
+                      Next: {formatDate(s._nextAirdate)}
+                      {s._nextAirtime ? " · " + s._nextAirtime : ""}
+                    </p>
+                  )}
+
+                  {s.genres?.length ? (
+                    <div className="show-genres">
+                      {s.genres.slice(0, 2).map((g) => (
+                        <span key={g}>{g}</span>
+                      ))}
+                    </div>
+                  ) : null}
+
+                  {s.summary && (
+                    <p className="show-summary muted">
+                      {clean(s.summary).slice(0, 105)}
+                      {clean(s.summary).length > 105 ? "…" : ""}
+                    </p>
+                  )}
+
+                  <div className="card-actions">
+                    <TrackButton showId={s.id} title={s.name} compact />
+                    <Link href={"/show/" + s.id} className="view-link">
+                      View →
+                    </Link>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          {visible < filtered.length && (
+            <div className="load-more-wrap">
+              <button
+                onClick={() => setVisible((v) => v + 48)}
+                className="nav-pill load-more-button"
+              >
+                Load more shows
+              </button>
+            </div>
+          )}
+        </section>
+      )}
+    </main>
+  );
 }
