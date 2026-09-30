@@ -1,0 +1,2 @@
+import{NextResponse}from"next/server";
+export async function GET(){const d=new Date();const date=d.toISOString().slice(0,10);const r=await fetch("https://api.tvmaze.com/schedule?country=US&date="+date,{next:{revalidate:900}});if(!r.ok)return NextResponse.json({error:"Schedule unavailable"},{status:502});return NextResponse.json(await r.json())}
