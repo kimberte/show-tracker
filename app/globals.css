@@ -1,3 +1,4 @@
 @import "tailwindcss";
 :root{--bg:#08090b;--panel:#111318;--muted:#8f96a3;--text:#f5f7fa;--line:#242833;--accent:#f59e0b}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,Helvetica,sans-serif}a{text-decoration:none;color:inherit}.shell{max-width:1120px;margin:auto;padding:24px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px}.muted{color:var(--muted)}.accent{color:var(--accent)}
+@media(max-width:700px){.shell{padding:16px}.show-hero{grid-template-columns:1fr!important}.show-poster{max-width:220px}.cast-grid{grid-template-columns:1fr!important}.home-nav{flex-wrap:wrap}.hero-title{font-size:36px!important}}
