@@ -1,0 +1,2 @@
+import{NextResponse}from"next/server";
+export async function GET(req:Request){const q=new URL(req.url).searchParams.get("q")?.trim();if(!q)return NextResponse.json([]);const r=await fetch("https://api.tvmaze.com/search/shows?q="+encodeURIComponent(q),{next:{revalidate:3600}});if(!r.ok)return NextResponse.json({error:"TV service unavailable"},{status:502});const data=await r.json();return NextResponse.json(data.map((x:any)=>x.show));}
