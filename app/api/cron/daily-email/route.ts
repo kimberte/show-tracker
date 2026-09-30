@@ -66,9 +66,9 @@ export async function GET(request: Request) {
       ? "<h2>Coming up</h2>" + dates.filter((d) => d !== today).map((date) => "<h3>" + formatDate(date) + "</h3><ul>" + (byDate.get(date) || []).sort((a,b) => (a.episode.airtime || "99:99").localeCompare(b.episode.airtime || "99:99")).map(({ show, episode }) => "<li><strong>" + escapeHtml(episode.airtime || "Time TBA") + "</strong> — " + escapeHtml(show.title) + " — " + escapeHtml(episode.name) + " (S" + episode.season + " E" + episode.number + ")</li>").join("") + "</ul>").join("")
       : "<h2>Coming up</h2><p>No upcoming episodes in your selected window.</p>";
 
-    const html = "<!doctype html><html><body style="font-family:Arial,sans-serif;color:#151820;max-width:680px;margin:0 auto;padding:32px 20px">" +
-      "<div style="font-weight:800;letter-spacing:2px;color:#f59e0b">SHOW TRACKER</div><h1 style="margin-bottom:4px">Your TV roundup</h1><p style="color:#68707e;margin-top:0">" + formatDate(today) + "</p>" +
-      todayHtml + upcomingHtml + "<p style="margin-top:32px;color:#68707e;font-size:13px">You’re receiving this because daily email notifications are enabled in Show Tracker.</p></body></html>";
+    const html = '<!doctype html><html><body style="font-family:Arial,sans-serif;color:#151820;max-width:680px;margin:0 auto;padding:32px 20px">' +
+      '<div style="font-weight:800;letter-spacing:2px;color:#f59e0b">SHOW TRACKER</div><h1 style="margin-bottom:4px">Your TV roundup</h1><p style="color:#68707e;margin-top:0">' + formatDate(today) + '</p>' +
+      todayHtml + upcomingHtml + '<p style="margin-top:32px;color:#68707e;font-size:13px">You’re receiving this because daily email notifications are enabled in Show Tracker.</p></body></html>';
 
     const result = await resend.emails.send({ from: process.env.EMAIL_FROM, to: email, subject: "Your Show Tracker roundup — " + formatDate(today), html });
     if (result.error) results.failed++; else results.sent++;
