@@ -1,0 +1,48 @@
+"use client";
+import{useEffect,useState}from"react";
+import Link from"next/link";
+import{getSupabase}from"@/lib/supabase";
+
+type Show={id:number;tvmaze_id:number;title:string;poster_url?:string|null;network?:string|null;country?:string|null;description?:string|null};
+type Tracked={id:number;show:Show|null};
+
+export default function MyShows(){
+ const[shows,setShows]=useState<Tracked[]>([]);
+ const[loading,setLoading]=useState(true);
+ const[message,setMessage]=useState("");
+ const[busyId,setBusyId]=useState<number|null>(null);
+
+ async function load(){
+  setLoading(true);setMessage("");
+  const supabase=getSupabase();
+  const{data:{user}}=await supabase.auth.getUser();
+  if(!user){setLoading(false);return}
+  const{data,error}=await supabase.from("tracked_shows").select("id,show:shows(id,tvmaze_id,title,poster_url,network,country,description)").eq("user_id",user.id).order("created_at",{ascending:false});
+  if(error){setMessage(error.message);setLoading(false);return}
+  setShows((data||[]) as unknown as Tracked[]);setLoading(false);
+ }
+
+ useEffect(()=>{load()},[]);
+
+ async function remove(trackedId:number){
+  setBusyId(trackedId);setMessage("");
+  const supabase=getSupabase();
+  const{error}=await supabase.from("tracked_shows").delete().eq("id",trackedId);
+  if(error)setMessage(error.message);else setShows(current=>current.filter(item=>item.id!==trackedId));
+  setBusyId(null);
+ }
+
+ return <main className="shell">
+  <header style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:16,marginBottom:32}}>
+   <div><Link href="/" className="muted">← Show Tracker</Link><h1 style={{marginBottom:6}}>My Shows</h1><p className="muted" style={{margin:0}}>Your personal watch list.</p></div>
+   <nav style={{display:"flex",gap:10}}><Link className="panel" style={{padding:"10px 14px"}} href="/today">Today</Link><Link className="panel" style={{padding:"10px 14px"}} href="/discover">Discover</Link></nav>
+  </header>
+  {loading?<p className="muted">Loading your shows…</p>:shows.length===0?<section className="panel" style={{padding:24}}><h2>Nothing tracked yet</h2><p className="muted">Search for a show and add it to your list.</p><Link href="/" style={{display:"inline-block",marginTop:10,padding:"11px 16px",background:"var(--accent)",borderRadius:10,color:"#111",fontWeight:700}}>Find shows</Link></section>:
+  <section style={{display:"grid",gap:14}}>{shows.map(item=>{const s=item.show;if(!s)return null;return <article key={item.id} className="panel" style={{padding:16,display:"flex",gap:16,alignItems:"center"}}>
+   {s.poster_url&&<img src={s.poster_url} width="78" height="108" style={{objectFit:"cover",borderRadius:10}} alt=""/>}
+   <div style={{flex:1,minWidth:0}}><h2 style={{margin:"0 0 6px",fontSize:20}}>{s.title}</h2><p className="muted" style={{margin:"0 0 12px"}}>{s.network||s.country||"TV show"}</p><Link href={"/show/"+s.tvmaze_id} className="accent">View show →</Link></div>
+   <button onClick={()=>remove(item.id)} disabled={busyId===item.id} style={{padding:"9px 12px",border:"1px solid var(--line)",borderRadius:9,background:"transparent",color:"var(--muted)"}}>{busyId===item.id?"Removing…":"Remove"}</button>
+  </article>})}</section>}
+  {message&&<p className="muted" style={{marginTop:16}}>{message}</p>}
+ </main>
+}
