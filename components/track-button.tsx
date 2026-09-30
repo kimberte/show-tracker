@@ -1,0 +1,6 @@
+"use client";
+import{useState}from"react";
+import{getSupabase}from"@/lib/supabase";
+export default function TrackButton({showId}:{showId:number}){const[busy,setBusy]=useState(false);const[message,setMessage]=useState("");
+async function track(){setBusy(true);const supabase=getSupabase();const{data:{user}}=await supabase.auth.getUser();if(!user){setMessage("Sign in to sync your shows.");setBusy(false);return}const{error}=await supabase.from("shows").upsert({tvmaze_id:showId,title:"TV show"},{onConflict:"tvmaze_id"});if(error){setMessage(error.message);setBusy(false);return}const{data:show}=await supabase.from("shows").select("id").eq("tvmaze_id",showId).single();if(show)await supabase.from("tracked_shows").upsert({user_id:user.id,show_id:show.id},{onConflict:"user_id,show_id"});setMessage("Tracked");setBusy(false)}
+return <div><button onClick={track} disabled={busy} style={{marginTop:20,padding:"12px 18px",border:0,borderRadius:10,background:"var(--accent)",fontWeight:800}}>{busy?"Saving…":"+ Track this show"}</button>{message&&<div className="muted" style={{marginTop:8}}>{message}</div>}</div>}
