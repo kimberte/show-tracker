@@ -1,0 +1,23 @@
+"use client";
+import{useEffect,useState}from"react";import Link from"next/link";import{getSupabase}from"@/lib/supabase";
+type Show={tvmaze_id:number;title:string;poster_url?:string|null;network?:string|null};
+type Tracked={id:number;show:Show|null};
+type Episode={id:number;season:number;number:number;name:string;airdate?:string|null;airtime?:string|null;runtime?:number|null};
+type Item={show:Show;episode:Episode};
+
+function dateKey(e:Episode){return e.airdate||"9999-99-99"}
+function groupLabel(date:string,today:string,tomorrow:string){if(date===today)return"Today";if(date===tomorrow)return"Tomorrow";return new Date(date+"T12:00:00").toLocaleDateString(undefined,{weekday:"long",month:"short",day:"numeric"})}
+
+export default function Upcoming(){
+ const[items,setItems]=useState<Item[]>([]);const[loading,setLoading]=useState(true);const[message,setMessage]=useState("");
+ useEffect(()=>{async function load(){const supabase=getSupabase();const{data:{user}}=await supabase.auth.getUser();if(!user){setLoading(false);return}
+  const{data,error}=await supabase.from("tracked_shows").select("id,show:shows(tvmaze_id,title,poster_url,network)").eq("user_id",user.id);if(error){setMessage(error.message);setLoading(false);return}
+  const list=(data||[]) as unknown as Tracked[];const today=new Date();const todayKey=today.toLocaleDateString("en-CA");const tomorrowDate=new Date(today);tomorrowDate.setDate(tomorrowDate.getDate()+1);const tomorrowKey=tomorrowDate.toLocaleDateString("en-CA");const cutoff=new Date(today);cutoff.setDate(cutoff.getDate()+30);const found:Item[]=[];
+  await Promise.all(list.map(async item=>{if(!item.show)return;try{const r=await fetch("https://api.tvmaze.com/shows/"+item.show.tvmaze_id+"?embed[]=episodes");if(!r.ok)return;const s=await r.json();for(const e of (s._embedded?.episodes||[]) as Episode[]){if(e.airdate&&e.airdate>=todayKey&&new Date(e.airdate+"T12:00:00")<=cutoff)found.push({show:item.show,episode:e})}}catch{}}));
+  found.sort((a,b)=>(dateKey(a.episode)+ (a.episode.airtime||"")).localeCompare(dateKey(b.episode)+(b.episode.airtime||"")));setItems(found);setLoading(false)
+ }load()},[]);
+ const groups=items.reduce<Record<string,Item[]>>((acc,item)=>{const key=item.episode.airdate||"unknown";(acc[key] ||= []).push(item);return acc},{});
+ return <main className="shell"><header style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:16,marginBottom:32}}><div><Link href="/" className="muted">← Show Tracker</Link><h1 style={{marginBottom:6}}>Upcoming</h1><p className="muted" style={{margin:0}}>The next 30 days across your tracked shows.</p></div><nav style={{display:"flex",gap:10}}><Link className="panel" style={{padding:"10px 14px"}} href="/today">Today</Link><Link className="panel" style={{padding:"10px 14px"}} href="/my-shows">My Shows</Link></nav></header>
+ {loading?<p className="muted">Loading upcoming episodes…</p>:items.length===0?<section className="panel" style={{padding:24}}><h2>No upcoming episodes</h2><p className="muted">There are no announced episodes in the next 30 days for your tracked shows.</p><Link href="/my-shows" className="accent">View My Shows →</Link></section>:<div style={{display:"grid",gap:28}}>{Object.entries(groups).map(([date,list])=><section key={date}><h2 style={{marginBottom:12}}>{groupLabel(date,todayKey,tomorrowKey)}</h2><div style={{display:"grid",gap:10}}>{list.map(item=><article key={item.show.tvmaze_id+"-"+item.episode.id} className="panel" style={{padding:15,display:"flex",gap:14,alignItems:"center"}}>{item.show.poster_url&&<img src={item.show.poster_url} width="60" height="84" style={{objectFit:"cover",borderRadius:9,flexShrink:0}} alt=""/>}<div style={{flex:1,minWidth:0}}><div className="accent" style={{fontWeight:800}}>{item.episode.airtime||"Time TBA"}</div><h3 style={{margin:"3px 0"}}>{item.episode.name}</h3><div className="muted">{item.show.title} · S{item.episode.season} E{item.episode.number}{item.episode.runtime?" · "+item.episode.runtime+" min":""}</div></div><Link href={"/show/"+item.show.tvmaze_id} className="accent">View →</Link></article>)}</div></section>)}</div>}
+ </main>
+}
