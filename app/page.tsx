@@ -12,6 +12,7 @@ type Show = {
   image?: { medium?: string } | null;
   network?: { name: string } | null;
   webChannel?: { name: string } | null;
+  status?: string | null;
 };
 
 type TodayItem = {
