@@ -1,5 +1,22 @@
 import Link from "next/link";
 import TrackButton from "@/components/track-button";
+import SiteNav from "@/components/site-nav";
+import type { Metadata } from "next";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const s = await getShow(id);
+  if (!s) return { title: "Show not found | My TV Tracker" };
+  const description = s.summary
+    ? s.summary.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim().slice(0, 155)
+    : `Track ${s.name}, see upcoming episodes, and never miss what's next.`;
+  return {
+    title: `${s.name} — Episodes, Schedule & Tracking | My TV Tracker`,
+    description,
+    alternates: { canonical: `/show/${s.id}` },
+    openGraph: { title: `${s.name} | My TV Tracker`, description, type: "website" },
+  };
+}
 
 async function getShow(id: string) {
   const r = await fetch(
@@ -78,6 +95,7 @@ export default async function ShowPage({
 
   return (
     <main className="shell">
+      <SiteNav />
       <div className="show-detail-nav">
         <Link href="/my-shows" className="muted">← My Shows</Link>
         <Link href="/" className="muted">Search</Link>
