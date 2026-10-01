@@ -7,7 +7,7 @@ body{margin:0;background:radial-gradient(circle at 50% -15%,#171a21 0,transparen
 a{text-decoration:none;color:inherit}
 button,input,select{font:inherit}
 button{cursor:pointer}
-.shell{max-width:1120px;margin:auto;padding:28px 24px 60px}
+.shell{max-width:1120px;margin:auto;padding:28px 24px 60px}\n.site-nav{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-bottom:30px;min-width:0}.site-brand{font-size:16px;font-weight:900;letter-spacing:1.8px;white-space:nowrap}.site-nav-links{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0}.site-nav-links .nav-pill{white-space:nowrap}.site-nav-links .nav-pill[href="/"]{display:none}
 .panel{background:rgba(17,19,24,.92);border:1px solid var(--line);border-radius:18px}
 .muted{color:var(--muted)}
 .accent{color:var(--accent)}
@@ -162,6 +162,7 @@ button{cursor:pointer}
   .cast-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:700px){
+  .site-nav{align-items:flex-start;gap:12px;margin-bottom:24px;flex-direction:column}.site-nav-links{width:100%;justify-content:flex-start;overflow-x:auto;flex-wrap:nowrap;padding-bottom:3px;scrollbar-width:none}.site-nav-links::-webkit-scrollbar{display:none}
   .shell{padding:18px 16px 45px}
   .top-nav{overflow-x:auto;flex-wrap:nowrap;padding-bottom:3px;scrollbar-width:none}
   .top-nav::-webkit-scrollbar{display:none}
