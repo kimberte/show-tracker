@@ -167,6 +167,45 @@ export default function Home() {
         )}
       </section>
 
+      {results.length > 0 && (
+        <section className="home-results">
+          <div className="section-heading">
+            <h2>Search results</h2>
+            <span className="muted">{results.length} found</span>
+          </div>
+
+          <div className="home-results-list">
+            {results.map((s) => (
+              <div key={s.id} className="panel home-result-card">
+                {s.image?.medium && (
+                  <img src={s.image.medium} width="70" height="95" alt="" />
+                )}
+
+                <div className="home-result-info">
+                  <h3>{s.name}</h3>
+                  <p className="muted">
+                    {s.network?.name || s.webChannel?.name || "TV"}
+                    {s.premiered ? " · " + s.premiered.slice(0, 4) : ""}
+                  </p>
+                  {s.status && s.status !== "Running" && (
+                    <div className="accent home-result-status">
+                      {s.status === "In Development" ? "Premieres soon" : s.status}
+                    </div>
+                  )}
+                </div>
+
+                <div className="home-result-actions">
+                  <TrackButton showId={s.id} title={s.name} compact />
+                  <Link href={"/show/" + s.id} className="nav-pill home-view-button">
+                    View
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {!todayLoading && today.length > 0 && (
         <section className="home-today">
           <div className="section-heading">
