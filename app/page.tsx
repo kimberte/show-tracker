@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import TrackButton from "@/components/track-button";
+import SiteNav from "@/components/site-nav";
 import { getSupabase } from "@/lib/supabase";
 
 type Show = {
@@ -121,9 +122,11 @@ export default function Home() {
 
   return (
     <main className="shell home-shell">
+      <SiteNav />
+
       <header className="home-nav">
         <div>
-          <div className="accent home-brand">SHOW TRACKER</div>
+          <div className="accent home-brand">MY TV TRACKER</div>
           <h1 className="hero-title home-title">
             Never miss
             <br />
@@ -131,13 +134,6 @@ export default function Home() {
           </h1>
           <p className="muted">Track your shows. See what’s airing. Know what to watch.</p>
         </div>
-
-        <nav className="top-nav home-top-nav">
-          <Link className="nav-pill" href="/today">Today</Link>
-          <Link className="nav-pill" href="/upcoming">Upcoming</Link>
-          <Link className="nav-pill" href="/my-shows">My Shows</Link>
-          <Link className="nav-pill" href="/discover">Discover</Link><Link className="nav-pill" href="/settings/notifications">Notifications</Link>
-        </nav>
       </header>
 
       <section className="home-search panel">
