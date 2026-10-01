@@ -33,6 +33,7 @@ export default function Home() {
   const [q, setQ] = useState("");
   const [results, setResults] = useState<Show[]>([]);
   const [loading, setLoading] = useState(false);
+  const [searched, setSearched] = useState(false);
   const [today, setToday] = useState<TodayItem[]>([]);
   const [todayLoading, setTodayLoading] = useState(true);
 
@@ -101,6 +102,7 @@ export default function Home() {
     if (!q.trim()) return;
 
     setLoading(true);
+    setSearched(true);
 
     try {
       const r = await fetch("/api/search?q=" + encodeURIComponent(q));
@@ -156,6 +158,12 @@ export default function Home() {
             {loading ? "Searching…" : "Search"}
           </button>
         </div>
+        {searched && !loading && results.length === 0 && (
+          <div className="home-search-empty">
+            <h3>No active or upcoming shows found</h3>
+            <p className="muted">Try another title. We include currently airing shows and shows with announced upcoming episodes.</p>
+          </div>
+        )}
       </section>
 
       {!todayLoading && today.length > 0 && (
@@ -218,6 +226,11 @@ export default function Home() {
                     {s.network?.name || s.webChannel?.name || "TV"}
                     {s.premiered ? " · " + s.premiered.slice(0, 4) : ""}
                   </p>
+                  {s.status && s.status !== "Running" && (
+                    <div className="accent home-result-status">
+                      {s.status === "In Development" ? "Premieres soon" : s.status}
+                    </div>
+                  )}
                 </div>
 
                 <div className="home-result-actions">
@@ -232,7 +245,7 @@ export default function Home() {
         </section>
       )}
 
-      {results.length === 0 && (
+      {results.length === 0 && !searched && (
         <section className="home-quick-grid">
           {[
             ["Upcoming", "See what’s next across your shows.", "/upcoming"],
