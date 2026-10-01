@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getSupabase } from "@/lib/supabase";
+import SiteNav from "@/components/site-nav";
 
 export default function NotificationSettings() {
   const [enabled, setEnabled] = useState(false);
@@ -60,6 +61,7 @@ export default function NotificationSettings() {
 
   return (
     <main className="shell" style={{ maxWidth: 760 }}>
+      <SiteNav />
       <header className="page-header"><div>
         <Link href="/" className="muted">← Show Tracker</Link>
         <div className="accent eyebrow">NOTIFICATIONS</div>
