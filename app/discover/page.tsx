@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import TrackButton from "@/components/track-button";
+import SiteNav from "@/components/site-nav";
 
 type Show = {
   id: number;
@@ -100,22 +101,8 @@ export default function Discover() {
 
   return (
     <main className="shell">
-      <header className="page-header">
-        <div>
-          <Link href="/" className="muted">← Show Tracker</Link>
-          <div className="accent eyebrow">DISCOVER</div>
-          <h1 className="page-title">Find your next show.</h1>
-          <p className="muted page-subtitle">
-            Browse active shows and add them straight to your watch list.
-          </p>
-        </div>
-
-        <nav className="top-nav">
-          <Link className="nav-pill" href="/today">Today</Link>
-          <Link className="nav-pill" href="/upcoming">Upcoming</Link>
-          <Link className="nav-pill" href="/my-shows">My Shows</Link>
-        </nav>
-      </header>
+      <SiteNav />
+      <header className="page-header"><div><Link href="/" className="muted">← My TV Tracker</Link><div className="accent eyebrow">DISCOVER</div><h1 className="page-title">Find your next show.</h1><p className="muted page-subtitle">Browse active shows and add them straight to your watch list.</p></div></header>
 
       <section className="discover-controls panel">
         <div className="discover-search">
