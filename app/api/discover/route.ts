@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+const discoverableStatuses = new Set(["Running", "In Development"]);
+
 export async function GET() {
   try {
     const r = await fetch("https://api.tvmaze.com/schedule/full", {
@@ -7,10 +9,7 @@ export async function GET() {
     });
 
     if (!r.ok) {
-      return NextResponse.json(
-        { error: "TV service unavailable" },
-        { status: 502 }
-      );
+      return NextResponse.json({ error: "TV service unavailable" }, { status: 502 });
     }
 
     const episodes = await r.json();
@@ -19,15 +18,14 @@ export async function GET() {
 
     for (const episode of episodes) {
       const show = episode?.show || episode?._embedded?.show;
-      if (!show?.id || show.status !== "Running") continue;
+      if (!show?.id || !discoverableStatuses.has(show.status)) continue;
 
       const existing = byShow.get(show.id);
 
       if (!existing) {
         byShow.set(show.id, {
           show,
-          nextEpisode:
-            episode.airdate && episode.airdate >= today ? episode : null,
+          nextEpisode: episode.airdate && episode.airdate >= today ? episode : null,
         });
         continue;
       }
@@ -37,8 +35,7 @@ export async function GET() {
         episode.airdate >= today &&
         (!existing.nextEpisode ||
           episode.airdate + (episode.airtime || "") <
-            existing.nextEpisode.airdate +
-              (existing.nextEpisode.airtime || ""))
+            existing.nextEpisode.airdate + (existing.nextEpisode.airtime || ""))
       ) {
         existing.nextEpisode = episode;
       }
@@ -57,9 +54,6 @@ export async function GET() {
 
     return NextResponse.json(shows);
   } catch {
-    return NextResponse.json(
-      { error: "TV service unavailable" },
-      { status: 502 }
-    );
+    return NextResponse.json({ error: "TV service unavailable" }, { status: 502 });
   }
 }
