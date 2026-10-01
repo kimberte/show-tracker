@@ -65,9 +65,12 @@ export default async function ShowPage({
     .slice(0, 8);
 
   const recent = episodes
-    .filter((e: any) => !upcoming.some((u: any) => u.id === e.id))
-    .slice(-5)
-    .reverse();
+    .filter((e: any) => e.airdate && e.airdate < today)
+    .sort(
+      (a: any, b: any) =>
+        new Date(b.airdate).getTime() - new Date(a.airdate).getTime()
+    )
+    .slice(0, 5);
 
   const cast = (s._embedded?.cast || []).slice(0, 6);
   const network = s.network?.name || s.webChannel?.name || "TV";
