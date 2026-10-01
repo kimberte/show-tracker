@@ -213,3 +213,9 @@ button{cursor:pointer}
 }
 
 .upcoming-show-title{margin:3px 0;color:var(--accent);font-size:17px;font-weight:800}
+
+.seo-intro{padding:16px 18px;margin-bottom:18px;display:flex;gap:6px;flex-wrap:wrap}
+.seo-cta{padding:24px;margin-top:30px}
+.seo-cta h2{margin:0 0 7px}
+.seo-cta p{margin:0 0 14px;line-height:1.6}
+@media(max-width:700px){.seo-intro{padding:14px}.seo-cta{padding:18px}}
