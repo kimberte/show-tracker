@@ -1,0 +1,42 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import SiteNav from "@/components/site-nav";
+
+export const revalidate = 3600;
+export const metadata: Metadata = {
+  title: "New TV Episodes — What's New This Week | My TV Tracker",
+  description: "Find new TV episodes airing this week and discover shows with upcoming episodes.",
+  alternates: { canonical: "/new-episodes" },
+};
+
+async function getEpisodes() {
+  const r = await fetch("https://api.tvmaze.com/schedule/full", { next: { revalidate: 3600 } });
+  if (!r.ok) return [];
+  return r.json();
+}
+
+export default async function NewEpisodesPage() {
+  const episodes = await getEpisodes();
+  const start = new Date();
+  start.setHours(0,0,0,0);
+  const end = new Date(start);
+  end.setDate(end.getDate() + 7);
+  const items = episodes.filter((e:any) => {
+    if (!e.airdate || e.show?.status !== "Running") return false;
+    const d = new Date(e.airdate + "T12:00:00");
+    return d >= start && d < end;
+  }).sort((a:any,b:any) => (a.airdate+a.airtime).localeCompare(b.airdate+b.airtime));
+
+  return <main className="shell">
+    <SiteNav />
+    <header className="page-header"><div>
+      <div className="accent eyebrow">DISCOVERY</div>
+      <h1 className="page-title">New Episodes</h1>
+      <p className="muted page-subtitle">New episodes from currently airing shows over the next seven days.</p>
+    </div></header>
+    <div className="episode-list">{items.slice(0,100).map((e:any)=><article className="panel episode-card episode-card-simple" key={e.id}>
+      <div className="episode-card-info"><div className="episode-row"><strong>{e.show.name}</strong><span className="accent">{new Date(e.airdate+"T12:00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})} · {e.airtime || "Time TBA"}</span></div><div className="muted">S{e.season} E{e.number} — {e.name}</div><Link className="view-link" href={`/show/${e.show.id}`}>View show →</Link></div>
+    </article>)}</div>
+    <section className="seo-cta panel"><h2>Don't miss what's next</h2><p className="muted">Track your shows and get a daily email with your personalized TV schedule.</p><Link className="primary-button" href="/">Track your shows</Link></section>
+  </main>;
+}
