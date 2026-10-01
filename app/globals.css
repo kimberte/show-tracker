@@ -211,3 +211,5 @@ button{cursor:pointer}
   .episode-card-info h2{font-size:18px}
   .episode-summary{display:none}
 }
+
+.upcoming-show-title{margin:3px 0;color:var(--accent);font-size:17px;font-weight:800}
