@@ -242,46 +242,37 @@ export default function Home() {
         </section>
       )}
 
-      {results.length > 0 && (
-        <section className="home-results">
-          <div className="section-heading">
-            <h2>Search results</h2>
-            <span className="muted">{results.length} found</span>
-          </div>
-
-          <div className="home-results-list">
-            {results.map((s) => (
-              <div key={s.id} className="panel home-result-card">
-                {s.image?.medium && (
-                  <img src={s.image.medium} width="70" height="95" alt="" />
-                )}
-
-                <div className="home-result-info">
-                  <h3>{s.name}</h3>
-                  <p className="muted">
-                    {s.network?.name || s.webChannel?.name || "TV"}
-                    {s.premiered ? " · " + s.premiered.slice(0, 4) : ""}
-                  </p>
-                  {s.status && s.status !== "Running" && (
-                    <div className="accent home-result-status">
-                      {s.status === "In Development" ? "Premieres soon" : s.status}
-                    </div>
-                  )}
-                </div>
-
-                <div className="home-result-actions">
-                  <TrackButton showId={s.id} title={s.name} compact />
-                  <Link href={"/show/" + s.id} className="nav-pill home-view-button">
-                    View
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
       {results.length === 0 && !searched && (
+        <>
+          <section className="home-quick-grid">
+            {[
+              ["Upcoming", "See what’s next across your shows.", "/upcoming"],
+              ["My Shows", "Manage your personal watch list.", "/my-shows"],
+              ["Discover", "Browse more currently active shows.", "/discover"],
+            ].map(([title, description, href]) => (
+              <Link href={href} className="panel home-quick-card" key={title}>
+                <h3>{title}</h3>
+                <p className="muted">{description}</p>
+                <span className="accent">Open →</span>
+              </Link>
+            ))}
+          </section>
+          <section className="home-seo-grid">
+            {[
+              ["TV Tonight", "See new episodes airing today.", "/tv-tonight"],
+              ["TV This Week", "Browse the next seven days of episodes.", "/tv-this-week"],
+              ["New Episodes", "Find what’s new across active shows.", "/new-episodes"],
+            ].map(([title, description, href]) => (
+              <Link href={href} className="panel home-quick-card" key={title}>
+                <div className="accent eyebrow">TV GUIDE</div>
+                <h3>{title}</h3>
+                <p className="muted">{description}</p>
+                <span className="accent">Explore →</span>
+              </Link>
+            ))}
+          </section>
+        </>
+      )}
         <section className="home-quick-grid">
           {[
             ["Upcoming", "See what’s next across your shows.", "/upcoming"],
