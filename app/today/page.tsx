@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import SiteNav from "@/components/site-nav";
 import { getSupabase } from "@/lib/supabase";
 
 type Show = {
@@ -112,7 +113,7 @@ export default function Today() {
   }, []);
 
   return (
-    <main className="shell">
+    <main className="shell"><SiteNav />
       <header className="page-header">
         <div>
           <Link href="/" className="muted">← Show Tracker</Link>
