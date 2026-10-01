@@ -1,0 +1,2 @@
+import Link from "next/link";
+export default function SiteNav(){return <nav className="site-nav"><Link href="/" className="site-brand"><span className="accent">MY TV</span> TRACKER</Link><div className="site-nav-links"><Link className="nav-pill" href="/today">Today</Link><Link className="nav-pill" href="/upcoming">Upcoming</Link><Link className="nav-pill" href="/my-shows">My Shows</Link><Link className="nav-pill" href="/discover">Discover</Link><Link className="nav-pill" href="/settings/notifications">Notifications</Link></div></nav>}
