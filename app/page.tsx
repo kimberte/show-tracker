@@ -273,20 +273,6 @@ export default function Home() {
           </section>
         </>
       )}
-        <section className="home-quick-grid">
-          {[
-            ["Upcoming", "See what’s next across your shows.", "/upcoming"],
-            ["My Shows", "Manage your personal watch list.", "/my-shows"],
-            ["Discover", "Browse more currently active shows.", "/discover"],
-          ].map(([title, description, href]) => (
-            <Link href={href} className="panel home-quick-card" key={title}>
-              <h3>{title}</h3>
-              <p className="muted">{description}</p>
-              <span className="accent">Open →</span>
-            </Link>
-          ))}
-        </section>
-      )}
     </main>
   );
 }
