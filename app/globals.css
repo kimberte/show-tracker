@@ -66,6 +66,7 @@ button{cursor:pointer}
 .home-result-actions{display:flex;gap:8px;align-items:center}
 .home-view-button{color:var(--text)}
 .home-quick-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.home-seo-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:14px}
 .home-quick-card{padding:22px;transition:.15s}
 .home-quick-card:hover{border-color:#353a46;transform:translateY(-2px)}
 .home-result-card,.today-home-card,.my-show-card,.episode-card{transition:border-color .15s,background .15s,transform .15s}
@@ -180,7 +181,7 @@ button{cursor:pointer}
   .today-home-card{padding:12px}
   .today-home-card img{width:46px;height:66px}
   .today-home-card .view-link{font-size:12px}
-  .home-quick-grid{grid-template-columns:1fr}
+  .home-quick-grid,.home-seo-grid{grid-template-columns:1fr}
   .home-result-card{align-items:flex-start;padding:12px}
   .home-result-card>img{width:58px;height:80px}
   .home-result-actions{margin-left:auto;align-self:center}
