@@ -153,7 +153,8 @@ export default function MyShows() {
   }
 
   return (
-    <main className="shell"><SiteNav />
+    <main className="shell">
+      <SiteNav />
       <header className="page-header">
         <div>
           <Link href="/" className="muted">← Show Tracker</Link>
@@ -162,11 +163,6 @@ export default function MyShows() {
           <p className="muted page-subtitle">Your personal watch list and what’s coming next.</p>
         </div>
 
-        <nav className="top-nav">
-          <Link className="nav-pill" href="/today">Today</Link>
-          <Link className="nav-pill" href="/upcoming">Upcoming</Link>
-          <Link className="nav-pill" href="/discover">Discover</Link>
-        </nav>
       </header>
 
       {loading ? (
