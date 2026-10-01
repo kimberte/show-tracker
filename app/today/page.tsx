@@ -113,7 +113,8 @@ export default function Today() {
   }, []);
 
   return (
-    <main className="shell"><SiteNav />
+    <main className="shell">
+      <SiteNav />
       <header className="page-header">
         <div>
           <Link href="/" className="muted">← Show Tracker</Link>
