@@ -117,12 +117,13 @@ export default function Today() {
       <SiteNav />
       <header className="page-header">
         <div>
-          <Link href="/" className="muted">← Show Tracker</Link>
-          <div className="accent eyebrow">YOUR SCHEDULE</div>
+          <Link href="/" className="muted">← My TV Tracker</Link>
+          <div className="accent eyebrow">YOUR TV SCHEDULE</div>
           <h1 className="page-title">Today</h1>
           <p className="muted page-subtitle">
-            {formatDate(new Date().toLocaleDateString("en-CA"))}
+            Episodes airing today from shows you’re tracking.
           </p>
+          <p className="muted schedule-date">{formatDate(new Date().toLocaleDateString("en-CA"))}</p>
         </div>
 
         <nav className="top-nav">
