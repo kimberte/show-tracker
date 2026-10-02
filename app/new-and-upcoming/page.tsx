@@ -98,11 +98,13 @@ function ShowCard({ show: s }: { show: Show }) {
   const network = s.network?.name || s.webChannel?.name || "TV";
   return (
     <article className="panel new-upcoming-card">
-      {s.image?.medium ? (
-        <img src={s.image.medium} width="120" height="170" alt={s.name} loading="lazy" />
-      ) : (
-        <div className="new-upcoming-fallback">{s.name.slice(0, 1)}</div>
-      )}
+      <Link href={"/show/" + s.id} aria-label={"View " + s.name}>
+        {s.image?.medium ? (
+          <img src={s.image.medium} width="120" height="170" alt={s.name} loading="lazy" />
+        ) : (
+          <div className="new-upcoming-fallback">{s.name.slice(0, 1)}</div>
+        )}
+      </Link>
       <div className="new-upcoming-info">
         <div className="accent eyebrow" style={{ marginTop: 0 }}>{s._isNew ? "NEW SERIES" : "RETURNING"}</div>
         <h3>{s.name}</h3>
