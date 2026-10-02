@@ -220,11 +220,13 @@ export default function Discover() {
             {displayed.map((s) => (
               <article className="show-card panel" key={s.id}>
                 <div className="poster-wrap">
-                  {s.image?.medium ? (
-                    <img src={s.image.medium} alt={s.name} loading="lazy" />
-                  ) : (
-                    <div className="poster-fallback">{s.name.slice(0, 1)}</div>
-                  )}
+                  <Link href={"/show/" + s.id} aria-label={"View " + s.name}>
+                    {s.image?.medium ? (
+                      <img src={s.image.medium} alt={s.name} loading="lazy" />
+                    ) : (
+                      <div className="poster-fallback">{s.name.slice(0, 1)}</div>
+                    )}
+                  </Link>
 
                   <span className="status-badge">
                     {s._discoverStatus || "Active"}
