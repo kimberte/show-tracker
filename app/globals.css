@@ -330,3 +330,42 @@ button{cursor:pointer}
   .home-result-actions{gap:5px}
   .home-hero-benefit a{width:100%}
 }
+
+
+/* Watch history + profile stats */
+.poster-wrap>a{display:block;width:100%;height:100%;color:inherit}
+.watch-season-list{display:grid;gap:10px}
+.watch-season{padding:0;overflow:hidden}
+.watch-season summary{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 16px;cursor:pointer;list-style:none}
+.watch-season summary::-webkit-details-marker{display:none}
+.watch-season summary:hover{background:rgba(245,158,11,.035)}
+.watch-season-button{border:1px solid var(--line);border-radius:9px;background:var(--panel-2);color:var(--muted);padding:8px 10px;font-size:12px;font-weight:800;white-space:nowrap;cursor:pointer}
+.watch-season-button.complete{color:var(--accent);border-color:rgba(245,158,11,.3);background:var(--accent-soft)}
+.watch-season-button:disabled{opacity:.6;cursor:wait}
+.watch-episode-list{display:grid;border-top:1px solid var(--line)}
+.watch-episode{display:flex;align-items:center;gap:11px;text-align:left;padding:12px 16px;border:0;border-bottom:1px solid rgba(255,255,255,.045);background:transparent;color:var(--text);cursor:pointer}
+.watch-episode:last-child{border-bottom:0}
+.watch-episode:hover{background:rgba(245,158,11,.045)}
+.watch-episode.watched{background:rgba(245,158,11,.055)}
+.watch-episode>span:last-child{display:grid;gap:3px;min-width:0}
+.watch-episode strong{font-size:13px}
+.watch-episode .muted{font-size:12px}
+.watch-check{width:22px;height:22px;display:grid;place-items:center;flex:0 0 22px;border:1px solid var(--line);border-radius:6px;color:#111;font-size:13px;font-weight:900}
+.watch-episode.watched .watch-check{background:var(--accent);border-color:var(--accent)}
+.profile-stats-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.profile-stat-card{padding:20px}
+.profile-stat-card strong{display:block;font-size:42px;line-height:1;margin:8px 0 6px}
+.profile-stat-card .muted{font-size:13px}
+.profile-next{margin-top:18px;padding:20px;display:flex;align-items:center;justify-content:space-between;gap:20px;border-color:rgba(245,158,11,.18);background:linear-gradient(110deg,rgba(245,158,11,.055),rgba(17,19,24,.92))}
+.profile-next h2{margin:4px 0 5px}
+.profile-next p{margin:0}
+@media(max-width:700px){
+  .watch-season summary{align-items:flex-start;padding:13px}
+  .watch-season-button{font-size:11px;padding:7px 8px}
+  .watch-episode{padding:11px 13px}
+  .profile-stats-grid{grid-template-columns:1fr}
+  .profile-stat-card{padding:16px}
+  .profile-stat-card strong{font-size:36px}
+  .profile-next{display:block;padding:17px}
+  .profile-next>a{display:block;margin-top:12px}
+}
