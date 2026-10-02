@@ -210,7 +210,9 @@ export default function Home() {
             {results.slice(0, visibleResults).map((s) => (
               <div key={s.id} className="panel home-result-card">
                 {s.image?.medium && (
-                  <img src={s.image.medium} width="70" height="95" alt="" />
+                  <Link href={"/show/" + s.id} aria-label={"View " + s.name}>
+                    <img src={s.image.medium} width="70" height="95" alt="" />
+                  </Link>
                 )}
 
                 <div className="home-result-info">
@@ -273,7 +275,9 @@ export default function Home() {
                 className="panel today-home-card"
               >
                 {item.poster && (
-                  <img src={item.poster} width="52" height="74" alt="" />
+                  <Link href={"/show/" + item.showId} aria-label={"View " + item.showName}>
+                    <img src={item.poster} width="52" height="74" alt="" />
+                  </Link>
                 )}
 
                 <div className="today-home-info">
