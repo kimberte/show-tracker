@@ -28,7 +28,7 @@ export async function POST() {
   const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { autoRefreshToken: false, persistSession: false } });
   const resend = new Resend(process.env.RESEND_API_KEY);
 
-  const { data: pref } = await supabase.from("notification_preferences").select("days_ahead").eq("user_id", user.id).maybeSingle();
+  const { data: pref } = await supabase.from("notification_preferences").select("days_ahead,notification_email").eq("user_id", user.id).maybeSingle();
   const { data: tracked } = await supabase.from("tracked_shows").select("show:shows(id,title,tvmaze_id)").eq("user_id", user.id);
   const shows = (tracked || []).map((row: any) => row.show).filter(Boolean);
   if (!shows.length) return NextResponse.json({ error: "Track at least one show before sending a test email." }, { status: 400 });
@@ -75,11 +75,11 @@ export async function POST() {
 
   const result = await resend.emails.send({
     from: process.env.EMAIL_FROM,
-    to: user.email!,
+    to: pref?.notification_email || user.email!,
     subject: "Show Tracker test email",
     html
   });
 
   if (result.error) return NextResponse.json({ error: result.error.message }, { status: 502 });
-  return NextResponse.json({ success: true, email: user.email });
+  return NextResponse.json({ success: true, email: pref?.notification_email || user.email });
 }
