@@ -10,7 +10,8 @@ export const metadata: Metadata = {
 };
 
 async function getEpisodes() {
-  const r = await fetch("https://api.tvmaze.com/schedule/full", { next: { revalidate: 3600 } });
+  const today = new Date().toLocaleDateString("en-CA");
+  const r = await fetch("https://api.tvmaze.com/schedule?date=" + today, { next: { revalidate: 3600 } });
   if (!r.ok) return [];
   return r.json();
 }
@@ -22,11 +23,11 @@ function dateKey(offset: number) {
 }
 
 export default async function TvThisWeekPage() {
-  const episodes = await getEpisodes();
+  const episodes = (await Promise.all(Array.from({length: 7}, (_, i) => fetch("https://api.tvmaze.com/schedule?date=" + dateKey(i), { next: { revalidate: 3600 } }).then(r => r.ok ? r.json() : []).catch(() => [])))).flat();
   const dates = Array.from({length: 7}, (_, i) => dateKey(i));
   const groups = dates.map(date => ({
     date,
-    items: episodes.filter((e: any) => e.airdate === date && e.show?.status === "Running").sort((a: any,b: any)=>(a.airtime||"").localeCompare(b.airtime||""))
+    items: episodes.filter((e: any) => e.airdate === date && ["Running", "In Development"].includes(e.show?.status)).sort((a: any,b: any)=>(a.airtime||"").localeCompare(b.airtime||""))
   })).filter(g => g.items.length);
 
   return <main className="shell">
