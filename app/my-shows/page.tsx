@@ -233,7 +233,9 @@ export default function MyShows() {
             return (
               <article key={item.id} className="panel my-show-card">
                 {s.poster_url && (
-                  <img src={s.poster_url} width="92" height="128" alt="" />
+                  <Link href={"/show/" + s.tvmaze_id} aria-label={"View " + s.title}>
+                    <img src={s.poster_url} width="92" height="128" alt="" />
+                  </Link>
                 )}
 
                 <div className="my-show-info">
