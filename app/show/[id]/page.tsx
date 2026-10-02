@@ -1,6 +1,7 @@
 import Link from "next/link";
 import TrackButton from "@/components/track-button";
 import SiteNav from "@/components/site-nav";
+import EpisodeWatchList from "@/components/episode-watch-list";
 import type { Metadata } from "next";
 
 async function getShow(id: string) {
@@ -249,6 +250,8 @@ export default async function ShowPage({
           </div>
         </section>
       )}
+
+      <EpisodeWatchList tvmazeShowId={s.id} title={s.name} episodes={episodes} />
 
       {recent.length > 0 && (
         <section className="show-section">
