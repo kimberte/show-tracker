@@ -249,6 +249,7 @@ export default function Home() {
               ["Upcoming", "See what’s next across your shows.", "/upcoming"],
               ["My Shows", "Manage your personal watch list.", "/my-shows"],
               ["Discover", "Browse more currently active shows.", "/discover"],
+              ["New & Upcoming", "Find new series and returning shows coming soon.", "/new-and-upcoming"],
             ].map(([title, description, href]) => (
               <Link href={href} className="panel home-quick-card" key={title}>
                 <h3>{title}</h3>
