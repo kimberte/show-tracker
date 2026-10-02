@@ -17,7 +17,7 @@ async function getEpisodes() {
 }
 
 export default async function NewEpisodesPage() {
-  const episodes = await getEpisodes();
+  const episodes = (await Promise.all(Array.from({length: 7}, (_, i) => { const d = new Date(); d.setDate(d.getDate() + i); const date = d.toLocaleDateString("en-CA"); return fetch("https://api.tvmaze.com/schedule?date=" + date, { next: { revalidate: 3600 } }).then(r => r.ok ? r.json() : []).catch(() => []); }))).flat();
   const start = new Date();
   start.setHours(0,0,0,0);
   const end = new Date(start);
