@@ -2,6 +2,8 @@ import Link from "next/link";
 import TrackButton from "@/components/track-button";
 import SiteNav from "@/components/site-nav";
 import type { Metadata } from "next";
+import SiteNav from "@/components/site-nav";
+import type { Metadata } from "next";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
@@ -28,6 +30,21 @@ async function getShow(id: string) {
 
   if (!r.ok) return null;
   return r.json();
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  const s = await getShow(id);
+  if (!s) return { title: "Show not found | My TV Tracker" };
+  const description = s.summary
+    ? clean(s.summary).slice(0, 155)
+    : `Track ${s.name}, see upcoming episodes, and never miss what's next.`;
+  return {
+    title: `${s.name} — Episodes, Schedule & Tracking | My TV Tracker`,
+    description,
+    alternates: { canonical: `/show/${s.id}` },
+    openGraph: { title: `${s.name} | My TV Tracker`, description, type: "website" },
+  };
 }
 
 function clean(text: string) {
