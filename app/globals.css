@@ -246,3 +246,5 @@ button{cursor:pointer}
   .home-discovery-feature>span{white-space:normal}
   .discover-platform{width:100%}
 }
+
+.discover-platforms{display:grid;gap:7px;margin-bottom:13px}.discover-platforms>span{font-size:12px}.platform-chip-row{display:flex;gap:7px;overflow:auto;scrollbar-width:none;padding-bottom:2px}.platform-chip-row::-webkit-scrollbar{display:none}.platform-chip{white-space:nowrap;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:#0c0e12;color:var(--muted);font-size:13px;font-weight:700}.platform-chip:hover:not(:disabled){border-color:#353a46;color:var(--text);background:var(--panel-2)}.platform-chip.active{background:var(--accent-soft);border-color:rgba(245,158,11,.45);color:var(--accent)}.platform-chip:disabled{opacity:.4;cursor:not-allowed}
