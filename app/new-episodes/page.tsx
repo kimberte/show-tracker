@@ -28,7 +28,10 @@ export default async function NewEpisodesPage() {
     return d >= start && d < end;
   }).sort((a:any,b:any) => (a.airdate+a.airtime).localeCompare(b.airdate+b.airtime));
 
+  const guideStructuredData = { "@context": "https://schema.org", "@type": "ItemList", name: "New TV Episodes", itemListElement: items.slice(0, 100).map((e: any, i: number) => ({ "@type": "ListItem", position: i + 1, name: e.show.name + " — " + e.name, url: "https://mytvtracker.app/show/" + e.show.id })) };
+
   return <main className="shell">
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(guideStructuredData) }} />
     <SiteNav />
     <header className="page-header"><div>
       <div className="accent eyebrow">DISCOVERY</div>
