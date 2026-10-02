@@ -171,9 +171,8 @@ export default function Home() {
           <p className="muted">Search active shows and add them to your tracker.</p>
         </div>
 
-        <div className="home-search-row">
-          <form
-            className="home-search-row"
+        <form
+          className="home-search-row"
             onSubmit={(e) => {
               e.preventDefault();
               search();
@@ -189,7 +188,7 @@ export default function Home() {
             <button type="submit" onClick={search} disabled={loading}>
               {loading ? "Searching…" : "Search"}
             </button>
-          </form>
+        </form>
         {searched && !loading && results.length === 0 && (
           <div className="home-search-empty">
             <h3>No active or upcoming shows found</h3>
