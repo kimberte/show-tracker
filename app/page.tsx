@@ -133,11 +133,28 @@ export default function Home() {
             when your shows are on.
           </h1>
           <p className="muted">Track your shows. See what’s airing. Know what to watch.</p>
+          <div className="home-hero-benefit">
+            <div className="accent eyebrow">DAILY TV ALERTS</div>
+            <strong>Get your personal TV schedule delivered every day.</strong>
+            <span className="muted">Know what’s airing today and what’s coming next without having to remember.</span>
+            <Link href="/settings/notifications" className="accent">Set up daily alerts →</Link>
+          </div>
         </div>
         <div className="home-hero-visual" aria-hidden="true">
           <img src="/my-tv-tracker-hero.svg" alt="" />
         </div>
       </header>
+
+      <section className="home-discovery-strip">
+        <Link href="/new-and-upcoming" className="panel home-discovery-feature">
+          <div>
+            <div className="accent eyebrow">NEW & UPCOMING</div>
+            <h2>Looking for your next show?</h2>
+            <p className="muted">Find new series and returning favourites coming soon, then track them before they air.</p>
+          </div>
+          <span className="accent">Browse new & upcoming →</span>
+        </Link>
+      </section>
 
       <section className="home-search panel">
         <div className="home-search-copy">
@@ -252,7 +269,6 @@ export default function Home() {
               ["Upcoming", "See what’s next across your tracked shows.", "/upcoming"],
               ["My Shows", "Manage the shows you’re tracking.", "/my-shows"],
               ["Discover", "Browse more currently active shows.", "/discover"],
-              ["New & Upcoming", "Find new series and returning shows coming soon.", "/new-and-upcoming"],
             ].map(([title, description, href]) => (
               <Link href={href} className="panel home-quick-card" key={title}>
                 <h3>{title}</h3>
