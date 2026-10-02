@@ -7,8 +7,6 @@ type Show = {
   [key: string]: any;
 };
 
-const searchableStatuses = new Set(["Running", "In Development"]);
-
 export async function GET(req: Request) {
   const q = new URL(req.url).searchParams.get("q")?.trim();
   if (!q) return NextResponse.json([]);
@@ -29,39 +27,23 @@ export async function GET(req: Request) {
 
     const searchData = await searchResponse.json();
     const scheduleEpisodes = scheduleResponse.ok ? await scheduleResponse.json() : [];
-    const today = new Date().toLocaleDateString("en-CA");
-    const futureScheduledIds = new Set<number>();
 
-    for (const episode of scheduleEpisodes) {
-      const show = episode?.show || episode?._embedded?.show;
-      if (
-        show?.id &&
-        episode?.airdate &&
-        episode.airdate >= today &&
-        searchableStatuses.has(show.status)
-      ) {
-        futureScheduledIds.add(show.id);
-      }
-    }
-
+    // Search is an explicit request for a show, so don't hide results based on
+    // TVMaze status. A running show can be between seasons, and a show marked
+    // ended may still be useful to track while its status is being updated.
     const matches: Show[] = searchData
       .map((x: any) => x.show)
-      .filter(
-        (show: Show) =>
-          show &&
-          (show.status === "Running" ||
-            (show.status === "In Development" && futureScheduledIds.has(show.id)))
-      );
+      .filter((show: Show) => show);
 
     const term = q.toLowerCase();
 
+    // Keep the schedule fallback for shows that appear in the schedule but
+    // aren't returned by TVMaze's search endpoint.
     for (const episode of scheduleEpisodes) {
       const show = episode?.show || episode?._embedded?.show;
       if (
         show?.id &&
-        searchableStatuses.has(show.status) &&
         episode?.airdate &&
-        episode.airdate >= today &&
         typeof show.name === "string" &&
         show.name.toLowerCase().includes(term) &&
         !matches.some((item) => item.id === show.id)
