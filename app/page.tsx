@@ -145,17 +145,7 @@ export default function Home() {
         </div>
       </header>
 
-      <section className="home-discovery-strip">
-        <Link href="/new-and-upcoming" className="panel home-discovery-feature">
-          <div>
-            <div className="accent eyebrow">NEW & UPCOMING</div>
-            <h2>Looking for your next show?</h2>
-            <p className="muted">Find new series and returning favourites coming soon, then track them before they air.</p>
-          </div>
-          <span className="accent">Browse new & upcoming →</span>
-        </Link>
-      </section>
-
+      
       <section className="home-search panel">
         <div className="home-search-copy">
           <div className="accent eyebrow">FIND A SHOW</div>
@@ -181,6 +171,17 @@ export default function Home() {
             <p className="muted">Try another title. We include currently airing shows and shows with announced upcoming episodes.</p>
           </div>
         )}
+      </section>
+
+      <section className="home-discovery-strip">
+        <Link href="/new-and-upcoming" className="panel home-discovery-feature">
+          <div>
+            <div className="accent eyebrow">NEW & UPCOMING</div>
+            <h2>Looking for your next show?</h2>
+            <p className="muted">Find new series and returning favourites coming soon, then track them before they air.</p>
+          </div>
+          <span className="accent">Browse new & upcoming →</span>
+        </Link>
       </section>
 
       {results.length > 0 && (
