@@ -10,7 +10,8 @@ export const metadata: Metadata = {
 };
 
 async function getEpisodes() {
-  const r = await fetch("https://api.tvmaze.com/schedule/full", { next: { revalidate: 3600 } });
+  const today = new Date().toLocaleDateString("en-CA");
+  const r = await fetch("https://api.tvmaze.com/schedule?date=" + today, { next: { revalidate: 3600 } });
   if (!r.ok) return [];
   return r.json();
 }
@@ -19,7 +20,7 @@ export default async function TvTonightPage() {
   const episodes = await getEpisodes();
   const today = new Date().toLocaleDateString("en-CA");
   const items = episodes
-    .filter((e: any) => e.airdate === today && e.show?.status === "Running")
+    .filter((e: any) => e.airdate === today && ["Running", "In Development"].includes(e.show?.status))
     .sort((a: any, b: any) => (a.airtime || "").localeCompare(b.airtime || ""));
 
   return <main className="shell">
