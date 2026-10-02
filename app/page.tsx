@@ -120,8 +120,26 @@ export default function Home() {
     }
   }
 
+  const homeStructuredData = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "My TV Tracker",
+    url: "https://mytvtracker.app/",
+    description:
+      "Track your favourite TV shows, see what's airing today, discover what's coming next, and get a personal daily TV schedule.",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: "https://mytvtracker.app/?q={search_term_string}",
+      "query-input": "required name=search_term_string",
+    },
+  };
+
   return (
     <main className="shell home-shell">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homeStructuredData) }}
+      />
       <SiteNav />
 
       <header className="home-hero">
@@ -154,17 +172,24 @@ export default function Home() {
         </div>
 
         <div className="home-search-row">
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && search()}
-            placeholder="Search TV shows..."
-            aria-label="Search TV shows"
-          />
-          <button onClick={search} disabled={loading}>
-            {loading ? "Searching…" : "Search"}
-          </button>
-        </div>
+          <form
+            className="home-search-row"
+            onSubmit={(e) => {
+              e.preventDefault();
+              search();
+            }}
+          >
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search TV shows..."
+              aria-label="Search TV shows"
+              autoComplete="off"
+            />
+            <button type="submit" onClick={search} disabled={loading}>
+              {loading ? "Searching…" : "Search"}
+            </button>
+          </form>
         {searched && !loading && results.length === 0 && (
           <div className="home-search-empty">
             <h3>No active or upcoming shows found</h3>
@@ -174,7 +199,7 @@ export default function Home() {
       </section>
 
       {results.length > 0 && (
-        <section className="home-results">
+        <section className="home-results" aria-live="polite">
           <div className="section-heading">
             <h2>Search results</h2>
             <span className="muted">{results.length} found</span>
