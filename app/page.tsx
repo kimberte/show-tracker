@@ -207,7 +207,7 @@ export default function Home() {
           <div className="section-heading">
             <div>
               <div className="accent eyebrow home-eyebrow">YOUR TV SCHEDULE</div>
-              <h2>What’s on your shows today</h2>
+              <h2>What’s on today</h2>
               <p className="muted">{formatDate(new Date().toLocaleDateString("en-CA"))} · Tracked shows only</p>
             </div>
             <Link href="/today" className="accent">See all →</Link>
