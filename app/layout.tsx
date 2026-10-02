@@ -28,6 +28,7 @@ export const metadata: Metadata = {
     description:
       "Track your shows and stay on top of what airs today and what's coming next.",
   },
+  other: { "google-adsense-account": "ca-pub-3165991934235457" },
   robots: {
     index: true,
     follow: true,
