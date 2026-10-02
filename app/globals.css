@@ -55,7 +55,7 @@ button{cursor:pointer}
 .today-home-info{min-width:0;flex:1}
 .today-home-time{font-weight:800;font-size:13px}
 .today-home-info h3{margin:3px 0;font-size:17px;overflow-wrap:anywhere;word-break:break-word}
-.home-results{margin-top:26px}
+.home-results{margin-top:26px;margin-bottom:30px}
 .home-results-list{display:grid;gap:12px}
 .home-result-card{padding:16px;display:flex;align-items:center;gap:16px}
 .home-result-card>img{width:70px;height:95px;object-fit:cover;border-radius:10px;flex-shrink:0}
