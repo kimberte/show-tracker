@@ -142,11 +142,35 @@ export default async function ShowPage({
               )}
             </div>
 
+            {(s.network?.name || s.webChannel?.name) && (
+              <div className="show-watch-note muted">
+                Watch on {s.network?.name || s.webChannel?.name}
+              </div>
+            )}
+
             {s.rating?.average && (
               <div className="muted">TVMaze rating: {s.rating.average}/10</div>
             )}
 
-            <TrackButton showId={s.id} title={s.name} />
+            <div className="show-action-row">
+              <TrackButton showId={s.id} title={s.name} />
+              <a
+                className="nav-pill show-action-link"
+                href={"https://www.youtube.com/results?search_query=" + encodeURIComponent(s.name + " official trailer")}
+                target="_blank"
+                rel="noreferrer"
+              >
+                ▶ Find Trailer
+              </a>
+              <a
+                className="nav-pill show-action-link"
+                href={"https://www.google.com/search?q=" + encodeURIComponent(s.name + " where to watch")}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Where to Watch
+              </a>
+            </div>
           </div>
         </div>
       </section>
