@@ -60,6 +60,7 @@ export default function Discover() {
   const [q, setQ] = useState("");
   const [sort, setSort] = useState("next");
   const [platform, setPlatform] = useState("All");
+  const [airing, setAiring] = useState("All");
   const [visible, setVisible] = useState(48);
 
   useEffect(() => {
@@ -75,7 +76,7 @@ export default function Discover() {
 
   useEffect(() => {
     setVisible(48);
-  }, [genre, q, sort, platform]);
+  }, [genre, q, sort, platform, airing]);
 
   const platforms = useMemo(() => {
     const names = new Set<string>();
@@ -100,6 +101,7 @@ export default function Discover() {
         (s) =>
           (genre === "All" || s.genres?.includes(genre)) &&
           (platform === "All" || (s.network?.name || s.webChannel?.name) === platform) &&
+          (airing === "All" || (airing === "Airing soon" ? !!s._nextAirdate : !s._nextAirdate)) &&
           (!term || s.name.toLowerCase().includes(term) || (s.network?.name || s.webChannel?.name || "").toLowerCase().includes(term))
       )
       .sort((a, b) => {
@@ -121,7 +123,7 @@ export default function Discover() {
   return (
     <main className="shell">
       <SiteNav />
-      <header className="page-header"><div><Link href="/" className="muted">← My TV Tracker</Link><div className="accent eyebrow">DISCOVER</div><h1 className="page-title">Find your next show.</h1><p className="muted page-subtitle">Browse active shows and add them straight to your watch list.</p></div></header>
+      <header className="page-header"><div><Link href="/" className="muted">← My TV Tracker</Link><div className="accent eyebrow">DISCOVER</div><h1 className="page-title">Find your next show.</h1><p className="muted page-subtitle">Browse active and returning shows, see what is airing next, and add favourites straight to your watch list.</p></div></header>
 
       <section className="discover-controls panel">
         <div className="discover-search">
@@ -148,6 +150,12 @@ export default function Discover() {
               </button>
             ))}
           </div>
+        </div>
+
+        <div className="discover-status-tabs">
+          {["All", "Airing soon", "Between seasons"].map((value) => (
+            <button key={value} className={"genre-chip " + (airing === value ? "active" : "")} onClick={() => setAiring(value)}>{value}</button>
+          ))}
         </div>
 
         <div className="discover-toolbar">
@@ -204,7 +212,7 @@ export default function Discover() {
       ) : (
         <section>
           <div className="section-heading">
-            <h2>{platform !== "All" ? platform : genre === "All" ? "Active shows" : genre}</h2>
+            <h2>{airing !== "All" ? airing : platform !== "All" ? platform : genre === "All" ? "Active shows" : genre}</h2>
             <span className="muted">{filtered.length} shows</span>
           </div>
 
