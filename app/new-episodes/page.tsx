@@ -38,6 +38,7 @@ export default async function NewEpisodesPage() {
     <div className="episode-list">{items.slice(0,100).map((e:any)=><article className="panel episode-card episode-card-simple" key={e.id}>
       <div className="episode-card-info"><div className="episode-row"><strong>{e.show.name}</strong><span className="accent">{new Date(e.airdate+"T12:00:00").toLocaleDateString("en-US",{weekday:"short",month:"short",day:"numeric"})} · {e.airtime || "Time TBA"}</span></div><div className="muted">S{e.season} E{e.number} — {e.name}</div><Link className="view-link" href={`/show/${e.show.id}`}>View show →</Link></div>
     </article>)}</div>
+    <section className="seo-links panel"><div><div className="accent eyebrow">EXPLORE THE TV GUIDE</div><h2>Find more to watch</h2></div><div className="seo-link-grid"><Link href="/tv-tonight">TV Tonight →</Link><Link href="/tv-this-week">TV This Week →</Link><Link href="/discover">Discover Shows →</Link></div></section>
     <section className="seo-cta panel"><h2>Don't miss what's next</h2><p className="muted">Track your shows and get a daily email with your personalized TV schedule.</p><Link className="primary-button" href="/">Track your shows</Link></section>
   </main>;
 }
