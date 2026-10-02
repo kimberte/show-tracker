@@ -124,8 +124,8 @@ export default function Home() {
     <main className="shell home-shell">
       <SiteNav />
 
-      <header className="home-nav">
-        <div>
+      <header className="home-hero">
+        <div className="home-hero-copy">
           <div className="accent home-brand">MY TV TRACKER</div>
           <h1 className="hero-title home-title">
             Never miss
@@ -133,6 +133,9 @@ export default function Home() {
             when your shows are on.
           </h1>
           <p className="muted">Track your shows. See what’s airing. Know what to watch.</p>
+        </div>
+        <div className="home-hero-visual" aria-hidden="true">
+          <img src="/my-tv-tracker-hero.svg" alt="" />
         </div>
       </header>
 
