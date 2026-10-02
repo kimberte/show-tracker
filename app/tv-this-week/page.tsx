@@ -30,7 +30,10 @@ export default async function TvThisWeekPage() {
     items: episodes.filter((e: any) => e.airdate === date && ["Running", "In Development"].includes(e.show?.status)).sort((a: any,b: any)=>(a.airtime||"").localeCompare(b.airtime||""))
   })).filter(g => g.items.length);
 
+  const guideStructuredData = { "@context": "https://schema.org", "@type": "ItemList", name: "TV This Week", itemListElement: episodes.filter((e: any) => ["Running", "In Development"].includes(e.show?.status)).slice(0, 100).map((e: any, i: number) => ({ "@type": "ListItem", position: i + 1, name: e.show.name + " — " + e.name, url: "https://mytvtracker.app/show/" + e.show.id })) };
+
   return <main className="shell">
+    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(guideStructuredData) }} />
     <SiteNav />
     <header className="page-header"><div>
       <div className="accent eyebrow">TV SCHEDULE</div>
