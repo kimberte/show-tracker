@@ -173,17 +173,6 @@ export default function Home() {
         )}
       </section>
 
-      <section className="home-discovery-strip">
-        <Link href="/new-and-upcoming" className="panel home-discovery-feature">
-          <div>
-            <div className="accent eyebrow">NEW & UPCOMING</div>
-            <h2>Looking for your next show?</h2>
-            <p className="muted">Find new series and returning favourites coming soon, then track them before they air.</p>
-          </div>
-          <span className="accent">Browse new & upcoming →</span>
-        </Link>
-      </section>
-
       {results.length > 0 && (
         <section className="home-results">
           <div className="section-heading">
@@ -222,6 +211,18 @@ export default function Home() {
           </div>
         </section>
       )}
+
+
+      <section className="home-discovery-strip">
+        <Link href="/new-and-upcoming" className="panel home-discovery-feature">
+          <div>
+            <div className="accent eyebrow">NEW & UPCOMING</div>
+            <h2>Looking for your next show?</h2>
+            <p className="muted">Find new series and returning favourites coming soon, then track them before they air.</p>
+          </div>
+          <span className="accent">Browse new & upcoming →</span>
+        </Link>
+      </section>
 
       {!todayLoading && today.length > 0 && (
         <section className="home-today">
