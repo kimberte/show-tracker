@@ -26,7 +26,7 @@ export default function NotificationSettings() {
       setTimezone(detectedTimezone);
       const [{ data: profile }, { data: prefs }] = await Promise.all([
         supabase.from("profiles").select("timezone").eq("id", user.id).maybeSingle(),
-        supabase.from("notification_preferences").select("email_daily,days_ahead").eq("user_id", user.id).maybeSingle(),
+        supabase.from("notification_preferences").select("email_daily,days_ahead,notification_email").eq("user_id", user.id).maybeSingle(),
       ]);
       if (profile?.timezone) setTimezone(profile.timezone);
       if (prefs) { setEnabled(!!prefs.email_daily); setDaysAhead(prefs.days_ahead || 7); if (prefs.notification_email) setEmail(prefs.notification_email); }
