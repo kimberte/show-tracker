@@ -38,6 +38,7 @@ export default function Home() {
   const [searched, setSearched] = useState(false);
   const [today, setToday] = useState<TodayItem[]>([]);
   const [todayLoading, setTodayLoading] = useState(true);
+  const [visibleResults, setVisibleResults] = useState(10);
 
   useEffect(() => {
     async function loadToday() {
@@ -105,6 +106,7 @@ export default function Home() {
 
     setLoading(true);
     setSearched(true);
+    setVisibleResults(10);
 
     try {
       const r = await fetch("/api/search?q=" + encodeURIComponent(q));
@@ -185,7 +187,7 @@ export default function Home() {
               aria-label="Search TV shows"
               autoComplete="off"
             />
-            <button type="submit" onClick={search} disabled={loading}>
+            <button type="submit" disabled={loading}>
               {loading ? "Searching…" : "Search"}
             </button>
         </form>
@@ -205,7 +207,7 @@ export default function Home() {
           </div>
 
           <div className="home-results-list">
-            {results.map((s) => (
+            {results.slice(0, visibleResults).map((s) => (
               <div key={s.id} className="panel home-result-card">
                 {s.image?.medium && (
                   <img src={s.image.medium} width="70" height="95" alt="" />
@@ -233,6 +235,11 @@ export default function Home() {
               </div>
             ))}
           </div>
+          {visibleResults < results.length && (
+            <div className="load-more-wrap">
+              <button className="nav-pill load-more-button" onClick={() => setVisibleResults((v) => Math.min(v + 10, results.length))}>View more results</button>
+            </div>
+          )}
         </section>
       )}
 
