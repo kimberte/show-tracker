@@ -15,11 +15,7 @@ function formatDate(value: string) {
 
 function escapeHtml(value: string) {
   return value.replace(/[&<>"']/g, (c) => ({
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#039;",
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;",
   }[c] || c));
 }
 
@@ -32,9 +28,7 @@ function showImage(show: Show, width = 86, height = 122) {
 
 function episodeCard(show: Show, episode: Episode) {
   const image = showImage(show);
-  const imageCell = image
-    ? '<td width="86" valign="top" style="padding-right:16px;">' + image + "</td>"
-    : "";
+  const imageCell = image ? '<td width="86" valign="top" style="padding-right:16px;">' + image + "</td>" : "";
   const episodeTime = episode.airtime || "Time TBA";
   const showUrl = "https://mytvtracker.app/show/" + show.tvmaze_id;
 
@@ -67,7 +61,7 @@ export async function GET(request: Request) {
 
   const { data: prefs, error } = await supabase
     .from("notification_preferences")
-    .select("user_id,email_daily,days_ahead,notification_email")
+    .select("user_id,email_daily,days_ahead")
     .eq("email_daily", true);
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -76,8 +70,12 @@ export async function GET(request: Request) {
 
   for (const pref of prefs || []) {
     const { data: authData } = await supabase.auth.admin.getUserById(pref.user_id);
-    const email = pref.notification_email || authData.user?.email;
-    if (!email) {
+    const user = authData.user;
+    const email = user?.email;
+
+    // Only send to a confirmed Supabase Auth email. Never use a user-supplied
+    // notification address, even if an older preference row still contains one.
+    if (!email || !user.email_confirmed_at) {
       results.skipped++;
       continue;
     }
@@ -134,8 +132,7 @@ export async function GET(request: Request) {
       ? '<div style="font-size:12px;font-weight:800;letter-spacing:1.4px;color:#f59e0b;text-transform:uppercase;margin-bottom:12px;">Tonight / Today</div>' +
         todayItems.map(({ show, episode }) =>
           '<div style="background:#ffffff;border:1px solid #e7e9ee;border-radius:12px;padding:16px;margin-bottom:10px;">' +
-          episodeCard(show, episode) +
-          "</div>"
+          episodeCard(show, episode) + "</div>"
         ).join("")
       : '<div style="background:#ffffff;border:1px solid #e7e9ee;border-radius:12px;padding:18px;color:#68707e;">Nothing from your tracked shows is airing today.</div>';
 
@@ -148,8 +145,7 @@ export async function GET(request: Request) {
             (a.episode.airtime || "99:99").localeCompare(b.episode.airtime || "99:99")
           ).map(({ show, episode }) =>
             '<div style="background:#ffffff;border:1px solid #e7e9ee;border-radius:12px;padding:14px 16px;margin-bottom:8px;">' +
-            episodeCard(show, episode) +
-            "</div>"
+            episodeCard(show, episode) + "</div>"
           ).join("")
         ).join("")
       : '<div style="margin-top:28px;background:#ffffff;border:1px solid #e7e9ee;border-radius:12px;padding:16px;color:#68707e;">No upcoming episodes in your selected window.</div>';
@@ -164,10 +160,8 @@ export async function GET(request: Request) {
       : '<td valign="middle" style="padding-left:18px;"><div style="font-size:12px;font-weight:800;letter-spacing:1.5px;color:#f59e0b;text-transform:uppercase;">Your TV roundup</div><div style="font-size:28px;line-height:1.15;font-weight:900;color:#ffffff;margin-top:6px;">Stay on top of your shows.</div></td>';
 
     const hero = '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background:#151820;border-radius:16px;overflow:hidden;">' +
-      '<tr>' +
-      (heroImage ? '<td width="96" valign="middle" style="padding:18px 0 18px 18px;">' + heroImage + "</td>" : "") +
-      heroText +
-      "</tr></table>";
+      "<tr>" + (heroImage ? '<td width="96" valign="middle" style="padding:18px 0 18px 18px;">' + heroImage + "</td>" : "") +
+      heroText + "</tr></table>";
 
     const html = '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1.0"><meta name="color-scheme" content="light"></head>' +
       '<body style="margin:0;background:#f4f5f7;font-family:Arial,Helvetica,sans-serif;color:#151820;">' +
@@ -175,15 +169,11 @@ export async function GET(request: Request) {
       '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;"><tr><td align="center" style="padding:28px 12px;">' +
       '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:680px;border-collapse:collapse;">' +
       '<tr><td style="padding:0 4px 14px;"><div style="font-size:12px;font-weight:900;letter-spacing:2px;color:#151820;">MY TV TRACKER <span style="color:#f59e0b;">●</span></div></td></tr>' +
-      '<tr><td>' + hero + "</td></tr>" +
+      "<tr><td>" + hero + "</td></tr>" +
       '<tr><td style="padding-top:20px;">' + todayHtml + upcomingHtml + "</td></tr>" +
-      '<tr><td style="padding-top:22px;">' +
-      '<a href="https://mytvtracker.app/my-shows" style="display:block;text-align:center;background:#f59e0b;color:#151820;text-decoration:none;font-size:14px;font-weight:900;padding:13px 18px;border-radius:9px;">VIEW MY SHOWS</a>' +
-      "</td></tr>" +
-      '<tr><td style="padding:26px 4px 4px;font-size:12px;line-height:1.6;color:#7a818e;">' +
-      "You’re receiving this because daily email notifications are enabled in My TV Tracker." +
-      '<br><a href="https://mytvtracker.app/settings/notifications" style="color:#7a818e;">Manage email preferences</a>' +
-      ' · <a href="https://mytvtracker.app" style="color:#7a818e;">Open My TV Tracker</a>' +
+      '<tr><td style="padding-top:22px;"><a href="https://mytvtracker.app/my-shows" style="display:block;text-align:center;background:#f59e0b;color:#151820;text-decoration:none;font-size:14px;font-weight:900;padding:13px 18px;border-radius:9px;">VIEW MY SHOWS</a></td></tr>' +
+      '<tr><td style="padding:26px 4px 4px;font-size:12px;line-height:1.6;color:#7a818e;">You’re receiving this because daily email notifications are enabled in My TV Tracker.' +
+      '<br><a href="https://mytvtracker.app/settings/notifications" style="color:#7a818e;">Manage email preferences</a> · <a href="https://mytvtracker.app" style="color:#7a818e;">Open My TV Tracker</a>' +
       "</td></tr></table></td></tr></table></body></html>";
 
     const result = await resend.emails.send({
