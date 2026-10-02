@@ -43,6 +43,7 @@ export default async function TvThisWeekPage() {
         <div className="episode-card-info"><div className="episode-row"><strong>{e.show.name}</strong><span className="accent">{e.airtime || "Time TBA"}</span></div><div className="muted">S{e.season} E{e.number} — {e.name}</div><Link className="view-link" href={`/show/${e.show.id}`}>View show →</Link></div>
       </article>)}</div>
     </section>)}
+    <section className="seo-links panel"><div><div className="accent eyebrow">EXPLORE THE TV GUIDE</div><h2>Keep browsing</h2></div><div className="seo-link-grid"><Link href="/tv-tonight">TV Tonight →</Link><Link href="/new-episodes">New Episodes →</Link><Link href="/discover">Discover Shows →</Link></div></section>
     <section className="seo-cta panel"><h2>Keep your TV schedule in one place</h2><p className="muted">Track the shows you care about and let My TV Tracker keep you updated with a daily email.</p><Link className="primary-button" href="/">Start tracking</Link></section>
   </main>;
 }
