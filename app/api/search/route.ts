@@ -14,7 +14,7 @@ export async function GET(req: Request) {
   if (!q) return NextResponse.json([]);
 
   try {
-    const terms = Array.from(new Set([q, ...q.split(/\\s+/).filter((term) => term.length >= 3)]));
+    const terms = Array.from(new Set([q, ...q.split(/\s+/g).filter((term) => term.length >= 3)]));
     const searchResponses = await Promise.all(
       terms.map((term) =>
         fetch("https://api.tvmaze.com/search/shows?q=" + encodeURIComponent(term), {
@@ -55,7 +55,7 @@ export async function GET(req: Request) {
       }
     }
 
-    const queryWords = q.toLowerCase().split(/\\s+/).filter(Boolean);
+    const queryWords = q.toLowerCase().split(/\s+/g).filter(Boolean);
     const matches: Show[] = Array.from(uniqueShows.values()).sort((a, b) => {
       const score = (show: Show) => {
         const name = show.name.toLowerCase();
