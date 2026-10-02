@@ -45,6 +45,7 @@ export default async function TvTonightPage() {
         </div>
       </article>)}
     </div>
+    <section className="seo-links panel"><div><div className="accent eyebrow">EXPLORE THE TV GUIDE</div><h2>More ways to find what’s on</h2></div><div className="seo-link-grid"><Link href="/tv-this-week">TV This Week →</Link><Link href="/new-episodes">New Episodes →</Link><Link href="/new-and-upcoming">New & Upcoming →</Link></div></section>
     <section className="seo-cta panel"><h2>Never miss an episode</h2><p className="muted">Track your shows with My TV Tracker and get a daily email with what's airing and what's coming next.</p><Link className="primary-button" href="/">Track your shows</Link></section>
   </main>;
 }
