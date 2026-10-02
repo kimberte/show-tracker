@@ -157,12 +157,11 @@ export default function MyShows() {
       <SiteNav />
       <header className="page-header">
         <div>
-          <Link href="/" className="muted">← Show Tracker</Link>
-          <div className="accent eyebrow">YOUR LIBRARY</div>
+          <Link href="/" className="muted">← My TV Tracker</Link>
+          <div className="accent eyebrow">YOUR TRACKED SHOWS</div>
           <h1 className="page-title">My Shows</h1>
-          <p className="muted page-subtitle">Your personal watch list and what’s coming next.</p>
+          <p className="muted page-subtitle">Your personal TV library — the shows you’ve chosen to track.</p>
         </div>
-
       </header>
 
       {loading ? (
