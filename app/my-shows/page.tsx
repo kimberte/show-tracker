@@ -57,6 +57,7 @@ export default function MyShows() {
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
   const [busyId, setBusyId] = useState<number | null>(null);
+  const [shareMessage, setShareMessage] = useState("");
 
   async function load() {
     setLoading(true);
@@ -136,6 +137,41 @@ export default function MyShows() {
     load();
   }, []);
 
+  async function shareShows() {
+    if (!shows.length) return;
+
+    const titles = shows
+      .map((item) => item.show?.title)
+      .filter(Boolean) as string[];
+
+    const text = [
+      "What I'm watching on My TV Tracker:",
+      "",
+      ...titles.map((title) => "• " + title),
+      "",
+      "Track your own shows:",
+      window.location.origin,
+    ].join("\n");
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: "What I'm watching",
+          text,
+          url: window.location.origin,
+        });
+        setShareMessage("Ready to share");
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(text);
+        setShareMessage("Copied to clipboard");
+      } else {
+        setShareMessage("Sharing isn't available on this device");
+      }
+    } catch {
+      setShareMessage("");
+    }
+  }
+
   async function remove(trackedId: number) {
     setBusyId(trackedId);
     setMessage("");
@@ -161,6 +197,15 @@ export default function MyShows() {
           <div className="accent eyebrow">YOUR TRACKED SHOWS</div>
           <h1 className="page-title">My Shows</h1>
           <p className="muted page-subtitle">Your personal TV library — the shows you’ve chosen to track.</p>
+          {!loading && shows.length > 0 && (
+            <div className="my-shows-header-meta">
+              <span className="my-shows-count">{shows.length} {shows.length === 1 ? "show" : "shows"} tracked</span>
+              <button onClick={shareShows} className="my-shows-share-button">
+                Share what I’m watching ↗
+              </button>
+              {shareMessage && <span className="muted my-shows-share-message">{shareMessage}</span>}
+            </div>
+          )}
         </div>
       </header>
 
