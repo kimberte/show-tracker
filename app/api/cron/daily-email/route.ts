@@ -20,14 +20,14 @@ export async function GET(request: Request) {
   const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { autoRefreshToken: false, persistSession: false } });
   const resend = new Resend(process.env.RESEND_API_KEY);
 
-  const { data: prefs, error } = await supabase.from("notification_preferences").select("user_id,email_daily,days_ahead").eq("email_daily", true);
+  const { data: prefs, error } = await supabase.from("notification_preferences").select("user_id,email_daily,days_ahead,notification_email").eq("email_daily", true);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   const results = { sent: 0, skipped: 0, failed: 0 };
 
   for (const pref of prefs || []) {
     const { data: authData } = await supabase.auth.admin.getUserById(pref.user_id);
-    const email = authData.user?.email;
+    const email = pref.notification_email || authData.user?.email;
     if (!email) { results.skipped++; continue; }
 
     const { data: tracked } = await supabase.from("tracked_shows").select("show:shows(id,title,tvmaze_id,poster_url)").eq("user_id", pref.user_id);
@@ -68,7 +68,7 @@ export async function GET(request: Request) {
 
     const html = '<!doctype html><html><body style="font-family:Arial,sans-serif;color:#151820;max-width:680px;margin:0 auto;padding:32px 20px">' +
       '<div style="font-weight:800;letter-spacing:2px;color:#f59e0b">SHOW TRACKER</div><h1 style="margin-bottom:4px">Your TV roundup</h1><p style="color:#68707e;margin-top:0">' + formatDate(today) + '</p>' +
-      todayHtml + upcomingHtml + '<p style="margin-top:32px;color:#68707e;font-size:13px">You’re receiving this because daily email notifications are enabled in Show Tracker.</p><p style="color:#68707e;font-size:13px"><a href="https://show-tracker-delta.vercel.app/settings/notifications" style="color:#f59e0b">Manage email preferences</a></p></body></html>';
+      todayHtml + upcomingHtml + '<p style="margin-top:32px;color:#68707e;font-size:13px">You’re receiving this because daily email notifications are enabled in Show Tracker.</p><p style="color:#68707e;font-size:13px"><a href="https://mytvtracker.app/settings/notifications" style="color:#f59e0b">Manage email preferences</a></p></body></html>';
 
     const result = await resend.emails.send({ from: process.env.EMAIL_FROM, to: email, subject: "Your Show Tracker roundup — " + formatDate(today), html });
     if (result.error) results.failed++; else results.sent++;
