@@ -183,7 +183,7 @@ export async function GET(request: Request) {
       '<tr><td style="padding:26px 4px 4px;font-size:12px;line-height:1.6;color:#7a818e;">' +
       "You’re receiving this because daily email notifications are enabled in My TV Tracker." +
       '<br><a href="https://mytvtracker.app/settings/notifications" style="color:#7a818e;">Manage email preferences</a>' +
-      " · <a href="https://mytvtracker.app" style="color:#7a818e;">Open My TV Tracker</a>" +
+      ' · <a href="https://mytvtracker.app" style="color:#7a818e;">Open My TV Tracker</a>' +
       "</td></tr></table></td></tr></table></body></html>";
 
     const result = await resend.emails.send({
