@@ -57,6 +57,7 @@ export default function Discover() {
   const [genre, setGenre] = useState("All");
   const [q, setQ] = useState("");
   const [sort, setSort] = useState("next");
+  const [platform, setPlatform] = useState("All");
   const [visible, setVisible] = useState(48);
 
   useEffect(() => {
@@ -72,7 +73,16 @@ export default function Discover() {
 
   useEffect(() => {
     setVisible(48);
-  }, [genre, q, sort]);
+  }, [genre, q, sort, platform]);
+
+  const platforms = useMemo(() => {
+    const names = new Set<string>();
+    shows.forEach((s) => {
+      const name = s.network?.name || s.webChannel?.name;
+      if (name) names.add(name);
+    });
+    return Array.from(names).sort((a, b) => a.localeCompare(b));
+  }, [shows]);
 
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
@@ -81,7 +91,8 @@ export default function Discover() {
       .filter(
         (s) =>
           (genre === "All" || s.genres?.includes(genre)) &&
-          (!term || s.name.toLowerCase().includes(term))
+          (platform === "All" || (s.network?.name || s.webChannel?.name) === platform) &&
+          (!term || s.name.toLowerCase().includes(term) || (s.network?.name || s.webChannel?.name || "").toLowerCase().includes(term))
       )
       .sort((a, b) => {
         if (sort === "name") return a.name.localeCompare(b.name);
@@ -120,6 +131,13 @@ export default function Discover() {
         </div>
 
         <div className="discover-toolbar">
+          <label className="discover-platform">
+            <span className="muted">Platform / network</span>
+            <select value={platform} onChange={(e) => setPlatform(e.target.value)}>
+              <option value="All">All platforms</option>
+              {platforms.map((name) => <option value={name} key={name}>{name}</option>)}
+            </select>
+          </label>
           <div className="genre-row">
             {genres.map((g) => (
               <button
@@ -166,7 +184,7 @@ export default function Discover() {
       ) : (
         <section>
           <div className="section-heading">
-            <h2>{genre === "All" ? "Active shows" : genre}</h2>
+            <h2>{platform !== "All" ? platform : genre === "All" ? "Active shows" : genre}</h2>
             <span className="muted">{filtered.length} shows</span>
           </div>
 
