@@ -149,7 +149,9 @@ export default function Today() {
               className="panel episode-card"
             >
               {item.show.poster_url && (
-                <img src={item.show.poster_url} width="78" height="108" alt="" />
+                <Link href={"/show/" + item.show.tvmaze_id} aria-label={"View " + item.show.title}>
+                  <img src={item.show.poster_url} width="78" height="108" alt="" />
+                </Link>
               )}
 
               <div className="episode-card-info">
