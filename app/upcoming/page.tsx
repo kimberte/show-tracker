@@ -170,17 +170,19 @@ export default function Upcoming() {
                     }}
                   >
                     {item.show.poster_url && (
-                      <img
-                        src={item.show.poster_url}
-                        width="60"
-                        height="84"
-                        style={{
-                          objectFit: "cover",
-                          borderRadius: 9,
-                          flexShrink: 0,
-                        }}
-                        alt=""
-                      />
+                      <Link href={"/show/" + item.show.tvmaze_id} aria-label={"View " + item.show.title}>
+                        <img
+                          src={item.show.poster_url}
+                          width="60"
+                          height="84"
+                          style={{
+                            objectFit: "cover",
+                            borderRadius: 9,
+                            flexShrink: 0,
+                          }}
+                          alt=""
+                        />
+                      </Link>
                     )}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div className="muted" style={{ fontSize: 13, fontWeight: 700 }}>
