@@ -165,7 +165,7 @@ button{cursor:pointer}
 @keyframes pulse{to{background-position:-200% 0}}
 
 
-@media(max-width:1100px){
+@media(max-width:1250px){
   .site-nav-links{display:none}
   .mobile-menu-button{display:flex;margin-left:auto;width:42px;height:42px;align-items:center;justify-content:center;flex-direction:column;gap:5px;border:1px solid var(--line);border-radius:11px;background:var(--panel);color:var(--text);padding:0}
   .mobile-menu-button span{display:block;width:18px;height:2px;border-radius:2px;background:currentColor;transition:transform .18s,opacity .18s}
