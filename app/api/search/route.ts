@@ -39,13 +39,13 @@ export async function GET(req: Request) {
     // between seasons even when it has no future episode scheduled yet.
     const matches: Show[] = searchData
       .map((x: any) => x.show)
-      .filter((show: Show) => show && searchableStatuses.has(show.status));
+      .filter((show: Show) => show && typeof show.status === "string" && typeof show.status === "string" && searchableStatuses.has(show.status));
 
     // TVMaze's single-search endpoint helps exact/near-exact titles such as
     // "Star Trek: Strange New Worlds" when regular search ranking omits it.
     if (
       exactShow &&
-      searchableStatuses.has(exactShow.status) &&
+      typeof exactShow.status === "string" && searchableStatuses.has(exactShow.status) &&
       !matches.some((item) => item.id === exactShow.id)
     ) {
       matches.unshift(exactShow);
