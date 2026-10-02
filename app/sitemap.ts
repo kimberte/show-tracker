@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = "https://mytvtracker.app";
-  const staticRoutes = ["/", "/today", "/upcoming", "/discover", "/tv-tonight", "/tv-this-week", "/new-episodes"];
+  const staticRoutes = ["/", "/today", "/upcoming", "/discover", "/tv-tonight", "/tv-this-week", "/new-episodes", "/new-and-upcoming"];
   let shows: any[] = [];
   try {
     const r = await fetch("https://api.tvmaze.com/schedule/full", { next: { revalidate: 86400 } });
