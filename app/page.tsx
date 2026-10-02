@@ -242,7 +242,7 @@ export default function Home() {
         </section>
       )}
 
-      {results.length === 0 && !searched && (
+      {true && (
         <>
           <section className="home-quick-grid">
             {[
