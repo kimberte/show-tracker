@@ -93,8 +93,35 @@ export default async function ShowPage({
   const network = s.network?.name || s.webChannel?.name || "TV";
   const status = getStatus(s.status, upcoming, today);
 
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "TVSeries",
+    name: s.name,
+    description: s.summary ? clean(s.summary).slice(0, 300) : undefined,
+    image: s.image?.original || s.image?.medium || undefined,
+    genre: s.genres?.length ? s.genres : undefined,
+    dateCreated: s.premiered || undefined,
+    url: `https://mytvtracker.app/show/${s.id}`,
+    sameAs: s.officialSite ? [s.officialSite] : undefined,
+    actor: cast.map((c: any) => ({
+      "@type": "Person",
+      name: c.person?.name,
+    })),
+  };
+
+  const breadcrumbData = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "My TV Tracker", item: "https://mytvtracker.app/" },
+      { "@type": "ListItem", position: 2, name: s.name, item: `https://mytvtracker.app/show/${s.id}` },
+    ],
+  };
+
   return (
     <main className="shell">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbData) }} />
       <SiteNav />
       <div className="show-detail-nav">
         <Link href="/my-shows" className="muted">← My Shows</Link>
