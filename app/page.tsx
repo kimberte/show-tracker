@@ -206,9 +206,9 @@ export default function Home() {
         <section className="home-today">
           <div className="section-heading">
             <div>
-              <div className="accent eyebrow home-eyebrow">TODAY</div>
-              <h2>What’s on today</h2>
-              <p className="muted">{formatDate(new Date().toLocaleDateString("en-CA"))}</p>
+              <div className="accent eyebrow home-eyebrow">YOUR TV SCHEDULE</div>
+              <h2>What’s on your shows today</h2>
+              <p className="muted">{formatDate(new Date().toLocaleDateString("en-CA"))} · Tracked shows only</p>
             </div>
             <Link href="/today" className="accent">See all →</Link>
           </div>
@@ -246,8 +246,8 @@ export default function Home() {
         <>
           <section className="home-quick-grid">
             {[
-              ["Upcoming", "See what’s next across your shows.", "/upcoming"],
-              ["My Shows", "Manage your personal watch list.", "/my-shows"],
+              ["Upcoming", "See what’s next across your tracked shows.", "/upcoming"],
+              ["My Shows", "Manage the shows you’re tracking.", "/my-shows"],
               ["Discover", "Browse more currently active shows.", "/discover"],
               ["New & Upcoming", "Find new series and returning shows coming soon.", "/new-and-upcoming"],
             ].map(([title, description, href]) => (
