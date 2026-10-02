@@ -10,7 +10,8 @@ export const metadata: Metadata = {
 };
 
 async function getEpisodes() {
-  const r = await fetch("https://api.tvmaze.com/schedule/full", { next: { revalidate: 3600 } });
+  const today = new Date().toLocaleDateString("en-CA");
+  const r = await fetch("https://api.tvmaze.com/schedule?date=" + today, { next: { revalidate: 3600 } });
   if (!r.ok) return [];
   return r.json();
 }
