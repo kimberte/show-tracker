@@ -20,6 +20,8 @@ type Show = {
   _nextAirtime?: string | null;
 };
 
+const featuredPlatforms = ["Netflix","HBO","Max","Apple TV+","Disney+","Prime Video","Hulu","Paramount+"];
+
 const genres = [
   "All",
   "Drama",
@@ -84,6 +86,12 @@ export default function Discover() {
     return Array.from(names).sort((a, b) => a.localeCompare(b));
   }, [shows]);
 
+  const featuredPlatformMatches = useMemo(() => featuredPlatforms.map((label) => {
+    const exact = platforms.find((name) => name.toLowerCase() === label.toLowerCase());
+    const partial = platforms.find((name) => name.toLowerCase().includes(label.toLowerCase()) || label.toLowerCase().includes(name.toLowerCase()));
+    return { label, value: exact || partial || label };
+  }), [platforms]);
+
   const filtered = useMemo(() => {
     const term = q.trim().toLowerCase();
 
@@ -106,7 +114,7 @@ export default function Discover() {
           )
         );
       });
-  }, [shows, genre, q, sort]);
+  }, [shows, genre, q, sort, platform]);
 
   const displayed = filtered.slice(0, visible);
 
@@ -128,6 +136,18 @@ export default function Discover() {
               Clear
             </button>
           )}
+        </div>
+
+        <div className="discover-platforms">
+          <span className="muted">Popular platforms</span>
+          <div className="platform-chip-row">
+            <button className={"platform-chip " + (platform === "All" ? "active" : "")} onClick={() => setPlatform("All")}>All</button>
+            {featuredPlatformMatches.map(({ label, value }) => (
+              <button key={label} className={"platform-chip " + (platform === value ? "active" : "")} onClick={() => setPlatform(value)} disabled={!platforms.includes(value)}>
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="discover-toolbar">
