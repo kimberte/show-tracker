@@ -41,7 +41,7 @@ export async function GET(request: Request) {
 
   const { data: prefs, error } = await supabase
     .from("notification_preferences")
-    .select("user_id,daily_push,episode_alerts,episode_alert_minutes,days_ahead")
+    .select("user_id,daily_push,episode_alerts,episode_alert_minutes,days_ahead,email_time_local")
     .or("daily_push.eq.true,episode_alerts.eq.true");
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
@@ -74,7 +74,7 @@ export async function GET(request: Request) {
     }));
 
     if (pref.daily_push) {
-      const desired = String((pref as any).email_time_local || "08:00:00").slice(0, 5);
+      const desired = String(pref.email_time_local || "08:00:00").slice(0, 5);
       const [hour, minute] = desired.split(":").map(Number);
       const withinWindow = Math.abs(localMinute - minutesOfDay(hour, minute)) <= 2;
       const dailyKey = "daily:" + pref.user_id + ":" + nowLocal.date;
