@@ -96,7 +96,8 @@ export default function NotificationSettings() {
         if (!r.ok) throw new Error(data.error || "Push notifications are not configured.");
         return data;
       });
-      const registration = await navigator.serviceWorker.ready;
+      const registration = await navigator.serviceWorker.register("/sw.js", { updateViaCache: "none" });
+      await registration.update().catch(() => {});
       let subscription = await registration.pushManager.getSubscription();
       if (!subscription) {
         subscription = await registration.pushManager.subscribe({
