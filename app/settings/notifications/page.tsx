@@ -32,6 +32,7 @@ export default function NotificationSettings() {
   const [testingPush, setTestingPush] = useState(false);
   const [enablingPush, setEnablingPush] = useState(false);
   const [message, setMessage] = useState("");
+  const [pushDiagnostic, setPushDiagnostic] = useState("");
 
   useEffect(() => {
     async function load() {
@@ -43,7 +44,12 @@ export default function NotificationSettings() {
       setEmailVerified(!!user.email_confirmed_at);
       const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
       setTimezone(detectedTimezone);
-      setPushSupported(typeof window !== "undefined" && window.isSecureContext && "serviceWorker" in navigator && "PushManager" in window && "Notification" in window);
+      const supported = typeof window !== "undefined" && window.isSecureContext && "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+      setPushSupported(supported);
+      if (!supported) {
+        const parts = [window.isSecureContext ? "HTTPS" : "not HTTPS", "serviceWorker" in navigator ? "service worker" : "no service worker", "PushManager" in window ? "Push API" : "no Push API", "Notification" in window ? "Notifications API" : "no Notifications API"];
+        setPushDiagnostic(parts.join(" • "));
+      }
 
       const [{ data: profile }, { data: prefs }, { data: subscription }] = await Promise.all([
         supabase.from("profiles").select("timezone").eq("id", user.id).maybeSingle(),
@@ -67,36 +73,39 @@ export default function NotificationSettings() {
       let browserPushEnabled = false;
       if (typeof window !== "undefined" && "serviceWorker" in navigator) {
         try {
-          const registration = await navigator.serviceWorker.ready;
-          browserPushEnabled = !!(await registration.pushManager.getSubscription());
+          const registration = await navigator.serviceWorker.getRegistration("/sw.js");
+          browserPushEnabled = !!(registration && await registration.pushManager.getSubscription());
         } catch {
           browserPushEnabled = false;
         }
       }
       const permissionGranted = typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted";
       setPushEnabled(!!subscription?.endpoint || (browserPushEnabled && permissionGranted));
+      if (supported) setPushDiagnostic(`Permission: ${Notification.permission} • Service worker: ${browserPushEnabled ? "subscribed" : "not subscribed"}`);
       setLoading(false);
     }
     load();
   }, []);
 
   async function enableBrowserNotifications(): Promise<boolean> {
-    if (!pushSupported) { setMessage("Browser notifications are not supported on this device/browser."); return false; }
+    if (!pushSupported) { setMessage(`Web push is not available here. ${pushDiagnostic || "Use Chrome over HTTPS."}`); return false; }
     setEnablingPush(true); setMessage("");
     try {
-      const permission = await Notification.requestPermission();
+      const permission = Notification.permission === "granted" ? "granted" : await Notification.requestPermission();
       if (permission !== "granted") {
-        setMessage("Browser notification permission was not granted.");
+        setMessage(`Browser notification permission is ${permission}. If it is denied, open Chrome site settings for mytvtracker.app and allow Notifications.`);
         setEnablingPush(false);
         return false;
       }
 
+      setPushDiagnostic("Permission granted • loading push configuration…");
       const config = await fetch(VAPID_PUBLIC_KEY_ENDPOINT).then(async (r) => {
         const data = await r.json();
         if (!r.ok) throw new Error(data.error || "Push notifications are not configured.");
         return data;
       });
       const registration = await navigator.serviceWorker.register("/sw.js", { updateViaCache: "none" });
+      setPushDiagnostic("Permission granted • service worker registered • creating subscription…");
       await registration.update().catch(() => {});
       let subscription = await registration.pushManager.getSubscription();
       if (!subscription) {
@@ -106,6 +115,7 @@ export default function NotificationSettings() {
         });
       }
 
+      setPushDiagnostic("Subscription created • saving it to your account…");
       const response = await fetch("/api/notifications/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -116,9 +126,11 @@ export default function NotificationSettings() {
 
       setPushEnabled(true);
       setDailyPush(true);
+      setPushDiagnostic("Permission: granted • Service worker: subscribed");
       setMessage("Browser notifications enabled on this device.");
     } catch (error: any) {
-      setMessage(error?.message || "Could not enable browser notifications.");
+      const detail = error?.name && error?.message ? `${error.name}: ${error.message}` : (error?.message || "Unknown error");
+      setMessage(`Could not enable browser notifications: ${detail}`);
       setEnablingPush(false);
       return false;
     }
@@ -207,7 +219,7 @@ export default function NotificationSettings() {
               <button onClick={enableBrowserNotifications} disabled={enablingPush || !pushSupported} style={{ padding: "12px 18px", border: 0, borderRadius: 10, background: "var(--accent)", color: "#111", fontWeight: 800 }}>
                 {enablingPush ? "Enabling…" : pushEnabled ? "✓ Notifications enabled" : "Enable browser notifications"}
               </button>
-              <button onClick={sendTestPush} disabled={testingPush || !pushSupported} style={{ padding: "12px 18px", border: "1px solid var(--line)", borderRadius: 10, background: "transparent", color: "var(--text)", fontWeight: 800 }}>{testingPush ? "Sending…" : "Test notification"}</button>
+              <button onClick={sendTestPush} disabled={testingPush} style={{ padding: "12px 18px", border: "1px solid var(--line)", borderRadius: 10, background: "transparent", color: "var(--text)", fontWeight: 800 }}>{testingPush ? "Sending…" : "Test notification"}</button>
             </div>
             {!pushSupported && <p className="muted" style={{ fontSize: 13 }}>Web push is unavailable in this browser/session. Open mytvtracker.app in Chrome over HTTPS and allow notifications for the site.</p>}
           </div>
