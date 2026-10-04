@@ -16,6 +16,7 @@ function urlBase64ToUint8Array(value: string) {
 export default function NotificationSettings() {
   const [emailEnabled, setEmailEnabled] = useState(false);
   const [emailTime, setEmailTime] = useState("08:00");
+  const [pushTime, setPushTime] = useState("08:00");
   const [daysAhead, setDaysAhead] = useState(7);
   const [dailyPush, setDailyPush] = useState(true);
   const [episodeAlerts, setEpisodeAlerts] = useState(false);
@@ -46,7 +47,7 @@ export default function NotificationSettings() {
 
       const [{ data: profile }, { data: prefs }, { data: subscription }] = await Promise.all([
         supabase.from("profiles").select("timezone").eq("id", user.id).maybeSingle(),
-        supabase.from("notification_preferences").select("email_daily,days_ahead,email_time_local,daily_push,episode_alerts,episode_alert_minutes").eq("user_id", user.id).maybeSingle(),
+        supabase.from("notification_preferences").select("email_daily,days_ahead,email_time_local,push_time_local,daily_push,episode_alerts,episode_alert_minutes").eq("user_id", user.id).maybeSingle(),
         supabase.from("push_subscriptions").select("endpoint").eq("user_id", user.id).limit(1).maybeSingle(),
       ]);
 
@@ -55,6 +56,7 @@ export default function NotificationSettings() {
         setEmailEnabled(!!prefs.email_daily);
         setDaysAhead(prefs.days_ahead || 7);
         setEmailTime(String(prefs.email_time_local || "08:00:00").slice(0, 5));
+        setPushTime(String(prefs.push_time_local || "08:00:00").slice(0, 5));
         setDailyPush(prefs.daily_push !== false);
         setEpisodeAlerts(!!prefs.episode_alerts);
         setEpisodeAlertMinutes(Number(prefs.episode_alert_minutes || 0));
@@ -134,6 +136,7 @@ export default function NotificationSettings() {
       email_daily: emailEnabled,
       days_ahead: daysAhead,
       email_time_local: emailTime + ":00",
+      push_time_local: pushTime + ":00",
       daily_push: dailyPush && pushEnabled,
       episode_alerts: episodeAlerts && pushEnabled,
       episode_alert_minutes: episodeAlertMinutes,
@@ -210,6 +213,11 @@ export default function NotificationSettings() {
           </div>
 
           <div style={{ borderTop: "1px solid var(--line)", paddingTop: 20 }}>
+            <div className="accent eyebrow">DAILY PUSH</div>
+            <label style={{ display: "grid", gap: 7, maxWidth: 260, marginTop: 8, marginBottom: 20 }}>
+              <strong>Send daily notification at</strong>
+              <input type="time" value={pushTime} onChange={(e) => setPushTime(e.target.value)} disabled={!dailyPush || !pushEnabled} style={{ padding: 11, borderRadius: 10, border: "1px solid var(--line)", background: "#090a0d", color: "var(--text)" }} />
+            </label>
             <div className="accent eyebrow">DAILY EMAIL</div>
             <div style={{ marginBottom: 14 }}>
               <strong>{email || "Account email"}</strong>
