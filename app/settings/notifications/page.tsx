@@ -87,7 +87,7 @@ export default function NotificationSettings() {
       if (permission !== "granted") {
         setMessage("Browser notification permission was not granted.");
         setEnablingPush(false);
-        return;
+        return false;
       }
 
       const config = await fetch(VAPID_PUBLIC_KEY_ENDPOINT).then(async (r) => {
@@ -117,8 +117,11 @@ export default function NotificationSettings() {
       setMessage("Browser notifications enabled on this device.");
     } catch (error: any) {
       setMessage(error?.message || "Could not enable browser notifications.");
+      setEnablingPush(false);
+      return false;
     }
     setEnablingPush(false);
+    return true;
   }
 
   async function save() {
