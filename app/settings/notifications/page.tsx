@@ -208,7 +208,7 @@ export default function NotificationSettings() {
 
           <div style={{ borderTop: "1px solid var(--line)", paddingTop: 20 }}>
             <label style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-              <input type="checkbox" checked={episodeAlerts} onChange={(e) => setEpisodeAlerts(e.target.checked)} disabled={!pushEnabled} style={{ marginTop: 4 }} />
+              <input type="checkbox" checked={episodeAlerts} onChange={(e) => setEpisodeAlerts(e.target.checked)} style={{ marginTop: 4 }} />
               <span><strong>Episode alerts</strong><span className="muted" style={{ display: "block", marginTop: 4 }}>Get an alert when a tracked episode is about to air, when a reliable airtime is available.</span></span>
             </label>
             {episodeAlerts && <label style={{ display: "grid", gap: 7, marginTop: 14 }}>
