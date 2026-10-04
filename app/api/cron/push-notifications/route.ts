@@ -78,7 +78,7 @@ async function recordDelivery(
   kind: "daily" | "episode",
   episodeId?: number,
 ) {
-  await db.from("notification_deliveries").insert([{
+  await (db.from("notification_deliveries") as any).insert([{
     user_id: userId,
     delivery_key: key,
     kind,
