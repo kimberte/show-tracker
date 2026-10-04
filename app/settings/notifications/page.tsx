@@ -79,8 +79,8 @@ export default function NotificationSettings() {
     load();
   }, []);
 
-  async function enableBrowserNotifications() {
-    if (!pushSupported) { setMessage("Browser notifications are not supported on this device/browser."); return; }
+  async function enableBrowserNotifications(): Promise<boolean> {
+    if (!pushSupported) { setMessage("Browser notifications are not supported on this device/browser."); return false; }
     setEnablingPush(true); setMessage("");
     try {
       const permission = await Notification.requestPermission();
@@ -191,12 +191,12 @@ export default function NotificationSettings() {
           <div>
             <div className="accent eyebrow">BROWSER NOTIFICATIONS</div>
             <h2 style={{ margin: "4px 0 6px" }}>What’s on, right when you need it</h2>
-            <p className="muted" style={{ marginTop: 0 }}>{pushEnabled ? "Notifications are enabled on this device. You can turn them off any time in your browser settings." : "Notifications are currently disabled on this device. Enable them below to receive TV reminders."}</p>
+            <p className="muted" style={{ marginTop: 0 }}><strong style={{ color: pushEnabled ? "#22c55e" : "var(--accent)" }}>Status: {pushEnabled ? "Enabled on this device" : "Disabled on this device"}</strong><span style={{ display: "block", marginTop: 5 }}>{pushEnabled ? "Notifications are ready for your daily TV schedule and episode alerts." : "Enable them below to receive TV reminders."}</span></p>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
               <button onClick={enableBrowserNotifications} disabled={enablingPush || !pushSupported} style={{ padding: "12px 18px", border: 0, borderRadius: 10, background: "var(--accent)", color: "#111", fontWeight: 800 }}>
                 {enablingPush ? "Enabling…" : pushEnabled ? "✓ Notifications enabled" : "Enable browser notifications"}
               </button>
-              <button onClick={sendTestPush} disabled={testingPush || !pushEnabled} style={{ padding: "12px 18px", border: "1px solid var(--line)", borderRadius: 10, background: "transparent", color: pushEnabled ? "var(--text)" : "var(--muted)", fontWeight: 800 }}>{testingPush ? "Sending…" : "Test notification"}</button>
+              <button onClick={sendTestPush} disabled={testingPush || !pushSupported} style={{ padding: "12px 18px", border: "1px solid var(--line)", borderRadius: 10, background: "transparent", color: var(--text), fontWeight: 800 }}>{testingPush ? "Sending…" : "Test notification"}</button>
             </div>
             {!pushSupported && <p className="muted" style={{ fontSize: 13 }}>This browser does not support web push notifications.</p>}
           </div>
