@@ -43,7 +43,7 @@ export default function NotificationSettings() {
       setEmailVerified(!!user.email_confirmed_at);
       const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
       setTimezone(detectedTimezone);
-      setPushSupported(typeof window !== "undefined" && "serviceWorker" in navigator && "PushManager" in window && "Notification" in window);
+      setPushSupported(typeof window !== "undefined" && window.isSecureContext && "serviceWorker" in navigator && "PushManager" in window && "Notification" in window);
 
       const [{ data: profile }, { data: prefs }, { data: subscription }] = await Promise.all([
         supabase.from("profiles").select("timezone").eq("id", user.id).maybeSingle(),
@@ -208,7 +208,7 @@ export default function NotificationSettings() {
               </button>
               <button onClick={sendTestPush} disabled={testingPush || !pushSupported} style={{ padding: "12px 18px", border: "1px solid var(--line)", borderRadius: 10, background: "transparent", color: "var(--text)", fontWeight: 800 }}>{testingPush ? "Sending…" : "Test notification"}</button>
             </div>
-            {!pushSupported && <p className="muted" style={{ fontSize: 13 }}>This browser does not support web push notifications.</p>}
+            {!pushSupported && <p className="muted" style={{ fontSize: 13 }}>Web push is unavailable in this browser/session. Open mytvtracker.app in Chrome over HTTPS and allow notifications for the site.</p>}
           </div>
 
           <label style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
