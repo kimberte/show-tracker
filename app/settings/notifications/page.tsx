@@ -131,11 +131,6 @@ export default function NotificationSettings() {
       setSaving(false);
       return;
     }
-    if (episodeAlerts && !pushEnabled) {
-      setMessage("Enable browser notifications before turning on episode alerts.");
-      setSaving(false);
-      return;
-    }
 
     const profile = await supabase.from("profiles").upsert(
       { id: user.id, email: user.email, timezone },
@@ -149,8 +144,8 @@ export default function NotificationSettings() {
       days_ahead: daysAhead,
       email_time_local: emailTime + ":00",
       push_time_local: pushTime + ":00",
-      daily_push: dailyPush && pushEnabled,
-      episode_alerts: episodeAlerts && pushEnabled,
+      daily_push: dailyPush,
+      episode_alerts: episodeAlerts,
       episode_alert_minutes: episodeAlertMinutes,
       updated_at: new Date().toISOString(),
     }, { onConflict: "user_id" });
@@ -207,7 +202,7 @@ export default function NotificationSettings() {
           </div>
 
           <label style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-            <input type="checkbox" checked={dailyPush} onChange={(e) => setDailyPush(e.target.checked)} disabled={!pushEnabled} style={{ marginTop: 4 }} />
+            <input type="checkbox" checked={dailyPush} onChange={(e) => setDailyPush(e.target.checked)} disabled={false} style={{ marginTop: 4 }} />
             <span><strong>Daily TV notification</strong><span className="muted" style={{ display: "block", marginTop: 4 }}>A simple daily list of what’s airing from your tracked shows, plus what’s coming next.</span></span>
           </label>
 
@@ -228,7 +223,7 @@ export default function NotificationSettings() {
             <div className="accent eyebrow">DAILY PUSH</div>
             <label style={{ display: "grid", gap: 7, maxWidth: 260, marginTop: 8, marginBottom: 20 }}>
               <strong>Send daily notification at</strong>
-              <input type="time" value={pushTime} onChange={(e) => setPushTime(e.target.value)} disabled={!dailyPush || !pushEnabled} style={{ padding: 11, borderRadius: 10, border: "1px solid var(--line)", background: "#090a0d", color: "var(--text)" }} />
+              <input type="time" value={pushTime} onChange={(e) => setPushTime(e.target.value)} disabled={!dailyPush} style={{ padding: 11, borderRadius: 10, border: "1px solid var(--line)", background: "#090a0d", color: "var(--text)" }} />
             </label>
             <div className="accent eyebrow">DAILY EMAIL</div>
             <div style={{ marginBottom: 14 }}>
