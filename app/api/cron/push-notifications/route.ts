@@ -67,7 +67,7 @@ export async function GET(request: Request) {
 
   const db = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, { auth: { autoRefreshToken: false, persistSession: false } });
   const { data: prefs, error } = await db.from("notification_preferences")
-    .select("user_id,daily_push,episode_alerts,episode_alert_minutes,email_time_local")
+    .select("user_id,daily_push,episode_alerts,episode_alert_minutes,email_time_local,push_time_local")
     .or("daily_push.eq.true,episode_alerts.eq.true");
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
@@ -83,7 +83,7 @@ export async function GET(request: Request) {
     const episodes = await getEpisodes(shows);
 
     if (pref.daily_push) {
-      const time = String(pref.email_time_local || "08:00").slice(0, 5).split(":").map(Number);
+      const time = String(pref.push_time_local || "08:00").slice(0, 5).split(":").map(Number);
       const key = "daily:" + pref.user_id + ":" + now.date;
       if (inWindow(minutes(now.hour, now.minute), minutes(time[0], time[1])) && !(await delivered(db, key))) {
         const today = episodes.filter(({ episode }) => episode.airdate === now.date).sort((a, b) => (a.episode.airtime || "99:99").localeCompare(b.episode.airtime || "99:99"));
