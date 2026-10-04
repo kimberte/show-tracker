@@ -73,7 +73,8 @@ export default function NotificationSettings() {
           browserPushEnabled = false;
         }
       }
-      setPushEnabled(!!subscription?.endpoint || browserPushEnabled);
+      const permissionGranted = typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted";
+      setPushEnabled(!!subscription?.endpoint || (browserPushEnabled && permissionGranted));
       setLoading(false);
     }
     load();
@@ -170,10 +171,16 @@ export default function NotificationSettings() {
   async function sendTestPush() {
     setTestingPush(true); setMessage("");
     try {
+      if (!pushEnabled) {
+        const enabled = await enableBrowserNotifications();
+        if (!enabled) { setTestingPush(false); return; }
+      }
       const response = await fetch("/api/notifications/push-test", { method: "POST" });
       const data = await response.json();
       setMessage(response.ok ? "Test notification sent to this device." : (data.error || "Could not send test notification."));
-    } catch { setMessage("Could not send test notification."); }
+    } catch (error: any) {
+      setMessage(error?.message || "Could not send test notification.");
+    }
     setTestingPush(false);
   }
 
