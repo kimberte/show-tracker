@@ -61,7 +61,7 @@ function readableDate(date: string) {
   }).format(parsed);
 }
 
-async function alreadyDelivered(db: ReturnType<typeof createClient>, key: string) {
+async function alreadyDelivered(db: any, key: string) {
   const { data } = await db
     .from("notification_deliveries")
     .select("id")
@@ -72,7 +72,7 @@ async function alreadyDelivered(db: ReturnType<typeof createClient>, key: string
 }
 
 async function recordDelivery(
-  db: ReturnType<typeof createClient>,
+  db: any,
   userId: string,
   key: string,
   kind: "daily" | "episode",
@@ -87,7 +87,7 @@ async function recordDelivery(
 }
 
 async function sendToUser(
-  db: ReturnType<typeof createClient>,
+  db: any,
   userId: string,
   payload: object,
 ) {
