@@ -20,18 +20,12 @@ function formatDate(value: string) {
 }
 
 async function getShow(slug: string) {
-  const page = await fetch("https://api.tvmaze.com/shows?page=0", { next: { revalidate: 86400 } }).then(r => r.ok ? r.json() : []);
-  const match = page.find((show: any) => slugify(show.name) === slug);
-  if (!match) {
-    for (let p = 1; p < 5; p++) {
-      const shows = await fetch("https://api.tvmaze.com/shows?page=" + p, { next: { revalidate: 86400 } }).then(r => r.ok ? r.json() : []);
-      const found = shows.find((show: any) => slugify(show.name) === slug);
-      if (found) return getShowById(found.id);
-      if (!shows.length) break;
-    }
-    return null;
-  }
-  return getShowById(match.id);
+  const query = slug.replace(/-/g, " ");
+  const r = await fetch("https://api.tvmaze.com/search/shows?q=" + encodeURIComponent(query), { next: { revalidate: 86400 } });
+  if (!r.ok) return null;
+  const matches = await r.json();
+  const exact = matches.find((item: any) => slugify(item.show?.name || "") === slug);
+  return exact?.show?.id ? getShowById(exact.show.id) : null;
 }
 
 async function getShowById(id: number) {
