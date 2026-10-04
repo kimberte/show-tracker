@@ -61,7 +61,19 @@ export default function NotificationSettings() {
         setEpisodeAlerts(!!prefs.episode_alerts);
         setEpisodeAlertMinutes(Number(prefs.episode_alert_minutes || 0));
       }
-      setPushEnabled(!!subscription?.endpoint);
+      // The browser subscription is the authoritative local signal that push is enabled.
+      // The database read can be briefly unavailable because of auth/RLS timing, which
+      // should not leave the notification controls disabled after the user grants permission.
+      let browserPushEnabled = false;
+      if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+        try {
+          const registration = await navigator.serviceWorker.ready;
+          browserPushEnabled = !!(await registration.pushManager.getSubscription());
+        } catch {
+          browserPushEnabled = false;
+        }
+      }
+      setPushEnabled(!!subscription?.endpoint || browserPushEnabled);
       setLoading(false);
     }
     load();
