@@ -157,7 +157,7 @@ export default async function ShowPage({
             {s.genres?.length > 0 && (
               <div className="show-genre-list">
                 {s.genres.map((g: string) => (
-                  <span key={g} className="panel">{g}</span>
+                  <Link key={g} href={"/genres/" + g.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")} className="panel">{g}</Link>
                 ))}
               </div>
             )}
