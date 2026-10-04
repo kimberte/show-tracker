@@ -196,7 +196,7 @@ export default function NotificationSettings() {
               <button onClick={enableBrowserNotifications} disabled={enablingPush || !pushSupported} style={{ padding: "12px 18px", border: 0, borderRadius: 10, background: "var(--accent)", color: "#111", fontWeight: 800 }}>
                 {enablingPush ? "Enabling…" : pushEnabled ? "✓ Notifications enabled" : "Enable browser notifications"}
               </button>
-              <button onClick={sendTestPush} disabled={testingPush || !pushSupported} style={{ padding: "12px 18px", border: "1px solid var(--line)", borderRadius: 10, background: "transparent", color: var(--text), fontWeight: 800 }}>{testingPush ? "Sending…" : "Test notification"}</button>
+              <button onClick={sendTestPush} disabled={testingPush || !pushSupported} style={{ padding: "12px 18px", border: "1px solid var(--line)", borderRadius: 10, background: "transparent", color: "var(--text)", fontWeight: 800 }}>{testingPush ? "Sending…" : "Test notification"}</button>
             </div>
             {!pushSupported && <p className="muted" style={{ fontSize: 13 }}>This browser does not support web push notifications.</p>}
           </div>
