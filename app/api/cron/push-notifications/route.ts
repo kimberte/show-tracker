@@ -91,8 +91,7 @@ async function sendToUser(
   userId: string,
   payload: object,
 ) {
-  const { data: subscriptions, error } = await db
-    .from("push_subscriptions")
+  const { data: subscriptions, error } = await (db.from("push_subscriptions") as any)
     .select("endpoint,p256dh,auth")
     .eq("user_id", userId);
 
