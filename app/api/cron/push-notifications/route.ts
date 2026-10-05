@@ -49,7 +49,7 @@ function isWithinWindow(now: number, target: number, windowMinutes: number) {
 }
 
 function parseTime(value: unknown, fallback = "08:00") {
-  const match = String(value || fallback).slice(0, 5).match(/^(\\d{2}):(\\d{2})$/);
+  const match = String(value || fallback).slice(0, 5).match(/^(\d{2}):(\d{2})$/);
   if (!match) return [8, 0];
   return [Number(match[1]), Number(match[2])];
 }
