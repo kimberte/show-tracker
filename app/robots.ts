@@ -5,8 +5,8 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/api/", "/auth/", "/login", "/settings/"],
+      disallow: ["/api/", "/auth/", "/login", "/settings/", "/profile", "/my-shows", "/today", "/upcoming"],
     },
-    sitemap: "https://mytvtracker.app/sitemap.xml",
+    sitemap: "https://www.mytvtracker.app/sitemap.xml",
   };
 }

@@ -36,15 +36,22 @@ async function getShowById(id: number) {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const show = await getShow(slug);
-  if (!show) return { title: "TV Show Not Found | My TV Tracker" };
+  if (!show) return { title: "TV Show Not Found | My TV Tracker", robots: { index: false, follow: true } };
   const description = show.summary
     ? clean(show.summary).slice(0, 155)
     : "Track " + show.name + ", see its schedule and upcoming episodes.";
+  const canonical = "/shows/" + slug;
   return {
     title: show.name + " — Episodes, Schedule & Where to Watch | My TV Tracker",
     description,
-    alternates: { canonical: "/shows/" + slug },
-    openGraph: { title: show.name + " | My TV Tracker", description, type: "website" },
+    alternates: { canonical },
+    openGraph: {
+      title: show.name + " | My TV Tracker",
+      description,
+      type: "website",
+      url: canonical,
+      images: show.image?.original ? [{ url: show.image.original, alt: show.name }] : undefined,
+    },
   };
 }
 
@@ -61,10 +68,14 @@ export default async function ShowSeoPage({ params }: { params: Promise<{ slug: 
   const recent = episodes.filter((e: any) => e.airdate && e.airdate < today).sort((a: any,b: any) => b.airdate.localeCompare(a.airdate)).slice(0, 5);
   const showSlug = slugify(show.name);
   const structuredData = {
-    "@context": "https://schema.org", "@type": "TVSeries", name: show.name,
+    "@context": "https://schema.org",
+    "@type": "TVSeries",
+    name: show.name,
     description: show.summary ? clean(show.summary).slice(0, 300) : undefined,
-    image: show.image?.original || show.image?.medium, genre: show.genres,
-    dateCreated: show.premiered, url: "https://mytvtracker.app/shows/" + showSlug,
+    image: show.image?.original || show.image?.medium,
+    genre: show.genres,
+    dateCreated: show.premiered,
+    url: "https://www.mytvtracker.app/shows/" + showSlug,
     sameAs: show.officialSite ? [show.officialSite] : undefined,
   };
 

@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import PwaRegister from "@/components/pwa-register";
 import Script from "next/script";
 
+const siteUrl = "https://www.mytvtracker.app";
+
 export const metadata: Metadata = {
   title: {
     default: "My TV Tracker — Never Miss When Your Shows Are On",
@@ -10,7 +12,7 @@ export const metadata: Metadata = {
   },
   description:
     "Track your favourite TV shows, see what's airing today, discover what's coming next, and get a personal daily TV schedule.",
-  metadataBase: new URL("https://mytvtracker.app"),
+  metadataBase: new URL(siteUrl),
   alternates: { canonical: "/" },
   manifest: "/manifest.webmanifest",
   icons: { icon: "/icon.svg", apple: "/icon.svg" },
@@ -20,7 +22,7 @@ export const metadata: Metadata = {
     title: "My TV Tracker — Never Miss When Your Shows Are On",
     description:
       "Track your shows, see what's airing, discover what to watch next, and get your personal TV schedule by email.",
-    url: "https://mytvtracker.app",
+    url: siteUrl,
   },
   twitter: {
     card: "summary",

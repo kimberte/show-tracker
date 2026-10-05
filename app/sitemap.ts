@@ -1,13 +1,15 @@
 import type { MetadataRoute } from "next";
 
+const base = "https://www.mytvtracker.app";
+
 function slugify(value: string) {
   return value.toLowerCase().replace(/&/g, "and").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = "https://mytvtracker.app";
-  const staticRoutes = ["/", "/today", "/upcoming", "/discover", "/tv-tonight", "/tv-this-week", "/new-episodes", "/new-and-upcoming"];
+  const staticRoutes = ["/", "/discover", "/tv-tonight", "/tv-this-week", "/new-episodes", "/new-and-upcoming"];
   let shows: any[] = [];
+
   try {
     const r = await fetch("https://api.tvmaze.com/schedule/full", { next: { revalidate: 86400 } });
     if (r.ok) shows = await r.json();
@@ -31,24 +33,30 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     if (service) services.add(slugify(service));
   }
 
+  const today = new Date().toISOString().slice(0, 10);
+
   return [
     ...staticRoutes.map(path => ({
       url: base + path,
+      lastModified: new Date(),
       changeFrequency: "daily" as const,
       priority: path === "/" ? 1 : 0.8,
     })),
     ...activeShows.map(show => ({
       url: base + "/shows/" + slugify(show.name),
+      lastModified: show.updated ? new Date(show.updated * 1000) : new Date(),
       changeFrequency: "daily" as const,
       priority: 0.8,
     })),
     ...Array.from(genres).map(genre => ({
       url: base + "/genres/" + genre,
+      lastModified: new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.6,
     })),
     ...Array.from(services).map(service => ({
       url: base + "/streaming/" + service,
+      lastModified: new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.6,
     })),
