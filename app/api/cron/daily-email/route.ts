@@ -125,8 +125,9 @@ export async function GET(request: Request) {
       (a.episode.airtime || "99:99").localeCompare(b.episode.airtime || "99:99")
     );
 
-    const firstItem = todayItems[0] || (byDate.get(dates[0]) || [])[0];
-    const heroImage = firstItem ? showImage(firstItem.show, 96, 136) : "";
+    const nextUpItem = (byDate.get(dates.find((d) => d !== today) || "") || [])[0];
+    const heroItem = todayItems[0] || nextUpItem;
+    const heroImage = heroItem ? showImage(heroItem.show, 96, 136) : "";
 
     const todayHtml = todayItems.length
       ? '<div style="font-size:12px;font-weight:800;letter-spacing:1.4px;color:#f59e0b;text-transform:uppercase;margin-bottom:12px;">Tonight / Today</div>' +
@@ -150,12 +151,14 @@ export async function GET(request: Request) {
         ).join("")
       : '<div style="margin-top:28px;background:#ffffff;border:1px solid #e7e9ee;border-radius:12px;padding:16px;color:#68707e;">No upcoming episodes in your selected window.</div>';
 
-    const heroText = firstItem
+    const heroText = heroItem
       ? '<td valign="middle" style="padding-left:18px;">' +
-        '<div style="font-size:12px;font-weight:800;letter-spacing:1.5px;color:#f59e0b;text-transform:uppercase;">Your TV tonight</div>' +
-        '<div style="font-size:28px;line-height:1.15;font-weight:900;color:#ffffff;margin-top:6px;">' + escapeHtml(firstItem.show.title) + "</div>" +
+        '<div style="font-size:12px;font-weight:800;letter-spacing:1.5px;color:#f59e0b;text-transform:uppercase;">' +
+        (todayItems.length ? "Your TV today" : "Next up") + "</div>" +
+        '<div style="font-size:28px;line-height:1.15;font-weight:900;color:#ffffff;margin-top:6px;">' + escapeHtml(heroItem.show.title) + "</div>" +
         '<div style="font-size:14px;line-height:1.5;color:#c9ced8;margin-top:8px;">' +
-        escapeHtml(firstItem.episode.name) + " · " + escapeHtml(firstItem.episode.airtime || "Time TBA") + "</div>" +
+        escapeHtml(heroItem.episode.name) + " · " + escapeHtml(todayItems.length ? (heroItem.episode.airtime || "Time TBA") : formatDate(heroItem.episode.airdate || today)) +
+        (todayItems.length ? "" : " · " + (heroItem.episode.airtime || "Time TBA")) + "</div>" +
         "</td>"
       : '<td valign="middle" style="padding-left:18px;"><div style="font-size:12px;font-weight:800;letter-spacing:1.5px;color:#f59e0b;text-transform:uppercase;">Your TV roundup</div><div style="font-size:28px;line-height:1.15;font-weight:900;color:#ffffff;margin-top:6px;">Stay on top of your shows.</div></td>';
 
@@ -179,7 +182,7 @@ export async function GET(request: Request) {
     const result = await resend.emails.send({
       from: process.env.EMAIL_FROM,
       to: email,
-      subject: "Your TV tonight — " + formatDate(today),
+      subject: todayItems.length ? "Your TV today — " + formatDate(today) : "Your TV schedule — " + formatDate(today),
       html,
     });
 
