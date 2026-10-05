@@ -261,9 +261,7 @@ export default function NotificationSettings() {
                   <option value={3}>3 days</option><option value={7}>7 days</option><option value={14}>14 days</option>
                 </select>
               </label>
-                <strong>Upcoming window</strong>
-
-          </div>
+            </div>
 
           <div>
             <strong>Timezone</strong>
