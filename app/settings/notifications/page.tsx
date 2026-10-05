@@ -262,6 +262,7 @@ export default function NotificationSettings() {
                 </select>
               </label>
             </div>
+          </div>
 
           <div>
             <strong>Timezone</strong>
