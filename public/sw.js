@@ -1,4 +1,4 @@
-const CACHE_NAME = "my-tv-tracker-v3";
+const CACHE_NAME = "my-tv-tracker-v4";
 const APP_SHELL = ["/","/icon.svg","/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
