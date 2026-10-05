@@ -3,6 +3,7 @@ import { createClient } from "@supabase/supabase-js";
 import { sendWebPush, pushConfigured } from "@/lib/push";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
 type Show = { title: string; tvmaze_id: number };
 type Episode = {
