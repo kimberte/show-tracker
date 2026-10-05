@@ -15,7 +15,6 @@ function urlBase64ToUint8Array(value: string) {
 
 export default function NotificationSettings() {
   const [emailEnabled, setEmailEnabled] = useState(false);
-  const [emailTime, setEmailTime] = useState("08:00");
   const [pushTime, setPushTime] = useState("08:00");
   const [daysAhead, setDaysAhead] = useState(7);
   const [dailyPush, setDailyPush] = useState(true);
@@ -61,7 +60,6 @@ export default function NotificationSettings() {
       if (prefs) {
         setEmailEnabled(!!prefs.email_daily);
         setDaysAhead(prefs.days_ahead || 7);
-        setEmailTime(String(prefs.email_time_local || "08:00:00").slice(0, 5));
         setPushTime(String(prefs.push_time_local || "08:00:00").slice(0, 5));
         setDailyPush(prefs.daily_push !== false);
         setEpisodeAlerts(!!prefs.episode_alerts);
@@ -159,7 +157,6 @@ export default function NotificationSettings() {
       user_id: user.id,
       email_daily: emailEnabled,
       days_ahead: daysAhead,
-      email_time_local: emailTime + ":00",
       push_time_local: pushTime + ":00",
       daily_push: dailyPush,
       episode_alerts: episodeAlerts,
@@ -257,24 +254,21 @@ export default function NotificationSettings() {
               <input type="checkbox" checked={emailEnabled} onChange={(e) => setEmailEnabled(e.target.checked)} disabled={!emailVerified} style={{ marginTop: 4 }} />
               <span><strong>Send me the daily email</strong><span className="muted" style={{ display: "block", marginTop: 4 }}>Your tracked shows for today and the next {daysAhead} days.</span></span>
             </label>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-              <label style={{ display: "grid", gap: 7 }}>
-                <strong>Send at</strong>
-                <input type="time" value={emailTime} onChange={(e) => setEmailTime(e.target.value)} disabled={!emailEnabled} style={{ padding: 11, borderRadius: 10, border: "1px solid var(--line)", background: "#090a0d", color: "var(--text)" }} />
-              </label>
+            <div>
               <label style={{ display: "grid", gap: 7 }}>
                 <strong>Upcoming window</strong>
-                <select value={daysAhead} onChange={(e) => setDaysAhead(Number(e.target.value))} disabled={!emailEnabled} style={{ padding: 11, borderRadius: 10, border: "1px solid var(--line)", background: "#090a0d", color: "var(--text)" }}>
+                <select value={daysAhead} onChange={(e) => setDaysAhead(Number(e.target.value))} disabled={!emailEnabled} style={{ padding: 11, borderRadius: 10, border: "1px solid var(--line)", background: "#090a0d", color: "var(--text)", maxWidth: 260 }}>
                   <option value={3}>3 days</option><option value={7}>7 days</option><option value={14}>14 days</option>
                 </select>
               </label>
-            </div>
+                <strong>Upcoming window</strong>
+
           </div>
 
           <div>
             <strong>Timezone</strong>
             <p className="muted" style={{ margin: "5px 0 0" }}>{timezone}</p>
-            <p className="muted" style={{ fontSize: 13, marginTop: 4 }}>We use your browser timezone for schedule dates and your selected email time.</p>
+            <p className="muted" style={{ fontSize: 13, marginTop: 4 }}>Your timezone is used for schedule dates and browser notification timing. Daily emails are sent on the site’s fixed daily schedule.</p>
           </div>
 
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
