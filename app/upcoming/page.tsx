@@ -71,7 +71,8 @@ export default function Upcoming() {
 
       const list = (data || []) as unknown as Tracked[];
 
-      const hydrated = await Promise.all(\n        list.map(async (item) => {
+      const hydrated = await Promise.all(
+        list.map(async (item) => {
           if (!item.show || item.show.poster_url) return item;
           try {
             const r = await fetch("https://api.tvmaze.com/shows/" + item.show.tvmaze_id);
