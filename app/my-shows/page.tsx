@@ -87,7 +87,7 @@ export default function MyShows() {
     const list = (data || []) as unknown as Tracked[];
     list.sort((a, b) => (a.show?.title || "").localeCompare(b.show?.title || ""));
     const hydrated = await Promise.all(
-      hydrated.map(async (item) => {
+      list.map(async (item) => {
         if (!item.show || item.show.poster_url) return item;
         try {
           const r = await fetch("https://api.tvmaze.com/shows/" + item.show.tvmaze_id);
@@ -111,7 +111,7 @@ export default function MyShows() {
     const today = new Date().toLocaleDateString("en-CA");
 
     const details = await Promise.all(
-      list.map(async (item) => {
+      hydrated.map(async (item) => {
         if (!item.show) {
           return [item.id, { next: null, last: null }] as const;
         }
