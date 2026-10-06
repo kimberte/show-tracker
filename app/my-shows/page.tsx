@@ -493,8 +493,10 @@ export default function MyShows() {
                         disabled={watchBusy === "episode-" + episode.id}
                         onClick={() => markWatched(item.show!.id, episode, true)}
                       >
-                        {watchBusy === episode.id ? "Saving…" : "✓ Watched"}
+                        {watchBusy === "episode-" + episode.id ? "Saving…" : "✓ Watched"}
                       </button>
+                    </div>
+                  ))}
                     </div>
                   ))}
                 </div>
