@@ -91,11 +91,21 @@ export async function GET(request: Request) {
       continue;
     }
 
+    const { data: watchedRows } = await supabase
+      .from("episode_watches")
+      .select("tvmaze_episode_id")
+      .eq("user_id", pref.user_id);
+
+    const watchedIds = new Set(
+      (watchedRows || []).map((row: { tvmaze_episode_id: number }) => Number(row.tvmaze_episode_id))
+    );
+
     const today = new Date().toLocaleDateString("en-CA");
     const horizon = new Date();
     horizon.setDate(horizon.getDate() + Math.max(1, Math.min(14, pref.days_ahead || 7)));
     const horizonKey = horizon.toLocaleDateString("en-CA");
     const byDate = new Map<string, Array<{ show: Show; episode: Episode }>>();
+    const catchUp = new Map<number, { show: Show; episodes: Episode[] }>();
 
     await Promise.all(shows.map(async (show) => {
       try {
@@ -107,7 +117,15 @@ export async function GET(request: Request) {
 
         const data = await r.json();
         for (const episode of (data._embedded?.episodes || []) as Episode[]) {
-          if (!episode.airdate || episode.airdate < today || episode.airdate > horizonKey) continue;
+          if (!episode.airdate) continue;
+
+          if (episode.airdate < today && !watchedIds.has(Number((episode as Episode & { id: number }).id))) {
+            const current = catchUp.get(show.id) || { show, episodes: [] };
+            current.episodes.push(episode);
+            catchUp.set(show.id, current);
+          }
+
+          if (episode.airdate < today || episode.airdate > horizonKey) continue;
           const list = byDate.get(episode.airdate) || [];
           list.push({ show, episode });
           byDate.set(episode.airdate, list);
@@ -162,6 +180,24 @@ export async function GET(request: Request) {
         "</td>"
       : '<td valign="middle" style="padding-left:18px;"><div style="font-size:12px;font-weight:800;letter-spacing:1.5px;color:#f59e0b;text-transform:uppercase;">Your TV roundup</div><div style="font-size:28px;line-height:1.15;font-weight:900;color:#ffffff;margin-top:6px;">Stay on top of your shows.</div></td>';
 
+    const catchUpEntries = Array.from(catchUp.values())
+      .filter((item) => item.episodes.length)
+      .sort((a, b) => b.episodes.length - a.episodes.length);
+
+    const catchUpHtml = catchUpEntries.length
+      ? '<div style="font-size:12px;font-weight:800;letter-spacing:1.4px;color:#f59e0b;text-transform:uppercase;margin:28px 0 12px;">Catch up</div>' +
+        catchUpEntries.map(({ show, episodes }) =>
+          '<div style="background:#ffffff;border:1px solid #e7e9ee;border-radius:12px;padding:14px 16px;margin-bottom:8px;">' +
+          '<div style="font-size:16px;font-weight:800;color:#151820;">' + escapeHtml(show.title) + ' <span style="font-size:12px;color:#68707e;">· ' + episodes.length + (episodes.length === 1 ? ' episode' : ' episodes') + ' behind</span></div>' +
+          '<div style="font-size:13px;line-height:1.5;color:#68707e;margin-top:5px;">' +
+          episodes.sort((a, b) => (a.airdate || "").localeCompare(b.airdate || "")).slice(-3).map((episode) =>
+            'S' + episode.season + ' E' + episode.number + ' · ' + escapeHtml(episode.name)
+          ).join('<br>') +
+          (episodes.length > 3 ? '<br>+' + (episodes.length - 3) + ' more' : '') +
+          '</div></div>'
+        ).join("")
+      : "";
+
     const hero = '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background:#151820;border-radius:16px;overflow:hidden;">' +
       "<tr>" + (heroImage ? '<td width="96" valign="middle" style="padding:18px 0 18px 18px;">' + heroImage + "</td>" : "") +
       heroText + "</tr></table>";
@@ -173,7 +209,7 @@ export async function GET(request: Request) {
       '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:680px;border-collapse:collapse;">' +
       '<tr><td style="padding:0 4px 14px;"><div style="font-size:12px;font-weight:900;letter-spacing:2px;color:#151820;">MY TV TRACKER <span style="color:#f59e0b;">●</span></div></td></tr>' +
       "<tr><td>" + hero + "</td></tr>" +
-      '<tr><td style="padding-top:20px;">' + todayHtml + upcomingHtml + "</td></tr>" +
+      '<tr><td style="padding-top:20px;">' + catchUpHtml + todayHtml + upcomingHtml + "</td></tr>" +
       '<tr><td style="padding-top:22px;"><a href="https://mytvtracker.app/my-shows" style="display:block;text-align:center;background:#f59e0b;color:#151820;text-decoration:none;font-size:14px;font-weight:900;padding:13px 18px;border-radius:9px;">VIEW MY SHOWS</a></td></tr>' +
       '<tr><td style="padding:26px 4px 4px;font-size:12px;line-height:1.6;color:#7a818e;">You’re receiving this because daily email notifications are enabled in My TV Tracker.' +
       '<br><a href="https://mytvtracker.app/settings/notifications" style="color:#7a818e;">Manage email preferences</a> · <a href="https://mytvtracker.app" style="color:#7a818e;">Open My TV Tracker</a>' +
