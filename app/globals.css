@@ -382,3 +382,10 @@ button{cursor:pointer}
   .profile-next{display:block;padding:17px}
   .profile-next>a{display:block;margin-top:12px}
 }
+
+/* New & Upcoming discovery filters */
+.new-upcoming-filters{display:grid;grid-template-columns:180px 180px 1fr;align-items:end;gap:12px;padding:14px 16px;margin-bottom:20px;background:rgba(17,19,24,.72)}
+.new-upcoming-filters .discover-platform{min-width:0}
+.new-upcoming-filters .discover-platform select{width:100%}
+.new-upcoming-filter-note{font-size:12px;padding-bottom:9px}
+@media(max-width:700px){.new-upcoming-filters{grid-template-columns:1fr 1fr;padding:12px}.new-upcoming-filter-note{grid-column:1/-1;padding:2px 0 0}}
