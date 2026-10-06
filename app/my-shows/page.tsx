@@ -232,11 +232,17 @@ export default function MyShows() {
 
             return (
               <article key={item.id} className="panel my-show-card">
-                {s.poster_url && (
-                  <Link href={"/show/" + s.tvmaze_id} aria-label={"View " + s.title}>
+                <Link
+                  href={"/show/" + s.tvmaze_id}
+                  className="my-show-poster"
+                  aria-label={"View " + s.title}
+                >
+                  {s.poster_url ? (
                     <img src={s.poster_url} width="92" height="128" alt="" />
-                  </Link>
-                )}
+                  ) : (
+                    <span>{s.title.slice(0, 1).toUpperCase()}</span>
+                  )}
+                </Link>
 
                 <div className="my-show-info">
                   <div className="my-show-topline">
