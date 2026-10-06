@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getSupabase } from "@/lib/supabase";
+import { trackEvent } from "@/lib/analytics";
 
 export default function TrackButton({
   showId,
@@ -111,6 +112,7 @@ export default function TrackButton({
 
     setTracked(true);
     setMessage("");
+    trackEvent("track_show", { show_id: showId, show_name: title });
     setBusy(false);
   }
 
@@ -155,6 +157,7 @@ export default function TrackButton({
 
     setTracked(false);
     setMessage("");
+    trackEvent("untrack_show", { show_id: showId, show_name: title });
     setBusy(false);
   }
 
