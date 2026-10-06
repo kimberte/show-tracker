@@ -5,6 +5,7 @@ import Link from "next/link";
 import TrackButton from "@/components/track-button";
 import SiteNav from "@/components/site-nav";
 import { getSupabase } from "@/lib/supabase";
+import { trackEvent } from "@/lib/analytics";
 
 type Show = {
   id: number;
@@ -106,6 +107,7 @@ export default function Home() {
 
     setLoading(true);
     setSearched(true);
+    trackEvent("search", { search_term: q.trim() });
     setVisibleResults(10);
 
     try {
