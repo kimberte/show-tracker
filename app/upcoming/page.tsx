@@ -70,6 +70,27 @@ export default function Upcoming() {
       }
 
       const list = (data || []) as unknown as Tracked[];
+
+      const hydrated = await Promise.all(
+        hydrated.map(async (item) => {
+          if (!item.show || item.show.poster_url) return item;
+          try {
+            const r = await fetch("https://api.tvmaze.com/shows/" + item.show.tvmaze_id);
+            if (!r.ok) return item;
+            const tv = await r.json();
+            return {
+              ...item,
+              show: {
+                ...item.show,
+                poster_url: tv.image?.medium || tv.image?.original || null,
+              },
+            };
+          } catch {
+            return item;
+          }
+        })
+      );
+
       const today = new Date();
       const todayKey = today.toLocaleDateString("en-CA");
       const cutoff = new Date(today);
