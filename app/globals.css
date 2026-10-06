@@ -475,6 +475,12 @@ button{cursor:pointer}
 .catch-up-show-title .accent{font-size:16px;font-weight:800}
 .catch-up-show-title .muted{font-size:12px}
 .catch-up-episode{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid rgba(255,255,255,.04)}
+.catch-up-season{border-top:1px solid rgba(255,255,255,.05);padding-top:14px;margin-top:4px}
+.catch-up-season-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:10px}
+.catch-up-season-heading>div{display:grid;gap:6px;min-width:0}
+.catch-up-season-heading .muted{font-size:12px;line-height:1.45}
+.catch-up-season .catch-up-episode{padding:11px 0}
+.catch-up-season-heading + .catch-up-episode{margin-top:4px}
 .catch-up-episode>div{display:grid;gap:3px;min-width:0}
 .catch-up-episode strong{font-size:13px;overflow:hidden;text-overflow:ellipsis}
 .catch-up-episode .muted{font-size:12px}
