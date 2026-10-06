@@ -12,8 +12,9 @@ type Show = {
   status?: string;
   genres?: string[];
   image?: { medium?: string; original?: string } | null;
-  network?: { name: string } | null;
-  webChannel?: { name: string } | null;
+  network?: { name: string; country?: { name?: string } | null } | null;
+  webChannel?: { name: string; country?: { name?: string } | null } | null;
+  language?: string | null;
   summary?: string | null;
   _discoverStatus?: string;
   _nextAirdate?: string | null;
@@ -61,6 +62,8 @@ export default function Discover() {
   const [sort, setSort] = useState("next");
   const [platform, setPlatform] = useState("All");
   const [airing, setAiring] = useState("All");
+  const [language, setLanguage] = useState("English");
+  const [region, setRegion] = useState("North America");
   const [visible, setVisible] = useState(48);
 
   useEffect(() => {
@@ -76,7 +79,7 @@ export default function Discover() {
 
   useEffect(() => {
     setVisible(48);
-  }, [genre, q, sort, platform, airing]);
+  }, [genre, q, sort, platform, airing, language, region]);
 
   const platforms = useMemo(() => {
     const names = new Set<string>();
@@ -97,13 +100,30 @@ export default function Discover() {
     const term = q.trim().toLowerCase();
 
     return shows
-      .filter(
-        (s) =>
+      .filter((s) => {
+        const country = s.network?.country?.name || s.webChannel?.country?.name || "";
+        const matchesLanguage =
+          language === "All" ||
+          (language === "Other" ? !!s.language && s.language !== "English" : s.language === language);
+        const matchesRegion =
+          region === "All" ||
+          (region === "North America"
+            ? country === "United States" || country === "Canada"
+            : region === "UK & Ireland"
+              ? country === "United Kingdom" || country === "Ireland"
+              : region === "Australia & New Zealand"
+                ? country === "Australia" || country === "New Zealand"
+                : !!country && !["United States", "Canada", "United Kingdom", "Ireland", "Australia", "New Zealand"].includes(country));
+
+        return (
           (genre === "All" || s.genres?.includes(genre)) &&
           (platform === "All" || (s.network?.name || s.webChannel?.name) === platform) &&
           (airing === "All" || (airing === "Airing soon" ? !!s._nextAirdate : !s._nextAirdate)) &&
+          matchesLanguage &&
+          matchesRegion &&
           (!term || s.name.toLowerCase().includes(term) || (s.network?.name || s.webChannel?.name || "").toLowerCase().includes(term))
-      )
+        );
+      })
       .sort((a, b) => {
         if (sort === "name") return a.name.localeCompare(b.name);
         if (sort === "newest") {
@@ -116,7 +136,7 @@ export default function Discover() {
           )
         );
       });
-  }, [shows, genre, q, sort, platform]);
+  }, [shows, genre, q, sort, platform, airing, language, region]);
 
   const displayed = filtered.slice(0, visible);
 
@@ -150,6 +170,27 @@ export default function Discover() {
               </button>
             ))}
           </div>
+        </div>
+
+        <div className="discover-toolbar">
+          <label className="discover-platform">
+            <span className="muted">Language</span>
+            <select value={language} onChange={(e) => setLanguage(e.target.value)}>
+              <option value="English">English</option>
+              <option value="All">All languages</option>
+              <option value="Other">Other languages</option>
+            </select>
+          </label>
+          <label className="discover-platform">
+            <span className="muted">Region</span>
+            <select value={region} onChange={(e) => setRegion(e.target.value)}>
+              <option value="North America">North America</option>
+              <option value="All">All regions</option>
+              <option value="UK & Ireland">UK & Ireland</option>
+              <option value="Australia & New Zealand">Australia & New Zealand</option>
+              <option value="Other">Other regions</option>
+            </select>
+          </label>
         </div>
 
         <div className="discover-status-tabs">
@@ -213,7 +254,7 @@ export default function Discover() {
         <section>
           <div className="section-heading">
             <h2>{airing !== "All" ? airing : platform !== "All" ? platform : genre === "All" ? "Active shows" : genre}</h2>
-            <span className="muted">{filtered.length} shows</span>
+            <span className="muted">{filtered.length} shows · {language === "English" ? "English" : language === "All" ? "All languages" : "Other languages"} · {region === "North America" ? "North America" : region === "All" ? "All regions" : region}</span>
           </div>
 
           <div className="discover-grid">
