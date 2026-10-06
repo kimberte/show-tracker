@@ -422,3 +422,33 @@ button{cursor:pointer}
 @media(max-width:700px){
   .my-show-poster{width:78px;height:108px;flex-basis:78px}
 }
+
+/* Phase 1 utility and trust UI */
+.site-footer{max-width:1120px;margin:0 auto;padding:0 24px 34px;display:flex;align-items:center;gap:18px;flex-wrap:wrap;color:var(--muted);font-size:12px}
+.site-footer-brand{font-weight:900;letter-spacing:1.4px;color:var(--text)}
+.site-footer-links{display:flex;gap:14px;flex-wrap:wrap}
+.site-footer-links a:hover{color:var(--text)}
+.site-footer-note{margin-left:auto}
+.utility-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.utility-card{padding:24px;line-height:1.65}
+.utility-card h2{margin:0 0 8px;font-size:21px}
+.utility-card h2:not(:first-child){margin-top:24px}
+.utility-card p{margin:0 0 14px}
+.utility-wide{margin-top:14px}
+.utility-cta{margin-top:18px}
+.faq-list{display:grid;gap:12px}
+.faq-item{padding:20px 22px}
+.faq-item h2{margin:0 0 7px;font-size:19px}
+.faq-item p{margin:0;line-height:1.65}
+.my-shows-header-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px}
+.my-shows-count{font-size:13px;font-weight:700;color:var(--muted)}
+.my-shows-share-button{padding:8px 11px;border:1px solid var(--line);border-radius:9px;background:transparent;color:var(--text);font-weight:700}
+.my-shows-share-button:hover{border-color:#353a46;background:var(--panel-2)}
+.my-shows-share-message{font-size:12px}
+@media(max-width:700px){
+  .site-footer{padding:0 16px 28px;display:grid;gap:10px}
+  .site-footer-note{margin-left:0}
+  .utility-grid{grid-template-columns:1fr}
+  .utility-card{padding:18px}
+  .my-shows-header-meta{align-items:flex-start}
+}
