@@ -301,7 +301,7 @@ export default function MyShows() {
                   )}
 
                   <div className="my-show-actions">
-                    <span className="muted my-show-open-hint">Open show details ↗</span>
+                    <Link href={"/show/" + s.tvmaze_id} className="muted my-show-open-hint">Open show details ↗</Link>
                     <button
                       onClick={() => remove(item.id)}
                       disabled={busyId === item.id}
