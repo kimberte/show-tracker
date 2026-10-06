@@ -70,7 +70,7 @@ export default function MyShows() {
   >({});
   const [progress, setProgress] = useState<Record<number, Progress>>({});
   const [loading, setLoading] = useState(true);
-  const [watchBusy, setWatchBusy] = useState<number | null>(null);
+  const [watchBusy, setWatchBusy] = useState<string | null>(null);
   const [signedIn, setSignedIn] = useState(false);
   const [message, setMessage] = useState("");
   const [busyId, setBusyId] = useState<number | null>(null);
@@ -245,7 +245,7 @@ export default function MyShows() {
 
   async function markWatched(showId: number, episode: Episode, watched: boolean) {
     if (!episode.id) return;
-    setWatchBusy(episode.id);
+    setWatchBusy("episode-" + episode.id);
 
     const supabase = getSupabase();
 
@@ -294,6 +294,23 @@ export default function MyShows() {
       };
     });
 
+    setWatchBusy(null);
+  }
+
+  async function markSeasonWatched(showId: number, season: SeasonProgress) {
+    if (!season.behind.length) return;
+    setWatchBusy("season-" + showId + "-" + season.season);
+    const supabase = getSupabase();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setMessage("You must be signed in to update watch progress."); setWatchBusy(null); return; }
+    const rows = season.behind.map((episode) => ({ user_id: user.id, show_id: showId, tvmaze_episode_id: episode.id, season_number: episode.season, episode_number: episode.number }));
+    const { error } = await supabase.from("episode_watches").insert(rows);
+    if (error && !error.message.toLowerCase().includes("duplicate")) { setMessage(error.message); setWatchBusy(null); return; }
+    const ids = new Set(season.behind.map((episode) => episode.id));
+    setProgress((current) => {
+      const p = current[showId] || { aired: 0, watched: 0, behind: [], seasons: [] };
+      return { ...current, [showId]: { ...p, watched: p.watched + season.behind.length, behind: p.behind.filter((e) => !ids.has(e.id)), seasons: p.seasons.map((item) => item.season === season.season ? { ...item, watched: item.watched + season.behind.length, behind: [] } : item) } };
+    });
     setWatchBusy(null);
   }
 
@@ -462,7 +479,7 @@ export default function MyShows() {
                       </div>
                       <button
                         className="watch-button"
-                        disabled={watchBusy === episode.id}
+                        disabled={watchBusy === "episode-" + episode.id}
                         onClick={() => markWatched(item.show!.id, episode, true)}
                       >
                         {watchBusy === episode.id ? "Saving…" : "✓ Watched"}
