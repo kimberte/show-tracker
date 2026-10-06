@@ -279,7 +279,7 @@ export default function MyShows() {
     }
 
     setProgress((current) => {
-      const p = current[showId] || { aired: 0, watched: 0, behind: [] };
+      const p = current[showId] || { aired: 0, watched: 0, behind: [], seasons: [] };
       const alreadyWatched = !p.behind.some((e) => e.id === episode.id);
       const nextBehind = watched
         ? p.behind.filter((e) => e.id !== episode.id)
