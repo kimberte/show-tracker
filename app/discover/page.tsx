@@ -274,7 +274,7 @@ export default function Discover() {
                   </span>
                 </div>
 
-                <div className="show-card-body">
+                <Link href={"/show/" + s.id} className="show-card-body show-card-body-link" aria-label={"View " + s.name}>
                   <h3>{s.name}</h3>
 
                   <p className="muted show-meta">
@@ -306,11 +306,8 @@ export default function Discover() {
 
                   <div className="card-actions">
                     <TrackButton showId={s.id} title={s.name} compact />
-                    <Link href={"/show/" + s.id} className="view-link">
-                      View →
-                    </Link>
                   </div>
-                </div>
+                </Link>
               </article>
             ))}
           </div>
