@@ -11,8 +11,9 @@ type Show = {
   status?: string;
   premiered?: string | null;
   image?: { medium?: string; original?: string } | null;
-  network?: { name: string } | null;
-  webChannel?: { name: string } | null;
+  network?: { name: string; country?: { name?: string } | null } | null;
+  webChannel?: { name: string; country?: { name?: string } | null } | null;
+  language?: string | null;
   summary?: string | null;
   _nextAirdate: string;
   _nextAirtime?: string | null;
@@ -36,6 +37,8 @@ export default function NewAndUpcoming() {
   const [shows, setShows] = useState<Show[]>([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
+  const [language, setLanguage] = useState("English");
+  const [region, setRegion] = useState("North America");
 
   useEffect(() => {
     fetch("/api/new-and-upcoming")
@@ -48,8 +51,25 @@ export default function NewAndUpcoming() {
       .finally(() => setLoading(false));
   }, []);
 
-  const newShows = shows.filter((s) => s._isNew);
-  const returning = shows.filter((s) => !s._isNew);
+  const filteredShows = shows.filter((s) => {
+    const country = s.network?.country?.name || s.webChannel?.country?.name || "";
+    const matchesLanguage =
+      language === "All" ||
+      (language === "Other" ? !!s.language && s.language !== "English" : s.language === language);
+    const matchesRegion =
+      region === "All" ||
+      (region === "North America"
+        ? country === "United States" || country === "Canada"
+        : region === "UK & Ireland"
+          ? country === "United Kingdom" || country === "Ireland"
+          : region === "Australia & New Zealand"
+            ? country === "Australia" || country === "New Zealand"
+            : !!country && !["United States", "Canada", "United Kingdom", "Ireland", "Australia", "New Zealand"].includes(country));
+    return matchesLanguage && matchesRegion;
+  });
+
+  const newShows = filteredShows.filter((s) => s._isNew);
+  const returning = filteredShows.filter((s) => !s._isNew);
 
   return (
     <main className="shell">
@@ -69,10 +89,32 @@ export default function NewAndUpcoming() {
         <p className="muted">Loading new and upcoming shows…</p>
       ) : message ? (
         <section className="panel empty-state"><h2>Discovery unavailable</h2><p className="muted">{message}</p></section>
-      ) : shows.length === 0 ? (
+      ) : filteredShows.length === 0 ? (
         <section className="panel empty-state"><h2>No upcoming shows found</h2><p className="muted">Try again later as schedules are announced.</p></section>
       ) : (
         <>
+          <section className="new-upcoming-filters panel">
+            <div className="discover-platform">
+              <span className="muted">Language</span>
+              <select value={language} onChange={(e) => setLanguage(e.target.value)}>
+                <option value="English">English</option>
+                <option value="All">All languages</option>
+                <option value="Other">Other languages</option>
+              </select>
+            </div>
+            <div className="discover-platform">
+              <span className="muted">Region</span>
+              <select value={region} onChange={(e) => setRegion(e.target.value)}>
+                <option value="North America">North America</option>
+                <option value="All">All regions</option>
+                <option value="UK & Ireland">UK & Ireland</option>
+                <option value="Australia & New Zealand">Australia & New Zealand</option>
+                <option value="Other">Other regions</option>
+              </select>
+            </div>
+            <span className="muted new-upcoming-filter-note">Showing {filteredShows.length} shows with your current filters.</span>
+          </section>
+
           {newShows.length > 0 && (
             <section className="new-upcoming-section">
               <div className="section-heading"><h2>New series</h2><span className="muted">{newShows.length} shows</span></div>
