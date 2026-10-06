@@ -469,18 +469,21 @@ button{cursor:pointer}
 .catch-up-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
 .catch-up-heading h2{margin:3px 0 4px;font-size:22px}
 .catch-up-total{padding:7px 10px;border-radius:999px;background:rgba(245,158,11,.12);color:var(--accent);font-size:12px;font-weight:800;white-space:nowrap}
-.catch-up-list{display:grid;gap:12px;margin-top:16px}
+.catch-up-list{display:grid;gap:10px;margin-top:16px}
 .catch-up-show{border-top:1px solid var(--line);padding-top:12px}
-.catch-up-show-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
-.catch-up-show-title .accent{font-size:16px;font-weight:800}
-.catch-up-show-title .muted{font-size:12px}
-.catch-up-episode{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid rgba(255,255,255,.04)}
-.catch-up-season{border-top:1px solid rgba(255,255,255,.05);padding-top:14px;margin-top:4px}
-.catch-up-season-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:10px}
-.catch-up-season-heading>div{display:grid;gap:6px;min-width:0}
-.catch-up-season-heading .muted{font-size:12px;line-height:1.45}
-.catch-up-season .catch-up-episode{padding:11px 0}
+.catch-up-show-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:0}
+.catch-up-show-toggle,.catch-up-season-toggle{display:flex;align-items:center;justify-content:space-between;gap:14px;flex:1;min-width:0;border:0;background:transparent;color:var(--text);padding:4px 0;text-align:left;cursor:pointer}
+.catch-up-show-toggle>span:first-child,.catch-up-season-toggle>span:first-child{display:grid;gap:4px;min-width:0}
+.catch-up-show-toggle .accent{font-size:16px;font-weight:800}
+.catch-up-show-toggle .muted,.catch-up-season-toggle .muted{font-size:12px;line-height:1.4}
+.catch-up-toggle-label{font-size:12px;font-weight:800;color:var(--accent);white-space:nowrap}
+.catch-up-all-button{flex:0 0 auto}
+.catch-up-seasons{display:grid;gap:4px;margin-top:8px}
+.catch-up-season{border-top:1px solid rgba(255,255,255,.05);padding-top:10px;margin-top:2px}
+.catch-up-season-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;margin-bottom:0}
+.catch-up-season .catch-up-episode{padding:10px 0}
 .catch-up-season-heading + .catch-up-episode{margin-top:4px}
+.catch-up-episode{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid rgba(255,255,255,.04)}
 .catch-up-episode>div{display:grid;gap:3px;min-width:0}
 .catch-up-episode strong{font-size:13px;overflow:hidden;text-overflow:ellipsis}
 .catch-up-episode .muted{font-size:12px}
@@ -492,6 +495,10 @@ button{cursor:pointer}
 @media(max-width:700px){
   .catch-up-panel{padding:16px}
   .catch-up-heading{gap:10px}
+  .catch-up-show-title{align-items:flex-start;flex-direction:column}
+  .catch-up-all-button{width:100%}
+  .catch-up-season-heading{gap:10px}
+  .catch-up-season-toggle{padding:2px 0}
   .catch-up-episode{align-items:flex-start}
   .watch-button{padding:7px 8px}
 }
