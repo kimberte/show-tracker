@@ -65,9 +65,9 @@ export default function MyShows() {
     setMessage("");
 
     const supabase = getSupabase();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const { data: { user: currentUser } } = await supabase.auth.getUser();
+    const { data: { session } } = await supabase.auth.getSession();
+    const user = currentUser || session?.user || null;
 
     if (!user) {
       setSignedIn(false);
