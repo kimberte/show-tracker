@@ -111,7 +111,7 @@ export default function MyShows() {
     const today = new Date().toLocaleDateString("en-CA");
 
     const details = await Promise.all(
-      hydrated.map(async (item) => {
+      list.map(async (item) => {
         if (!item.show) {
           return [item.id, { next: null, last: null }] as const;
         }
