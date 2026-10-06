@@ -75,6 +75,8 @@ export default function MyShows() {
       return;
     }
 
+    setSignedIn(true);
+
     const { data, error } = await supabase
       .from("tracked_shows")
       .select("id,show:shows(id,tvmaze_id,title,poster_url,network,country,description)")
