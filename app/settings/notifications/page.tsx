@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getSupabase } from "@/lib/supabase";
+import { trackEvent } from "@/lib/analytics";
 import SiteNav from "@/components/site-nav";
 
 const VAPID_PUBLIC_KEY_ENDPOINT = "/api/notifications/push-config";
@@ -124,6 +125,7 @@ export default function NotificationSettings() {
 
       setPushEnabled(true);
       setDailyPush(true);
+      trackEvent("push_enabled");
       setPushDiagnostic("Permission: granted • Service worker: subscribed");
       setMessage("Browser notifications enabled on this device.");
     } catch (error: any) {
@@ -164,6 +166,7 @@ export default function NotificationSettings() {
       updated_at: new Date().toISOString(),
     }, { onConflict: "user_id" });
 
+    if (!result.error) trackEvent("notification_settings_saved", { email_enabled: emailEnabled, daily_push: dailyPush, episode_alerts: episodeAlerts });
     setMessage(result.error ? result.error.message : "Notification settings saved.");
     setSaving(false);
   }
@@ -173,6 +176,7 @@ export default function NotificationSettings() {
     try {
       const response = await fetch("/api/notifications/test", { method: "POST" });
       const data = await response.json();
+      if (response.ok) trackEvent("email_test_sent");
       setMessage(response.ok ? "Test email sent. Check your inbox (and spam/junk)." : (data.error || "Could not send test email."));
     } catch { setMessage("Could not send test email."); }
     setTestingEmail(false);
@@ -187,6 +191,7 @@ export default function NotificationSettings() {
       }
       const response = await fetch("/api/notifications/push-test", { method: "POST" });
       const data = await response.json();
+      if (response.ok) trackEvent("push_test_sent");
       setMessage(response.ok ? "Test notification sent to this device." : (data.error || "Could not send test notification."));
     } catch (error: any) {
       setMessage(error?.message || "Could not send test notification.");
