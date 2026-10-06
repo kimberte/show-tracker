@@ -126,14 +126,9 @@ export default function Home() {
     "@context": "https://schema.org",
     "@type": "WebSite",
     name: "My TV Tracker",
-    url: "https://mytvtracker.app/",
+    url: "https://www.mytvtracker.app/",
     description:
       "Track your favourite TV shows, see what's airing today, discover what's coming next, and get a personal daily TV schedule.",
-    potentialAction: {
-      "@type": "SearchAction",
-      target: "https://mytvtracker.app/?q={search_term_string}",
-      "query-input": "required name=search_term_string",
-    },
   };
 
   return (
@@ -246,17 +241,6 @@ export default function Home() {
       )}
 
 
-      <section className="home-discovery-strip">
-        <Link href="/new-and-upcoming" className="panel home-discovery-feature">
-          <div>
-            <div className="accent eyebrow">NEW & UPCOMING</div>
-            <h2>Looking for your next show?</h2>
-            <p className="muted">Find new series and returning favourites coming soon, then track them before they air.</p>
-          </div>
-          <span className="accent">Browse new & upcoming →</span>
-        </Link>
-      </section>
-
       {!todayLoading && today.length > 0 && (
         <section className="home-today">
           <div className="section-heading">
@@ -298,6 +282,17 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      <section className="home-discovery-strip">
+        <Link href="/new-and-upcoming" className="panel home-discovery-feature">
+          <div>
+            <div className="accent eyebrow">NEW & UPCOMING</div>
+            <h2>Looking for your next show?</h2>
+            <p className="muted">Find new series and returning favourites coming soon, then track them before they air.</p>
+          </div>
+          <span className="accent">Browse new & upcoming →</span>
+        </Link>
+      </section>
 
       {true && (
         <>
