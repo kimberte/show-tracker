@@ -55,6 +55,7 @@ export default function MyShows() {
     Record<number, { next: Episode | null; last: Episode | null; status?: string }>
   >({});
   const [loading, setLoading] = useState(true);
+  const [signedIn, setSignedIn] = useState(false);
   const [message, setMessage] = useState("");
   const [busyId, setBusyId] = useState<number | null>(null);
   const [shareMessage, setShareMessage] = useState("");
@@ -69,6 +70,7 @@ export default function MyShows() {
     } = await supabase.auth.getUser();
 
     if (!user) {
+      setSignedIn(false);
       setLoading(false);
       return;
     }
@@ -231,6 +233,12 @@ export default function MyShows() {
 
       {loading ? (
         <p className="muted">Loading your shows…</p>
+       ) : !signedIn ? (
+        <section className="panel empty-state">
+          <h2>Your TV library starts here</h2>
+          <p className="muted">Sign in to track shows, see upcoming episodes, and get reminders.</p>
+          <Link href="/login" className="primary-button">Sign in</Link>
+        </section>
       ) : shows.length === 0 ? (
         <section className="panel empty-state">
           <h2>Nothing tracked yet</h2>
