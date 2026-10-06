@@ -1,6 +1,6 @@
 "use client";
 import{useEffect,useState}from"react";import{useRouter}from"next/navigation";import Link from"next/link";import{getSupabase}from"@/lib/supabase";
-const SITE_URL=process.env.NEXT_PUBLIC_SITE_URL||"https://show-tracker-delta.vercel.app";
+const SITE_URL=process.env.NEXT_PUBLIC_SITE_URL||"https://www.mytvtracker.app";
 export default function Login(){const[email,setEmail]=useState("");const[message,setMessage]=useState("");const[busy,setBusy]=useState(false);const router=useRouter();
 useEffect(()=>{const supabase=getSupabase();supabase.auth.getUser().then(({data})=>{if(data.user)router.replace("/")})},[router]);
 async function submit(e:React.FormEvent){e.preventDefault();if(busy)return;setBusy(true);setMessage("");const supabase=getSupabase();const{error}=await supabase.auth.signInWithOtp({email,options:{emailRedirectTo:SITE_URL+"/auth/callback?next=/"}});setMessage(error?error.message:"Check your email for a sign-in link. The link will sign you in automatically.");setBusy(false)}
