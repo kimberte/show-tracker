@@ -69,7 +69,7 @@ export default function TrackButton({
     } = await supabase.auth.getUser();
 
     if (!user) {
-      setMessage("Sign in to sync your shows.");
+      setMessage("Sign in to track and sync your shows.");
       setBusy(false);
       return;
     }
@@ -124,7 +124,7 @@ export default function TrackButton({
     } = await supabase.auth.getUser();
 
     if (!user) {
-      setMessage("Sign in to sync your shows.");
+      setMessage("Sign in to track and sync your shows.");
       setBusy(false);
       return;
     }
@@ -205,7 +205,7 @@ export default function TrackButton({
       >
         {busy ? "Saving…" : "+ Track this show"}
       </button>
-      {message === "Sign in to sync your shows." ? (
+      {message === "Sign in to track and sync your shows." ? (
         <div className="muted" style={{ marginTop: 8 }}>
           {message}{" "}
           <Link href="/login" className="accent">
