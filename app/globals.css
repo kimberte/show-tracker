@@ -462,3 +462,30 @@ button{cursor:pointer}
 .account-delete{border-color:rgba(239,68,68,.45);color:#f87171}
 .account-delete:hover{background:rgba(127,29,29,.16);border-color:rgba(239,68,68,.7)}
 .account-message{margin:0;font-size:13px}
+
+
+/* Watch progress + catch-up */
+.catch-up-panel{margin:20px 0 26px;padding:20px}
+.catch-up-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.catch-up-heading h2{margin:3px 0 4px;font-size:22px}
+.catch-up-total{padding:7px 10px;border-radius:999px;background:rgba(245,158,11,.12);color:var(--accent);font-size:12px;font-weight:800;white-space:nowrap}
+.catch-up-list{display:grid;gap:12px;margin-top:16px}
+.catch-up-show{border-top:1px solid var(--line);padding-top:12px}
+.catch-up-show-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:8px}
+.catch-up-show-title .accent{font-size:16px;font-weight:800}
+.catch-up-show-title .muted{font-size:12px}
+.catch-up-episode{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid rgba(255,255,255,.04)}
+.catch-up-episode>div{display:grid;gap:3px;min-width:0}
+.catch-up-episode strong{font-size:13px;overflow:hidden;text-overflow:ellipsis}
+.catch-up-episode .muted{font-size:12px}
+.watch-button{border:1px solid rgba(245,158,11,.4);border-radius:8px;background:transparent;color:var(--accent);padding:7px 10px;font-size:12px;font-weight:800;white-space:nowrap}
+.watch-button:hover{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.65)}
+.watch-button:disabled{opacity:.55;cursor:not-allowed}
+.my-show-progress{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:10px;font-size:12px;font-weight:700}
+.catch-up-empty{margin:0}
+@media(max-width:700px){
+  .catch-up-panel{padding:16px}
+  .catch-up-heading{gap:10px}
+  .catch-up-episode{align-items:flex-start}
+  .watch-button{padding:7px 8px}
+}
