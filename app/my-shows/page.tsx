@@ -244,7 +244,7 @@ export default function MyShows() {
                     <span className="muted">{s.network || s.country || "TV show"}</span>
                   </div>
 
-                  <h2>{s.title}</h2>
+                  <h2><Link href={"/show/" + s.tvmaze_id} className="accent">{s.title}</Link></h2>
 
                   {e.next ? (
                     <div className="episode-highlight">
@@ -265,9 +265,7 @@ export default function MyShows() {
                   )}
 
                   <div className="my-show-actions">
-                    <Link href={"/show/" + s.tvmaze_id} className="accent">
-                      View show →
-                    </Link>
+                    <span className="muted my-show-open-hint">Open show details ↗</span>
                     <button
                       onClick={() => remove(item.id)}
                       disabled={busyId === item.id}
