@@ -612,7 +612,7 @@ export default function MyShows() {
             )}
           </div>
         </section>
-      )
+      )}
       {message && <p className="muted">{message}</p>}
     </main>
   );
