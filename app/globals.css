@@ -411,3 +411,14 @@ button{cursor:pointer}
 .my-show-open-hint{font-size:13px}
 .home-hero-note{display:block;font-size:12px;margin-top:2px}
 @media(max-width:700px){.my-show-open-hint{font-size:12px}}
+
+
+/* My Shows poster polish */
+.my-show-poster{display:block;width:92px;height:128px;flex:0 0 92px;border-radius:10px;overflow:hidden;background:#151820;color:var(--muted);border:1px solid rgba(255,255,255,.04)}
+.my-show-poster img{display:block;width:100%;height:100%;object-fit:cover}
+.my-show-poster span{display:grid;place-items:center;width:100%;height:100%;font-size:34px;font-weight:800}
+.my-show-poster:hover{border-color:rgba(245,158,11,.35)}
+.my-show-poster:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media(max-width:700px){
+  .my-show-poster{width:78px;height:108px;flex-basis:78px}
+}
