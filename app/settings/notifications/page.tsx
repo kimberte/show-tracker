@@ -166,7 +166,7 @@ export default function NotificationSettings() {
       updated_at: new Date().toISOString(),
     }, { onConflict: "user_id" });
 
-    if (!result.error) trackEvent("notification_settings_saved", { email_enabled: emailEnabled, daily_push: dailyPush, episode_alerts: episodeAlerts });
+    if (!result.error) { trackEvent("notification_settings_saved", { email_enabled: emailEnabled, daily_push: dailyPush, episode_alerts: episodeAlerts }); if (emailEnabled || dailyPush) trackEvent("notification_setup_complete", { email_enabled: emailEnabled, push_enabled: pushEnabled, daily_push: dailyPush, episode_alerts: episodeAlerts }); }
     setMessage(result.error ? result.error.message : "Notification settings saved.");
     setSaving(false);
   }
