@@ -26,6 +26,12 @@ type Episode = {
   airtime?: string | null;
 };
 
+type Progress = {
+  aired: number;
+  watched: number;
+  behind: Episode[];
+};
+
 function episodeLabel(e: Episode) {
   return "S" + e.season + " E" + e.number + " · " + e.name;
 }
@@ -54,7 +60,9 @@ export default function MyShows() {
   const [episodes, setEpisodes] = useState<
     Record<number, { next: Episode | null; last: Episode | null; status?: string }>
   >({});
+  const [progress, setProgress] = useState<Record<number, Progress>>({});
   const [loading, setLoading] = useState(true);
+  const [watchBusy, setWatchBusy] = useState<number | null>(null);
   const [signedIn, setSignedIn] = useState(false);
   const [message, setMessage] = useState("");
   const [busyId, setBusyId] = useState<number | null>(null);
@@ -114,6 +122,15 @@ export default function MyShows() {
 
     const today = new Date().toLocaleDateString("en-CA");
 
+    const { data: watchedRows } = await supabase
+      .from("episode_watches")
+      .select("tvmaze_episode_id")
+      .eq("user_id", user.id);
+
+    const watchedIds = new Set(
+      (watchedRows || []).map((row: { tvmaze_episode_id: number }) => Number(row.tvmaze_episode_id))
+    );
+
     const details = await Promise.all(
       list.map(async (item) => {
         if (!item.show) {
@@ -146,14 +163,26 @@ export default function MyShows() {
               .sort((a, b) => (b.airdate || "").localeCompare(a.airdate || ""))[0] ||
             null;
 
-          return [item.id, { next, last, status: s.status }] as const;
+          const aired = eps.filter((e) => e.airdate && e.airdate < today);
+          const behind = aired.filter((e) => !watchedIds.has(Number(e.id)));
+
+          return [
+            item.id,
+            { next, last, status: s.status },
+            { aired: aired.length, watched: aired.length - behind.length, behind },
+          ] as const;
         } catch {
           return [item.id, { next: null, last: null }] as const;
         }
       })
     );
 
-    setEpisodes(Object.fromEntries(details));
+    setEpisodes(Object.fromEntries(details.map(([id, value]) => [id, value])));
+    setProgress(
+      Object.fromEntries(
+        details.map(([id, _value, p]) => [id, p || { aired: 0, watched: 0, behind: [] }])
+      )
+    );
     setLoading(false);
   }
 
@@ -194,6 +223,60 @@ export default function MyShows() {
     } catch {
       setShareMessage("");
     }
+  }
+
+  async function markWatched(showId: number, episode: Episode, watched: boolean) {
+    if (!episode.id) return;
+    setWatchBusy(episode.id);
+
+    const supabase = getSupabase();
+
+    if (watched) {
+      const { error } = await supabase
+        .from("episode_watches")
+        .insert({
+          user_id: (await supabase.auth.getUser()).data.user?.id,
+          show_id: showId,
+          tvmaze_episode_id: episode.id,
+          season_number: episode.season,
+          episode_number: episode.number,
+        });
+
+      if (error && !error.message.toLowerCase().includes("duplicate")) {
+        setMessage(error.message);
+        setWatchBusy(null);
+        return;
+      }
+    } else {
+      const { error } = await supabase
+        .from("episode_watches")
+        .delete()
+        .eq("tvmaze_episode_id", episode.id);
+
+      if (error) {
+        setMessage(error.message);
+        setWatchBusy(null);
+        return;
+      }
+    }
+
+    setProgress((current) => {
+      const p = current[showId] || { aired: 0, watched: 0, behind: [] };
+      const alreadyWatched = !p.behind.some((e) => e.id === episode.id);
+      const nextBehind = watched
+        ? p.behind.filter((e) => e.id !== episode.id)
+        : p.behind.some((e) => e.id === episode.id) ? p.behind : [...p.behind, episode];
+      return {
+        ...current,
+        [showId]: {
+          ...p,
+          watched: Math.max(0, p.watched + (watched && !alreadyWatched ? 1 : !watched && alreadyWatched ? -1 : 0)),
+          behind: nextBehind.sort((a, b) => (a.airdate || "").localeCompare(b.airdate || "")),
+        },
+      };
+    });
+
+    setWatchBusy(null);
   }
 
   async function remove(trackedId: number) {
@@ -300,6 +383,19 @@ export default function MyShows() {
                     </div>
                   )}
 
+                  {progress[item.id] && (
+                    <div className="my-show-progress">
+                      <span>
+                        {progress[item.id].watched} of {progress[item.id].aired} aired episodes watched
+                      </span>
+                      {progress[item.id].behind.length > 0 && (
+                        <span className="accent">
+                          {progress[item.id].behind.length} behind
+                        </span>
+                      )}
+                    </div>
+                  )}
+
                   <div className="my-show-actions">
                     <Link href={"/show/" + s.tvmaze_id} className="muted my-show-open-hint">Open show details ↗</Link>
                     <button
@@ -314,6 +410,53 @@ export default function MyShows() {
               </article>
             );
           })}
+        </section>
+      )}
+
+      {signedIn && !loading && shows.length > 0 && (
+        <section className="panel catch-up-panel">
+          <div className="catch-up-heading">
+            <div>
+              <div className="accent eyebrow">WATCH PROGRESS</div>
+              <h2>Catch Up</h2>
+              <p className="muted">Episodes that have aired but aren’t checked off yet.</p>
+            </div>
+            <span className="catch-up-total">
+              {Object.values(progress).reduce((sum, p) => sum + p.behind.length, 0)} behind
+            </span>
+          </div>
+          <div className="catch-up-list">
+            {shows.flatMap((item) => {
+              const p = progress[item.id];
+              if (!item.show || !p?.behind.length) return [];
+              return [(
+                <div key={item.id} className="catch-up-show">
+                  <div className="catch-up-show-title">
+                    <Link href={"/show/" + item.show.tvmaze_id} className="accent">{item.show.title}</Link>
+                    <span className="muted">{p.behind.length} {p.behind.length === 1 ? "episode" : "episodes"} behind</span>
+                  </div>
+                  {p.behind.slice(-5).map((episode) => (
+                    <div key={episode.id} className="catch-up-episode">
+                      <div>
+                        <strong>S{episode.season} E{episode.number} · {episode.name}</strong>
+                        <span className="muted">{episodeDate(episode)}</span>
+                      </div>
+                      <button
+                        className="watch-button"
+                        disabled={watchBusy === episode.id}
+                        onClick={() => markWatched(item.show!.id, episode, true)}
+                      >
+                        {watchBusy === episode.id ? "Saving…" : "✓ Watched"}
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )];
+            })}
+            {!Object.values(progress).some((p) => p.behind.length) && (
+              <p className="muted catch-up-empty">You’re caught up on all aired episodes of your tracked shows.</p>
+            )}
+          </div>
         </section>
       )}
 
