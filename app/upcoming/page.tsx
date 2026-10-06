@@ -98,7 +98,7 @@ export default function Upcoming() {
       const found: Item[] = [];
 
       await Promise.all(
-        list.map(async (item) => {
+        hydrated.map(async (item) => {
           if (!item.show) return;
 
           try {
