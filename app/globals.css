@@ -399,3 +399,5 @@ button{cursor:pointer}
 .new-upcoming-filters select{padding:10px 11px;border:1px solid var(--line);border-radius:10px;background:#090a0d;color:var(--text);min-height:40px}
 .new-upcoming-card{transition:border-color .15s,transform .15s,background .15s}.new-upcoming-card:hover{border-color:#353a46;background:rgba(21,24,32,.96);transform:translateY(-1px)}
 @media(max-width:700px){.site-brand{font-size:14px}.section-heading h2{font-size:20px}.new-upcoming-filters{margin-bottom:18px}.new-upcoming-card{padding:12px;gap:12px}.new-upcoming-card>img,.new-upcoming-fallback{width:88px;height:125px}.new-upcoming-summary{display:none}}
+
+.new-upcoming-loading{min-height:180px;display:grid;place-items:center}
