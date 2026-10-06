@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import TrackButton from "@/components/track-button";
 import SiteNav from "@/components/site-nav";
+import AnalyticsPageView from "@/components/analytics-page-view";
 
 export const revalidate = 3600;
 
@@ -82,6 +83,7 @@ export default async function ShowSeoPage({ params }: { params: Promise<{ slug: 
   return <main className="shell">
     <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify(structuredData)}} />
     <SiteNav />
+    <AnalyticsPageView event="show_view" params={{ show_id: show.id, show_name: show.name }} />
     <div className="show-detail-nav"><Link href="/" className="muted">← Search</Link><Link href="/tv-tonight" className="muted">TV Tonight</Link></div>
     <section className="panel show-detail-hero">
       <div className="show-hero">
