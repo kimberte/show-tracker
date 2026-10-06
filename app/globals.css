@@ -452,3 +452,13 @@ button{cursor:pointer}
   .utility-card{padding:18px}
   .my-shows-header-meta{align-items:flex-start}
 }
+
+.account-panel{margin-top:14px;padding:22px;display:grid;gap:16px}
+.account-panel h2{margin:0 0 6px;font-size:20px}
+.account-actions{display:flex;gap:10px;flex-wrap:wrap}
+.account-button{padding:10px 15px;border:1px solid var(--line);border-radius:9px;background:transparent;color:var(--text);font-weight:800}
+.account-button:hover{background:var(--panel-2);border-color:#353a46}
+.account-button:disabled{opacity:.6;cursor:not-allowed}
+.account-delete{border-color:rgba(239,68,68,.45);color:#f87171}
+.account-delete:hover{background:rgba(127,29,29,.16);border-color:rgba(239,68,68,.7)}
+.account-message{margin:0;font-size:13px}
