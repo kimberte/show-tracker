@@ -471,7 +471,18 @@ export default function MyShows() {
                     <Link href={"/show/" + item.show.tvmaze_id} className="accent">{item.show.title}</Link>
                     <span className="muted">{p.behind.length} {p.behind.length === 1 ? "episode" : "episodes"} behind</span>
                   </div>
-                  {p.behind.slice(-5).map((episode) => (
+                  {p.seasons.filter((season) => season.behind.length > 0).map((season) => (
+                    <div key={season.season} className="catch-up-season">
+                      <div className="catch-up-season-heading">
+                        <div>
+                          <strong>Season {season.season}</strong>
+                          <span className="muted">{season.watched} of {season.aired} aired episodes watched · {season.behind.length} behind</span>
+                        </div>
+                        <button className="watch-button" disabled={watchBusy === "season-" + item.show!.id + "-" + season.season} onClick={() => markSeasonWatched(item.show!.id, season)}>
+                          {watchBusy === "season-" + item.show!.id + "-" + season.season ? "Saving…" : "✓ Mark season watched"}
+                        </button>
+                      </div>
+                      {season.behind.slice(-5).map((episode) => (
                     <div key={episode.id} className="catch-up-episode">
                       <div>
                         <strong>S{episode.season} E{episode.number} · {episode.name}</strong>
