@@ -158,9 +158,9 @@ export default function Today() {
                 <div className="accent episode-time">
                   {item.episode.airtime || "TIME TBA"}
                 </div>
-                <h2>{item.episode.name}</h2>
+                <h2 className="upcoming-show-title">{item.show.title}</h2>
                 <div className="muted">
-                  {item.show.title} · S{item.episode.season} E{item.episode.number}
+                  {item.episode.name} · S{item.episode.season} E{item.episode.number}
                   {item.episode.runtime ? " · " + item.episode.runtime + " min" : ""}
                 </div>
 
