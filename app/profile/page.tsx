@@ -11,6 +11,8 @@ export default function ProfilePage() {
   const [shows, setShows] = useState(0);
   const [episodes, setEpisodes] = useState(0);
   const [seasons, setSeasons] = useState(0);
+  const [accountBusy, setAccountBusy] = useState(false);
+  const [accountMessage, setAccountMessage] = useState("");
 
   useEffect(() => {
     async function load() {
@@ -51,6 +53,32 @@ export default function ProfilePage() {
 
     load();
   }, []);
+
+  async function signOut() {
+    const supabase = getSupabase();
+    await supabase.auth.signOut();
+    window.location.href = "/";
+  }
+
+  async function deleteAccount() {
+    if (accountBusy) return;
+    const confirmed = window.confirm(
+      "Delete your My TV Tracker account permanently? This removes your tracked shows, watched episodes, notification settings, and account data. This cannot be undone."
+    );
+    if (!confirmed) return;
+
+    setAccountBusy(true);
+    setAccountMessage("");
+    try {
+      const response = await fetch("/api/account/delete", { method: "POST" });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || "Could not delete your account.");
+      window.location.href = "/";
+    } catch (error: any) {
+      setAccountMessage(error?.message || "Could not delete your account. Please try again.");
+      setAccountBusy(false);
+    }
+  }
 
   return (
     <main className="shell">
@@ -98,6 +126,21 @@ export default function ProfilePage() {
               <p className="muted">Open any tracked show to check off episodes or mark an entire season watched.</p>
             </div>
             <Link href="/my-shows" className="accent">My Shows →</Link>
+          </section>
+
+          <section className="panel account-panel">
+            <div>
+              <div className="accent eyebrow">ACCOUNT</div>
+              <h2>Account settings</h2>
+              <p className="muted">Sign out on this device or permanently delete your My TV Tracker account and its personal data.</p>
+            </div>
+            <div className="account-actions">
+              <button type="button" onClick={signOut} className="account-button">Log out</button>
+              <button type="button" onClick={deleteAccount} disabled={accountBusy} className="account-button account-delete">
+                {accountBusy ? "Deleting…" : "Delete account"}
+              </button>
+            </div>
+            {accountMessage && <p className="muted account-message">{accountMessage}</p>}
           </section>
         </>
       )}
