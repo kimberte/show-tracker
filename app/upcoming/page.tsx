@@ -28,14 +28,15 @@ function dateKey(e: Episode) {
 }
 function formatDate(date: string) {
   return new Date(date + "T12:00:00").toLocaleDateString("en-US", {
+    weekday: "long",
     year: "numeric",
     month: "long",
     day: "numeric",
   });
 }
 function groupLabel(date: string, today: string, tomorrow: string) {
-  if (date === today) return "Today";
-  if (date === tomorrow) return "Tomorrow";
+  if (date === today) return "Today · " + formatDate(date);
+  if (date === tomorrow) return "Tomorrow · " + formatDate(date);
   return formatDate(date);
 }
 
