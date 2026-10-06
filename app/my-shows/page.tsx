@@ -26,10 +26,18 @@ type Episode = {
   airtime?: string | null;
 };
 
+type SeasonProgress = {
+  season: number;
+  aired: number;
+  watched: number;
+  behind: Episode[];
+};
+
 type Progress = {
   aired: number;
   watched: number;
   behind: Episode[];
+  seasons: SeasonProgress[];
 };
 
 function episodeLabel(e: Episode) {
@@ -165,11 +173,21 @@ export default function MyShows() {
 
           const aired = eps.filter((e) => e.airdate && e.airdate < today);
           const behind = aired.filter((e) => !watchedIds.has(Number(e.id)));
+          const seasonMap = new Map<number, SeasonProgress>();
+          for (const episode of aired) {
+            const season = Number(episode.season) || 0;
+            const current = seasonMap.get(season) || { season, aired: 0, watched: 0, behind: [] };
+            current.aired += 1;
+            if (watchedIds.has(Number(episode.id))) current.watched += 1;
+            else current.behind.push(episode);
+            seasonMap.set(season, current);
+          }
+          const seasons = Array.from(seasonMap.values()).sort((a, b) => b.season - a.season);
 
           return [
             item.id,
             { next, last, status: s.status },
-            { aired: aired.length, watched: aired.length - behind.length, behind },
+            { aired: aired.length, watched: aired.length - behind.length, behind, seasons },
           ] as const;
         } catch {
           return [item.id, { next: null, last: null }] as const;
@@ -180,7 +198,7 @@ export default function MyShows() {
     setEpisodes(Object.fromEntries(details.map(([id, value]) => [id, value])));
     setProgress(
       Object.fromEntries(
-        details.map(([id, _value, p]) => [id, p || { aired: 0, watched: 0, behind: [] }])
+        details.map(([id, _value, p]) => [id, p || { aired: 0, watched: 0, behind: [], seasons: [] }])
       )
     );
     setLoading(false);
@@ -307,6 +325,7 @@ export default function MyShows() {
           {!loading && shows.length > 0 && (
             <div className="my-shows-header-meta">
               <span className="my-shows-count">{shows.length} {shows.length === 1 ? "show" : "shows"} tracked</span>
+              {Object.values(progress).some((p) => p.behind.length > 0) && <a href="#catch-up" className="my-shows-catch-up-jump">Catch Up ↓</a>}
               <button onClick={shareShows} className="my-shows-share-button">
                 Share what I’m watching ↗
               </button>
@@ -414,7 +433,7 @@ export default function MyShows() {
       )}
 
       {signedIn && !loading && shows.length > 0 && (
-        <section className="panel catch-up-panel">
+        <section id="catch-up" className="panel catch-up-panel">
           <div className="catch-up-heading">
             <div>
               <div className="accent eyebrow">WATCH PROGRESS</div>
