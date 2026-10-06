@@ -153,6 +153,7 @@ export default function Home() {
             <strong>Get your personal TV schedule delivered every day.</strong>
             <span className="muted">Know what’s airing today and what’s coming next without having to remember.</span>
             <Link href="/settings/notifications" className="accent">Set up daily alerts →</Link>
+            <span className="muted home-hero-note">Free to use · sign in only when you track a show</span>
           </div>
         </div>
         <div className="home-hero-visual" aria-hidden="true">
