@@ -42,6 +42,7 @@ function formatDate(value: string) {
 export default function Today() {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
+  const [signedIn, setSignedIn] = useState(false);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -52,9 +53,12 @@ export default function Today() {
       } = await supabase.auth.getUser();
 
       if (!user) {
+        setSignedIn(false);
         setLoading(false);
         return;
       }
+
+      setSignedIn(true);
 
       const { data, error } = await supabase
         .from("tracked_shows")
@@ -135,6 +139,12 @@ export default function Today() {
 
       {loading ? (
         <p className="muted">Checking your shows…</p>
+       ) : !signedIn ? (
+        <section className="panel empty-state">
+          <h2>Sign in to see your TV schedule</h2>
+          <p className="muted">Track a few shows and we’ll build your personal schedule here.</p>
+          <Link href="/login" className="primary-button">Sign in</Link>
+        </section>
       ) : items.length === 0 ? (
         <section className="panel empty-state">
           <h2>Nothing airing today</h2>
