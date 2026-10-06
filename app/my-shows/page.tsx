@@ -281,7 +281,7 @@ export default function MyShows() {
     }
 
     setProgress((current) => {
-      const p = current[trackedId] || { aired: 0, watched: 0, behind: [], seasons: [] };
+      const p = current[showId] || { aired: 0, watched: 0, behind: [], seasons: [] };
       const alreadyWatched = !p.behind.some((e) => e.id === episode.id);
       const delta = watched && !alreadyWatched ? 1 : !watched && alreadyWatched ? -1 : 0;
       const nextBehind = watched
@@ -290,7 +290,7 @@ export default function MyShows() {
 
       return {
         ...current,
-        [trackedId]: {
+        [showId]: {
           ...p,
           watched: Math.max(0, p.watched + delta),
           behind: nextBehind.sort((a, b) => (a.airdate || "").localeCompare(b.airdate || "")),
@@ -319,7 +319,7 @@ export default function MyShows() {
     if (error && !error.message.toLowerCase().includes("duplicate")) { setMessage(error.message); setWatchBusy(null); return; }
     const ids = new Set(season.behind.map((episode) => episode.id));
     setProgress((current) => {
-      const p = current[showId] || { aired: 0, watched: 0, behind: [], seasons: [] };
+      const p = current[trackedId] || { aired: 0, watched: 0, behind: [], seasons: [] };
       return { ...current, [trackedId]: { ...p, watched: p.watched + season.behind.length, behind: p.behind.filter((e) => !ids.has(e.id)), seasons: p.seasons.map((item) => item.season === season.season ? { ...item, watched: item.watched + season.behind.length, behind: [] } : item) } };
     });
     setWatchBusy(null);
@@ -356,7 +356,7 @@ export default function MyShows() {
       const p = current[trackedId] || showProgress;
       return {
         ...current,
-        [showId]: {
+        [trackedId]: {
           ...p,
           watched: p.watched + p.behind.length,
           behind: [],
