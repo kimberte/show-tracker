@@ -42,6 +42,7 @@ function groupLabel(date: string, today: string, tomorrow: string) {
 export default function Upcoming() {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
+  const [signedIn, setSignedIn] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -51,9 +52,12 @@ export default function Upcoming() {
       } = await supabase.auth.getUser();
 
       if (!user) {
+        setSignedIn(false);
         setLoading(false);
         return;
       }
+
+      setSignedIn(true);
 
       const { data, error } = await supabase
         .from("tracked_shows")
@@ -142,6 +146,12 @@ export default function Upcoming() {
 
       {loading ? (
         <p className="muted">Loading your upcoming schedule…</p>
+       ) : !signedIn ? (
+        <section className="panel empty-state">
+          <h2>Sign in to see what’s coming up</h2>
+          <p className="muted">Your Upcoming schedule is built from the shows you track.</p>
+          <Link href="/login" className="primary-button">Sign in</Link>
+        </section>
       ) : items.length === 0 ? (
         <section className="panel" style={{ padding: 24 }}>
           <h2>No upcoming episodes</h2>
