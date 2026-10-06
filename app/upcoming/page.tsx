@@ -159,9 +159,10 @@ export default function Upcoming() {
               </h2>
               <div style={{ display: "grid", gap: 10 }}>
                 {list.map((item) => (
-                  <article
+                  <Link
+                    href={"/show/" + item.show.tvmaze_id}
                     key={item.show.tvmaze_id + "-" + item.episode.id}
-                    className="panel"
+                    className="panel upcoming-episode-link"
                     style={{
                       padding: 15,
                       display: "flex",
@@ -170,7 +171,7 @@ export default function Upcoming() {
                     }}
                   >
                     {item.show.poster_url && (
-                      <Link href={"/show/" + item.show.tvmaze_id} aria-label={"View " + item.show.title}>
+                      <span aria-hidden="true">
                         <img
                           src={item.show.poster_url}
                           width="60"
@@ -182,7 +183,7 @@ export default function Upcoming() {
                           }}
                           alt=""
                         />
-                      </Link>
+                    </span>
                     )}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div className="muted" style={{ fontSize: 13, fontWeight: 700 }}>
@@ -194,10 +195,7 @@ export default function Upcoming() {
                         {item.episode.runtime ? " · " + item.episode.runtime + " min" : ""}
                       </div>
                     </div>
-                    <Link href={"/show/" + item.show.tvmaze_id} className="accent">
-                      View →
-                    </Link>
-                  </article>
+                  </Link>
                 ))}
               </div>
             </section>
