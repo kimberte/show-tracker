@@ -86,7 +86,9 @@ export default function NewAndUpcoming() {
       </header>
 
       {loading ? (
-        <p className="muted">Loading new and upcoming shows…</p>
+        <section className="new-upcoming-loading">
+          <p className="muted">Loading new and upcoming shows…</p>
+        </section>
       ) : message ? (
         <section className="panel empty-state"><h2>Discovery unavailable</h2><p className="muted">{message}</p></section>
       ) : filteredShows.length === 0 ? (
