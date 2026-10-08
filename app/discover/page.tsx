@@ -61,7 +61,7 @@ export default function Discover() {
   const [q, setQ] = useState("");
   const [sort, setSort] = useState("next");
   const [platform, setPlatform] = useState("All");
-  const [airing, setAiring] = useState("All");
+  const [airing, setAiring] = useState("Airing soon");
   const [language, setLanguage] = useState("English");
   const [region, setRegion] = useState("North America");
   const [visible, setVisible] = useState(48);
