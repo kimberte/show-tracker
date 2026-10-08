@@ -112,6 +112,7 @@ export default function TrackButton({
 
     setTracked(true);
     setMessage("");
+    window.dispatchEvent(new CustomEvent("mytvtracker:tracked-show-changed", { detail: { showId } }));
     trackEvent("track_show", { show_id: showId, show_name: title });
     setBusy(false);
   }
@@ -157,6 +158,7 @@ export default function TrackButton({
 
     setTracked(false);
     setMessage("");
+    window.dispatchEvent(new CustomEvent("mytvtracker:tracked-show-changed", { detail: { showId } }));
     trackEvent("untrack_show", { show_id: showId, show_name: title });
     setBusy(false);
   }
