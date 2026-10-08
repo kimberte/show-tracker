@@ -6,12 +6,11 @@ import { useEffect, useState } from "react";
 
 const links = [
   { href: "/today", label: "Today" },
-  { href: "/upcoming", label: "Upcoming" },
   { href: "/my-shows", label: "My Shows" },
+  { href: "/upcoming", label: "Upcoming" },
   { href: "/discover", label: "Discover" },
-  { href: "/new-and-upcoming", label: "New & Upcoming" },
-  { href: "/profile", label: "Profile" },
   { href: "/settings/notifications", label: "Notifications" },
+  { href: "/profile", label: "Profile" },
 ];
 
 export default function SiteNav() {
