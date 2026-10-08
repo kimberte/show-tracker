@@ -248,7 +248,21 @@ export default function NotificationSettings() {
             <div className="accent eyebrow">DAILY PUSH</div>
             <label style={{ display: "grid", gap: 7, maxWidth: 260, marginTop: 8, marginBottom: 20 }}>
               <strong>Send daily notification at</strong>
-              <input type="time" value={pushTime} onChange={(e) => setPushTime(e.target.value)} disabled={!dailyPush} style={{ padding: 11, borderRadius: 10, border: "1px solid var(--line)", background: "#090a0d", color: "var(--text)" }} />
+              <select
+                value={pushTime}
+                onChange={(e) => setPushTime(e.target.value)}
+                disabled={!dailyPush}
+                style={{ padding: 11, borderRadius: 10, border: "1px solid var(--line)", background: "#090a0d", color: "var(--text)" }}
+                aria-label="Daily notification time"
+              >
+                {Array.from({ length: 24 }, (_, hour) => {
+                  const value = String(hour).padStart(2, "0") + ":00";
+                  const displayHour = hour % 12 || 12;
+                  const period = hour < 12 ? "AM" : "PM";
+                  return <option key={value} value={value}>{displayHour}:00 {period}</option>;
+                })}
+              </select>
+              <span className="muted" style={{ fontSize: 13 }}>Times are shown in your local timezone.</span>
             </label>
             <div className="accent eyebrow">DAILY EMAIL</div>
             <div style={{ marginBottom: 14 }}>
