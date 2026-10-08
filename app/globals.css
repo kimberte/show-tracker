@@ -58,7 +58,7 @@ button{cursor:pointer}
 .home-today .section-heading p{margin:5px 0 0}
 .today-home-list{display:grid;gap:10px}
 .today-home-card{padding:14px;display:flex;gap:14px;align-items:center}
-.today-home-card img{width:52px;height:74px;object-fit:cover;border-radius:8px;flex-shrink:0}
+.today-home-card img{width:64px;height:90px;object-fit:cover;border-radius:8px;flex-shrink:0}
 .today-home-info{min-width:0;flex:1}
 .today-home-time{font-weight:800;font-size:13px}
 .today-home-info h3{margin:3px 0;font-size:17px;overflow-wrap:anywhere;word-break:break-word}
@@ -222,7 +222,7 @@ button{cursor:pointer}
   .home-search-row{display:grid;grid-template-columns:1fr}
   .home-search-row button{min-height:46px}
   .today-home-card{padding:12px}
-  .today-home-card img{width:46px;height:66px}
+  .today-home-card img{width:56px;height:78px}
   .today-home-card .view-link{font-size:12px}
   .home-quick-grid,.home-seo-grid{grid-template-columns:1fr}
   .home-result-card{align-items:flex-start;padding:12px}
