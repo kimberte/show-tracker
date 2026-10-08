@@ -52,6 +52,11 @@ export default function EpisodeWatchList({
     let active = true;
 
     async function load() {
+      setUserReady(false);
+      setTracked(false);
+      setShowDbId(null);
+      setWatched(new Set());
+
       const supabase = getSupabase();
       const { data: { user } } = await supabase.auth.getUser();
 
@@ -98,9 +103,17 @@ export default function EpisodeWatchList({
       }
     }
 
-    load();
+    const onTrackedShowChanged = (event: Event) => {
+      const detail = (event as CustomEvent<{ showId?: number }>).detail;
+      if (detail?.showId === tvmazeShowId) void load();
+    };
+
+    window.addEventListener("mytvtracker:tracked-show-changed", onTrackedShowChanged);
+    void load();
+
     return () => {
       active = false;
+      window.removeEventListener("mytvtracker:tracked-show-changed", onTrackedShowChanged);
     };
   }, [tvmazeShowId]);
 
