@@ -87,7 +87,7 @@ export default function Home() {
                 found.push({
                   showId: show.tvmaze_id,
                   showName: show.title,
-                  poster: show.poster_url,
+                  poster: show.poster_url || s.image?.medium || s.image?.original || null,
                   episode: e,
                 });
               }
