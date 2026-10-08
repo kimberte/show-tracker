@@ -353,7 +353,7 @@ export default function MyShows() {
                       </span>
                       {progress[item.id].behind.length > 0 && (
                         <span className="accent">
-                          {progress[item.id].behind.length} behind
+                          {progress[item.id].seasons.filter((season) => season.behind.length > 0).length} {progress[item.id].seasons.filter((season) => season.behind.length > 0).length === 1 ? "season" : "seasons"} and {progress[item.id].behind.length} {progress[item.id].behind.length === 1 ? "episode" : "episodes"} behind
                         </span>
                       )}
                     </div>
