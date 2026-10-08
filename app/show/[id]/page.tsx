@@ -35,6 +35,13 @@ function clean(text: string) {
   return text.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").trim();
 }
 
+function formatTime(value?: string | null) {
+  if (!value) return "Time TBA";
+  const [hour, minute] = value.split(":").map(Number);
+  if (Number.isNaN(hour) || Number.isNaN(minute)) return value;
+  return new Date(2000, 0, 1, hour, minute).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+}
+
 function formatDate(value: string) {
   return new Date(value + "T12:00:00").toLocaleDateString("en-US", {
     year: "numeric",
@@ -219,7 +226,7 @@ export default async function ShowPage({
                     <span className="accent">{formatDate(e.airdate)}</span>
                   </div>
                   <div className="muted">
-                    {e.airtime || "Time TBA"}
+                    {formatTime(e.airtime)}
                     {e.runtime ? " • " + e.runtime + " min" : ""}
                   </div>
                   {e.summary && (
