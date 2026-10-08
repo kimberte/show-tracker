@@ -44,6 +44,13 @@ function episodeLabel(e: Episode) {
   return "S" + e.season + " E" + e.number + " · " + e.name;
 }
 
+function formatTime(time?: string | null) {
+  if (!time || !/^\\d{2}:\\d{2}$/.test(time)) return time || "";
+  const [hour, minute] = time.split(":").map(Number);
+  const suffix = hour >= 12 ? "PM" : "AM";
+  return `${hour % 12 || 12}:${String(minute).padStart(2, "0")} ${suffix}`;
+}
+
 function episodeDate(e: Episode) {
   if (!e.airdate) return "";
   return (
@@ -51,7 +58,7 @@ function episodeDate(e: Episode) {
       year: "numeric",
       month: "long",
       day: "numeric",
-    }) + (e.airtime ? " · " + e.airtime : "")
+    }) + (e.airtime ? " · " + formatTime(e.airtime) : "")
   );
 }
 
