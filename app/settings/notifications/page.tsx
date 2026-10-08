@@ -15,6 +15,7 @@ function urlBase64ToUint8Array(value: string) {
 }
 
 export default function NotificationSettings() {
+  const [signedIn, setSignedIn] = useState(false);
   const [emailEnabled, setEmailEnabled] = useState(false);
   const [pushTime, setPushTime] = useState("08:00");
   const [daysAhead, setDaysAhead] = useState(7);
@@ -40,6 +41,7 @@ export default function NotificationSettings() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { setLoading(false); return; }
 
+      setSignedIn(true);
       setEmail(user.email || "");
       setEmailVerified(!!user.email_confirmed_at);
       const detectedTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC";
@@ -199,7 +201,20 @@ export default function NotificationSettings() {
     setTestingPush(false);
   }
 
-  if (loading) return <main className="shell"><p className="muted">Loading notification settings…</p></main>;
+  if (loading) return <main className="shell"><SiteNav /><p className="muted">Loading notification settings…</p></main>;
+
+  if (!signedIn) {
+    return (
+      <main className="shell">
+        <SiteNav />
+        <section className="panel empty-state">
+          <h1 className="page-title">Sign in to manage notifications</h1>
+          <p className="muted">Sign in to enable daily emails, configure browser notifications, and send a test notification.</p>
+          <Link href="/login" className="primary-button">Sign in</Link>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main className="shell" style={{ maxWidth: 760 }}>
