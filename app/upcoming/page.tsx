@@ -26,6 +26,13 @@ type Item = { show: Show; episode: Episode };
 function dateKey(e: Episode) {
   return e.airdate || "9999-99-99";
 }
+function formatTime(value?: string | null) {
+  if (!value) return "Time TBA";
+  const [hour, minute] = value.split(":").map(Number);
+  if (Number.isNaN(hour) || Number.isNaN(minute)) return value;
+  return new Date(2000, 0, 1, hour, minute).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+}
+
 function formatDate(date: string) {
   return new Date(date + "T12:00:00").toLocaleDateString("en-US", {
     weekday: "long",
@@ -219,7 +226,7 @@ export default function Upcoming() {
                     )}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div className="muted" style={{ fontSize: 13, fontWeight: 700 }}>
-                        {item.episode.airtime || "Time TBA"}
+                        {formatTime(item.episode.airtime)}
                       </div>
                       <h3 className="upcoming-show-title">{item.show.title}</h3>
                       <div className="muted">
