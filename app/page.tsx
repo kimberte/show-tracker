@@ -24,6 +24,13 @@ type TodayItem = {
   episode: any;
 };
 
+function formatTime(value?: string | null) {
+  if (!value) return "Time TBA";
+  const [hour, minute] = value.split(":").map(Number);
+  if (Number.isNaN(hour) || Number.isNaN(minute)) return value;
+  return new Date(2000, 0, 1, hour, minute).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+}
+
 function formatDate(value: string) {
   return new Date(value + "T12:00:00").toLocaleDateString("en-US", {
     year: "numeric",
@@ -263,13 +270,13 @@ export default function Home() {
               >
                 {item.poster && (
                   <Link href={"/show/" + item.showId} aria-label={"View " + item.showName}>
-                    <img src={item.poster} width="52" height="74" alt="" />
+                    <img src={item.poster} width="64" height="90" alt="" />
                   </Link>
                 )}
 
                 <div className="today-home-info">
                   <div className="accent today-home-time">
-                    {item.episode.airtime || "Time TBA"}
+                    {formatTime(item.episode.airtime)}
                   </div>
                   <h3>{item.showName}</h3>
                   <div className="muted">
