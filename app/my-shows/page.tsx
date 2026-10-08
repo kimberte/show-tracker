@@ -109,16 +109,6 @@ export default function MyShows() {
       list.map(async (item) => {
         if (!item.show || item.show.poster_url) return item;
         try {
-          const { data: watchedRows } = await supabase
-            .from("episode_watches")
-            .select("tvmaze_episode_id")
-            .eq("user_id", user.id)
-            .eq("show_id", item.show.id);
-
-          const watchedIds = new Set(
-            (watchedRows || []).map((row: { tvmaze_episode_id: number }) => Number(row.tvmaze_episode_id))
-          );
-
           const r = await fetch("https://api.tvmaze.com/shows/" + item.show.tvmaze_id);
           if (!r.ok) return item;
           const tv = await r.json();
@@ -146,6 +136,16 @@ export default function MyShows() {
         }
 
         try {
+          const { data: watchedRows } = await supabase
+            .from("episode_watches")
+            .select("tvmaze_episode_id")
+            .eq("user_id", user.id)
+            .eq("show_id", item.show.id);
+
+          const watchedIds = new Set(
+            (watchedRows || []).map((row: { tvmaze_episode_id: number }) => Number(row.tvmaze_episode_id))
+          );
+
           const r = await fetch(
             "https://api.tvmaze.com/shows/" +
               item.show.tvmaze_id +
