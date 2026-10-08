@@ -137,11 +137,6 @@ export default function Today() {
           <p className="muted schedule-date">{formatDate(new Date().toLocaleDateString("en-CA"))}</p>
         </div>
 
-        <nav className="top-nav">
-          <Link className="nav-pill" href="/my-shows">My Shows</Link>
-          <Link className="nav-pill" href="/upcoming">Upcoming</Link>
-          <Link className="nav-pill" href="/discover">Discover</Link>
-        </nav>
       </header>
 
       {loading ? (
