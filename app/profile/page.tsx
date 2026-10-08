@@ -10,7 +10,8 @@ export default function ProfilePage() {
   const [signedIn, setSignedIn] = useState(false);
   const [shows, setShows] = useState(0);
   const [episodes, setEpisodes] = useState(0);
-  const [seasons, setSeasons] = useState(0);
+  const [behind, setBehind] = useState(0);
+  const [airedEpisodes, setAiredEpisodes] = useState(0);
   const [accountBusy, setAccountBusy] = useState(false);
   const [accountMessage, setAccountMessage] = useState("");
 
@@ -26,7 +27,7 @@ export default function ProfilePage() {
 
       setSignedIn(true);
 
-      const [{ count: showCount }, { count: episodeCount }, { data: seasonRows }] = await Promise.all([
+      const [{ count: showCount }, { count: episodeCount }, { data: trackedRows }, { data: watchRows }] = await Promise.all([
         supabase
           .from("tracked_shows")
           .select("id", { count: "exact", head: true })
@@ -36,18 +37,51 @@ export default function ProfilePage() {
           .select("id", { count: "exact", head: true })
           .eq("user_id", user.id),
         supabase
+          .from("tracked_shows")
+          .select("show_id,show:shows(tvmaze_id)")
+          .eq("user_id", user.id),
+        supabase
           .from("episode_watches")
-          .select("show_id,season_number")
+          .select("show_id,tvmaze_episode_id")
           .eq("user_id", user.id),
       ]);
 
       setShows(showCount || 0);
       setEpisodes(episodeCount || 0);
 
-      const uniqueSeasons = new Set(
-        (seasonRows || []).map((row: any) => String(row.show_id) + "-" + String(row.season_number))
+      const watchedByShow = new Map<number, Set<number>>();
+      for (const row of watchRows || []) {
+        const showId = Number(row.show_id);
+        const ids = watchedByShow.get(showId) || new Set<number>();
+        ids.add(Number(row.tvmaze_episode_id));
+        watchedByShow.set(showId, ids);
+      }
+
+      const today = new Date().toLocaleDateString("en-CA");
+      const progressRows = await Promise.all(
+        (trackedRows || []).map(async (row: any) => {
+          const show = Array.isArray(row.show) ? row.show[0] : row.show;
+          if (!show?.tvmaze_id) return { aired: 0, watched: 0 };
+          try {
+            const response = await fetch("https://api.tvmaze.com/shows/" + show.tvmaze_id + "?embed[]=episodes");
+            if (!response.ok) return { aired: 0, watched: 0 };
+            const data = await response.json();
+            const aired = (data._embedded?.episodes || []).filter((episode: any) => episode.airdate && episode.airdate < today);
+            const watchedIds = watchedByShow.get(Number(row.show_id)) || new Set<number>();
+            return {
+              aired: aired.length,
+              watched: aired.filter((episode: any) => watchedIds.has(Number(episode.id))).length,
+            };
+          } catch {
+            return { aired: 0, watched: 0 };
+          }
+        })
       );
-      setSeasons(uniqueSeasons.size);
+
+      const totalAired = progressRows.reduce((total, row) => total + row.aired, 0);
+      const totalWatchedAired = progressRows.reduce((total, row) => total + row.watched, 0);
+      setAiredEpisodes(totalAired);
+      setBehind(Math.max(0, totalAired - totalWatchedAired));
       setLoading(false);
     }
 
@@ -113,19 +147,19 @@ export default function ProfilePage() {
               <span className="muted">checked off by you</span>
             </article>
             <article className="panel profile-stat-card">
-              <div className="accent eyebrow">SEASONS TOUCHED</div>
-              <strong>{seasons}</strong>
-              <span className="muted">with watched episodes</span>
+              <div className="accent eyebrow">EPISODES TO CATCH UP</div>
+              <strong>{behind}</strong>
+              <span className="muted">aired episodes not checked off</span>
             </article>
           </section>
 
           <section className="panel profile-next">
             <div>
-              <div className="accent eyebrow">KEEP IT GOING</div>
-              <h2>Build your TV history</h2>
-              <p className="muted">Open any tracked show to check off episodes or mark an entire season watched.</p>
+              <div className="accent eyebrow">YOUR WATCH PROGRESS</div>
+              <h2>{airedEpisodes === 0 ? "Your watch history starts here" : Math.round(((airedEpisodes - behind) / airedEpisodes) * 100) + "% of aired episodes watched"}</h2>
+              <p className="muted">{airedEpisodes === 0 ? "As you track shows and check off aired episodes, your progress will appear here." : (airedEpisodes - behind) + " of " + airedEpisodes + " aired episodes across your tracked shows are marked watched."}</p>
             </div>
-            <Link href="/my-shows" className="accent">My Shows →</Link>
+            <Link href="/my-shows" className="accent">Review My Shows →</Link>
           </section>
 
           <section className="panel account-panel">
