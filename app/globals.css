@@ -502,3 +502,40 @@ button{cursor:pointer}
   .catch-up-episode{align-items:flex-start}
   .watch-button{padding:7px 8px}
 }
+
+
+/* Final small-screen usability pass */
+.page-title,.show-detail-title,.home-title{overflow-wrap:anywhere}
+.show-detail-nav{flex-wrap:wrap}
+.show-action-row .nav-pill{min-height:42px;display:inline-flex;align-items:center;justify-content:center}
+.my-show-actions{flex-wrap:wrap}
+.my-show-actions>*{min-height:38px;display:inline-flex;align-items:center}
+.watch-season summary>span{min-width:0}
+.watch-season summary strong{overflow-wrap:anywhere}
+.watch-episode strong{overflow-wrap:anywhere;word-break:normal}
+@media(max-width:420px){
+  .shell{padding-left:12px;padding-right:12px}
+  .site-brand{font-size:13px;letter-spacing:1.2px}
+  .page-title{font-size:32px;letter-spacing:-.8px}
+  .show-detail-title{font-size:32px;letter-spacing:-.8px}
+  .home-title{font-size:32px}
+  .section-heading{gap:10px}
+  .section-heading h2{font-size:19px}
+  .my-show-card{gap:10px;padding:11px}
+  .my-show-poster{width:68px;height:96px;flex-basis:68px}
+  .my-show-info h2{font-size:18px;overflow-wrap:anywhere}
+  .my-show-topline{gap:6px}
+  .my-show-actions{align-items:stretch}
+  .my-show-actions .remove-button{padding:8px 9px}
+  .episode-card{gap:10px;padding:11px}
+  .episode-card>img{width:54px;height:76px}
+  .episode-card-info h2{font-size:16px;overflow-wrap:anywhere}
+  .show-hero{padding:14px;gap:18px}
+  .show-action-row{gap:7px}
+  .show-action-row .nav-pill{padding:8px 10px;font-size:12px}
+  .watch-season summary{flex-wrap:wrap}
+  .watch-season-button{white-space:normal;text-align:center;max-width:100%}
+  .watch-episode{gap:9px;padding:11px}
+  .catch-up-episode{flex-wrap:wrap}
+  .catch-up-episode>div{width:100%}
+}
