@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 function formatTime(time?: string | null) {
-  if (!time || !/^\\d{2}:\\d{2}$/.test(time)) return time || "Time TBA";
+  if (!time || !/^\d{2}:\d{2}$/.test(time)) return time || "Time TBA";
   const [hour, minute] = time.split(":").map(Number);
   const suffix = hour >= 12 ? "PM" : "AM";
   return `${hour % 12 || 12}:${String(minute).padStart(2, "0")} ${suffix}`;
