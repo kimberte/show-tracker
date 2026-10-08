@@ -31,6 +31,13 @@ function clean(t: string) {
   return t.replace(/<[^>]*>/g, "").trim();
 }
 
+function formatTime(value?: string | null) {
+  if (!value) return "TIME TBA";
+  const [hour, minute] = value.split(":").map(Number);
+  if (Number.isNaN(hour) || Number.isNaN(minute)) return value;
+  return new Date(2000, 0, 1, hour, minute).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+}
+
 function formatDate(value: string) {
   return new Date(value + "T12:00:00").toLocaleDateString("en-US", {
     year: "numeric",
@@ -166,7 +173,7 @@ export default function Today() {
 
               <div className="episode-card-info">
                 <div className="accent episode-time">
-                  {item.episode.airtime || "TIME TBA"}
+                  {formatTime(item.episode.airtime)}
                 </div>
                 <h2 className="upcoming-show-title">{item.show.title}</h2>
                 <div className="muted">
