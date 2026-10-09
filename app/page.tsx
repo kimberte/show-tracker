@@ -157,13 +157,6 @@ export default function Home() {
             when your shows are on.
           </h1>
           <p className="muted">Track your shows. See what’s airing. Know what to watch.</p>
-          <div className="home-hero-benefit">
-            <div className="accent eyebrow">DAILY TV ALERTS</div>
-            <strong>Get your personal TV schedule delivered every day.</strong>
-            <span className="muted">Know what’s airing today and what’s coming next without having to remember.</span>
-            <Link href="/settings/notifications" className="accent">Set up daily alerts →</Link>
-            <span className="muted home-hero-note">Free to use · sign in only when you track a show</span>
-          </div>
         </div>
         <div className="home-hero-visual" aria-hidden="true">
           <img src="/my-tv-tracker-hero.svg" alt="" />
@@ -293,48 +286,50 @@ export default function Home() {
         </section>
       )}
 
-      <section className="home-discovery-strip">
-        <Link href="/new-and-upcoming" className="panel home-discovery-feature">
-          <div>
-            <div className="accent eyebrow">NEW & UPCOMING</div>
-            <h2>Looking for your next show?</h2>
-            <p className="muted">Find new series and returning favourites coming soon, then track them before they air.</p>
-          </div>
-          <span className="accent">Browse new & upcoming →</span>
-        </Link>
+      <section className="home-priority-feature home-upcoming-feature panel">
+        <div>
+          <div className="accent eyebrow">UP NEXT</div>
+          <h2>Upcoming episodes</h2>
+          <p className="muted">See what’s next across your tracked shows and plan your viewing.</p>
+        </div>
+        <Link href="/upcoming" className="primary-button">View upcoming episodes →</Link>
       </section>
 
-      {true && (
-        <>
-          <section className="home-quick-grid">
-            {[
-              ["Upcoming", "See what’s next across your tracked shows.", "/upcoming"],
-              ["My Shows", "Manage the shows you’re tracking.", "/my-shows"],
-              ["Discover", "Browse more currently active shows.", "/discover"],
-            ].map(([title, description, href]) => (
-              <Link href={href} className="panel home-quick-card" key={title}>
-                <h3>{title}</h3>
-                <p className="muted">{description}</p>
-                <span className="accent">Open →</span>
-              </Link>
-            ))}
-          </section>
-          <section className="home-seo-grid">
-            {[
-              ["TV Tonight", "See new episodes airing today.", "/tv-tonight"],
-              ["TV This Week", "Browse the next seven days of episodes.", "/tv-this-week"],
-              ["New Episodes", "Find what’s new across active shows.", "/new-episodes"],
-            ].map(([title, description, href]) => (
-              <Link href={href} className="panel home-quick-card" key={title}>
-                <div className="accent eyebrow">TV GUIDE</div>
-                <h3>{title}</h3>
-                <p className="muted">{description}</p>
-                <span className="accent">Explore →</span>
-              </Link>
-            ))}
-          </section>
-        </>
-      )}
+      <section className="home-priority-feature home-alerts-feature panel">
+        <div>
+          <div className="accent eyebrow">DAILY TV ALERTS</div>
+          <h2>Your TV schedule, delivered daily</h2>
+          <p className="muted">Get a personal daily roundup of what’s airing today and what’s coming next.</p>
+        </div>
+        <Link href="/settings/notifications" className="primary-button">Set up daily alerts →</Link>
+      </section>
+
+      <section className="home-tools-section">
+        <div className="section-heading">
+          <div>
+            <div className="accent eyebrow home-eyebrow">EXPLORE</div>
+            <h2>TV guide & discovery</h2>
+            <p className="muted">Everything else in one place.</p>
+          </div>
+        </div>
+        <div className="home-tools-grid">
+          {[
+            ["My Shows", "Manage your tracked shows and viewing progress.", "/my-shows", "YOUR LIBRARY"],
+            ["Discover", "Browse active shows and find your next favourite.", "/discover", "FIND A SHOW"],
+            ["New & Upcoming", "Explore new series and returning favourites.", "/new-and-upcoming", "COMING SOON"],
+            ["TV Tonight", "See episodes airing today.", "/tv-tonight", "TV GUIDE"],
+            ["TV This Week", "Browse the next seven days of episodes.", "/tv-this-week", "TV GUIDE"],
+            ["New Episodes", "Find new episodes across active shows.", "/new-episodes", "TV GUIDE"],
+          ].map(([title, description, href, label]) => (
+            <Link href={href} className="panel home-tool-card" key={title}>
+              <div className="accent eyebrow">{label}</div>
+              <h3>{title}</h3>
+              <p className="muted">{description}</p>
+              <span className="accent">Explore →</span>
+            </Link>
+          ))}
+        </div>
+      </section>
     </main>
   );
 }
