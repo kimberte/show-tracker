@@ -76,12 +76,13 @@ export default async function ShowPage({
   }
 
   const episodes = s._embedded?.episodes || [];
-  const today = new Date().toLocaleDateString("en-CA");
+  const now = new Date();
+  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
   const upcoming = episodes
     .filter(
       (e: any) =>
-        e.airdate && new Date(e.airdate + "T23:59:59") >= new Date()
+        e.airdate && e.airdate >= today
     )
     .sort(
       (a: any, b: any) =>
