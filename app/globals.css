@@ -539,3 +539,35 @@ button{cursor:pointer}
   .catch-up-episode{flex-wrap:wrap}
   .catch-up-episode>div{width:100%}
 }
+
+
+/* Consolidated homepage flow */
+.home-priority-feature{display:flex;align-items:center;justify-content:space-between;gap:22px;padding:20px 22px;margin-bottom:14px;background:linear-gradient(110deg,rgba(245,158,11,.065),rgba(17,19,24,.94))}
+.home-priority-feature .eyebrow{margin:0 0 6px}
+.home-priority-feature h2{margin:0 0 6px;font-size:22px}
+.home-priority-feature p{margin:0;line-height:1.5;max-width:700px}
+.home-priority-feature .primary-button{flex-shrink:0;margin:0;white-space:nowrap}
+.home-upcoming-feature{border-color:rgba(245,158,11,.26)}
+.home-alerts-feature{border-color:rgba(245,158,11,.16);background:linear-gradient(110deg,rgba(17,19,24,.96),rgba(245,158,11,.045))}
+.home-tools-section{margin-top:28px}
+.home-tools-section>.section-heading{margin-bottom:16px}
+.home-tools-section>.section-heading h2{margin:5px 0}
+.home-tools-section>.section-heading p{margin:5px 0 0}
+.home-tools-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.home-tool-card{display:flex;flex-direction:column;align-items:flex-start;min-width:0;padding:19px;transition:border-color .15s,transform .15s,background .15s}
+.home-tool-card:hover{border-color:rgba(245,158,11,.3);background:rgba(21,24,32,.96);transform:translateY(-1px)}
+.home-tool-card .eyebrow{margin:0 0 9px;font-size:10px}
+.home-tool-card h3{margin:0 0 7px;font-size:18px}
+.home-tool-card p{margin:0 0 16px;line-height:1.5;flex:1}
+.home-tool-card>span:last-child{font-size:13px;font-weight:800}
+@media(max-width:700px){
+  .home-priority-feature{display:grid;gap:13px;padding:16px}
+  .home-priority-feature h2{font-size:20px}
+  .home-priority-feature .primary-button{width:100%;text-align:center}
+  .home-tools-section{margin-top:24px}
+  .home-tools-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .home-tool-card{padding:14px}
+  .home-tool-card h3{font-size:16px}
+  .home-tool-card p{font-size:13px}
+}
+@media(max-width:380px){.home-tools-grid{grid-template-columns:1fr}}
