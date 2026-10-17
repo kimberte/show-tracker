@@ -55,6 +55,7 @@ export default function Home() {
   const [todayLoading, setTodayLoading] = useState(true);
   const [heroShows, setHeroShows] = useState<Show[]>([]);
   const [heroIndex, setHeroIndex] = useState(0);
+  const [heroTouchStart, setHeroTouchStart] = useState<{ x: number; y: number } | null>(null);
   const [visibleResults, setVisibleResults] = useState(10);
 
   useEffect(() => {
@@ -194,7 +195,25 @@ export default function Home() {
       <SiteNav />
 
       {heroShows.length > 0 && (
-        <section className="home-featured-slider" aria-label="Featured new and upcoming shows">
+        <section
+          className="home-featured-slider"
+          aria-label="Featured new and upcoming shows"
+          onTouchStart={(event) => {
+            const touch = event.changedTouches[0];
+            setHeroTouchStart({ x: touch.clientX, y: touch.clientY });
+          }}
+          onTouchEnd={(event) => {
+            if (!heroTouchStart) return;
+            const touch = event.changedTouches[0];
+            const deltaX = touch.clientX - heroTouchStart.x;
+            const deltaY = touch.clientY - heroTouchStart.y;
+            if (Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY)) {
+              setHeroIndex((index) => deltaX < 0
+                ? (index + 1) % heroShows.length
+                : (index - 1 + heroShows.length) % heroShows.length);
+            }
+            setHeroTouchStart(null);
+          }}
           {heroShows.map((show, index) => (
             <article
               key={show.id}
