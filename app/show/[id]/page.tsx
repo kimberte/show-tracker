@@ -5,15 +5,29 @@ import EpisodeWatchList from "@/components/episode-watch-list";
 import type { Metadata } from "next";
 
 async function getShow(id: string) {
-  const r = await fetch(
-    "https://api.tvmaze.com/shows/" +
-      id +
-      "?embed[]=episodes&embed[]=cast",
-    { next: { revalidate: 3600 } }
-  );
+  // TVMaze can occasionally reset connections. Retry once, and never let a
+  // third-party API outage crash the entire show-detail route.
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      const r = await fetch(
+        "https://api.tvmaze.com/shows/" +
+          encodeURIComponent(id) +
+          "?embed[]=episodes&embed[]=cast",
+        { next: { revalidate: 3600 } }
+      );
 
-  if (!r.ok) return null;
-  return r.json();
+      if (!r.ok) {
+        if (r.status === 404) return null;
+        continue;
+      }
+
+      return await r.json();
+    } catch (error) {
+      console.error(`TVMaze show request failed for ${id} (attempt ${attempt + 1}/2):`, error);
+    }
+  }
+
+  return null;
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
@@ -70,7 +84,8 @@ export default async function ShowPage({
     return (
       <main className="shell">
         <Link href="/" className="muted">← Show Tracker</Link>
-        <h1>Show not found</h1>
+        <h1>Show details temporarily unavailable</h1>
+        <p className="muted">We couldn’t load this show right now. Please try again in a moment.</p>
       </main>
     );
   }
