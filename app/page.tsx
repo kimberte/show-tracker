@@ -15,6 +15,15 @@ type Show = {
   network?: { name: string } | null;
   webChannel?: { name: string } | null;
   status?: string | null;
+  image?: { original?: string; medium?: string } | null;
+  summary?: string | null;
+  language?: string | null;
+  network?: { name?: string; country?: { name?: string } | null } | null;
+  webChannel?: { name?: string; country?: { name?: string } | null } | null;
+  _nextAirdate?: string;
+  _nextAirtime?: string | null;
+  _nextEpisode?: { name?: string; season?: number; number?: number };
+  _isNew?: boolean;
 };
 
 type TodayItem = {
@@ -45,8 +54,32 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
   const [today, setToday] = useState<TodayItem[]>([]);
+  const [upcoming, setUpcoming] = useState<TodayItem[]>([]);
   const [todayLoading, setTodayLoading] = useState(true);
+  const [heroShows, setHeroShows] = useState<Show[]>([]);
+  const [heroIndex, setHeroIndex] = useState(0);
   const [visibleResults, setVisibleResults] = useState(10);
+
+  useEffect(() => {
+    fetch("/api/new-and-upcoming")
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data) => {
+        const eligible = (Array.isArray(data) ? data : []).filter((show: Show) => {
+          const country = show.network?.country?.name || show.webChannel?.country?.name || "";
+          return show.language === "English" && ["United States", "Canada"].includes(country);
+        });
+        setHeroShows(eligible.slice(0, 10));
+      })
+      .catch(() => setHeroShows([]));
+  }, []);
+
+  useEffect(() => {
+    if (heroShows.length < 2) return;
+    const timer = window.setInterval(() => {
+      setHeroIndex((index) => (index + 1) % heroShows.length);
+    }, 6500);
+    return () => window.clearInterval(timer);
+  }, [heroShows.length]);
 
   useEffect(() => {
     async function loadToday() {
@@ -64,8 +97,10 @@ export default function Home() {
         .from("tracked_shows")
         .select("show:shows(tvmaze_id,title,poster_url)");
 
-      const date = new Date().toLocaleDateString("en-CA");
+      const now = new Date();
+      const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
       const found: TodayItem[] = [];
+      const nextFound: TodayItem[] = [];
 
       await Promise.all(
         ((data || []) as any[]).map(async (item) => {
@@ -82,15 +117,26 @@ export default function Home() {
 
             const s = await r.json();
 
-            for (const e of s._embedded?.episodes || []) {
-              if (e.airdate === date) {
-                found.push({
-                  showId: show.tvmaze_id,
-                  showName: show.title,
-                  poster: show.poster_url || s.image?.medium || s.image?.original || null,
-                  episode: e,
-                });
-              }
+            const episodes = s._embedded?.episodes || [];
+            for (const e of episodes) {
+              const item = {
+                showId: show.tvmaze_id,
+                showName: show.title,
+                poster: show.poster_url || s.image?.medium || s.image?.original || null,
+                episode: e,
+              };
+              if (e.airdate === date) found.push(item);
+            }
+            const nextEpisode = episodes
+              .filter((e: any) => e.airdate && e.airdate > date)
+              .sort((a: any, b: any) => (a.airdate + (a.airtime || "99:99")).localeCompare(b.airdate + (b.airtime || "99:99")))[0];
+            if (nextEpisode) {
+              nextFound.push({
+                showId: show.tvmaze_id,
+                showName: show.title,
+                poster: show.poster_url || s.image?.medium || s.image?.original || null,
+                episode: nextEpisode,
+              });
             }
           } catch {}
         })
@@ -103,6 +149,8 @@ export default function Home() {
       );
 
       setToday(found);
+      nextFound.sort((a, b) => (a.episode.airdate + (a.episode.airtime || "99:99")).localeCompare(b.episode.airdate + (b.episode.airtime || "99:99")));
+      setUpcoming(nextFound.slice(0, 10));
       setTodayLoading(false);
     }
 
@@ -244,47 +292,91 @@ export default function Home() {
       )}
 
 
-      {!todayLoading && today.length > 0 && (
-        <section className="home-today">
-          <div className="section-heading">
-            <div>
-              <div className="accent eyebrow home-eyebrow">YOUR TV SCHEDULE</div>
-              <h2>What’s on today</h2>
-              <p className="muted">{formatDate(new Date().toLocaleDateString("en-CA"))} · Tracked shows only</p>
-            </div>
-            <Link href="/today" className="accent">See all →</Link>
-          </div>
-
-          <div className="today-home-list">
-            {today.map((item) => (
-              <article
-                key={item.showId + "-" + item.episode.id}
-                className="panel today-home-card"
-              >
-                {item.poster && (
-                  <Link href={"/show/" + item.showId} aria-label={"View " + item.showName}>
-                    <img src={item.poster} width="64" height="90" alt="" />
-                  </Link>
-                )}
-
-                <div className="today-home-info">
-                  <div className="accent today-home-time">
-                    {formatTime(item.episode.airtime)}
-                  </div>
-                  <h3>{item.showName}</h3>
-                  <div className="muted">
-                    {item.episode.name} · S{item.episode.season} E{item.episode.number}
-                  </div>
+      {heroShows.length > 0 && (
+        <section className="home-featured-slider" aria-label="Featured new and upcoming shows">
+          {heroShows.map((show, index) => (
+            <article
+              key={show.id}
+              className={"home-feature-slide" + (index === heroIndex ? " active" : "")}
+              style={{ backgroundImage: `linear-gradient(90deg, rgba(7,9,13,.97) 0%, rgba(7,9,13,.8) 44%, rgba(7,9,13,.2) 100%), linear-gradient(0deg, rgba(7,9,13,.75), transparent 55%), url("${show.image?.original || show.image?.medium || ""}")` }}
+              aria-hidden={index !== heroIndex}
+            >
+              <div className="home-feature-copy">
+                <div className="accent eyebrow">{show._isNew ? "NEW SERIES" : "COMING BACK SOON"}</div>
+                <h2>{show.name}</h2>
+                <p className="home-feature-meta">{show.network?.name || show.webChannel?.name || "TV"}{show.premiered ? " · " + show.premiered.slice(0, 4) : ""}</p>
+                {show._nextAirdate && <p className="accent home-feature-date">Next episode · {formatDate(show._nextAirdate)}{show._nextAirtime ? " · " + formatTime(show._nextAirtime) : ""}</p>}
+                {show.summary && <p className="home-feature-summary muted">{show.summary.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").slice(0, 190)}…</p>}
+                <div className="home-feature-actions">
+                  <TrackButton showId={show.id} title={show.name} compact />
+                  <Link href={"/show/" + show.id} className="nav-pill home-feature-view">Show details</Link>
                 </div>
-
-                <Link href={"/show/" + item.showId} className="accent view-link">
-                  View →
-                </Link>
-              </article>
-            ))}
+              </div>
+            </article>
+          ))}
+          <div className="home-feature-controls">
+            <span className="muted">FEATURED · {heroIndex + 1} / {heroShows.length}</span>
+            <div>
+              <button type="button" aria-label="Previous featured show" onClick={() => setHeroIndex((i) => (i - 1 + heroShows.length) % heroShows.length)}>‹</button>
+              <button type="button" aria-label="Next featured show" onClick={() => setHeroIndex((i) => (i + 1) % heroShows.length)}>›</button>
+            </div>
           </div>
         </section>
       )}
+
+      <section className="home-rail-section home-today">
+        <div className="section-heading">
+          <div>
+            <div className="accent eyebrow home-eyebrow">YOUR TV SCHEDULE</div>
+            <h2>What’s on today</h2>
+            <p className="muted">{formatDate(new Date().toLocaleDateString("en-CA"))} · Tracked shows only</p>
+          </div>
+          <Link href="/today" className="accent">See all →</Link>
+        </div>
+        {todayLoading ? <p className="muted">Loading today’s schedule…</p> : today.length === 0 ? (
+          <div className="home-rail-empty panel"><p className="muted">No tracked episodes airing today.</p><Link href="/my-shows" className="accent">Manage My Shows →</Link></div>
+        ) : (
+          <div className="home-poster-rail">
+            {today.map((item) => (
+              <Link key={item.showId + "-" + item.episode.id} href={"/show/" + item.showId} className="home-poster-card">
+                {item.poster ? <img src={item.poster} alt="" loading="lazy" /> : <div className="home-poster-fallback">{item.showName.slice(0, 1)}</div>}
+                <div className="home-poster-info">
+                  <h3>{item.showName}</h3>
+                  <p className="accent">{formatTime(item.episode.airtime)}</p>
+                  <p className="muted">{item.episode.name} · S{item.episode.season} E{item.episode.number}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="home-rail-section home-upcoming-rail">
+        <div className="section-heading">
+          <div>
+            <div className="accent eyebrow home-eyebrow">PLAN AHEAD</div>
+            <h2>Upcoming on your shows</h2>
+            <p className="muted">The next scheduled episode for each tracked show.</p>
+          </div>
+          <Link href="/upcoming" className="accent">Full schedule →</Link>
+        </div>
+        {todayLoading ? <p className="muted">Loading upcoming episodes…</p> : upcoming.length === 0 ? (
+          <div className="home-rail-empty panel"><p className="muted">No future episodes are listed for your tracked shows yet.</p><Link href="/discover" className="accent">Discover shows →</Link></div>
+        ) : (
+          <div className="home-poster-rail">
+            {upcoming.map((item) => (
+              <Link key={item.showId + "-" + item.episode.id} href={"/show/" + item.showId} className="home-poster-card">
+                {item.poster ? <img src={item.poster} alt="" loading="lazy" /> : <div className="home-poster-fallback">{item.showName.slice(0, 1)}</div>}
+                <div className="home-poster-info">
+                  <h3>{item.showName}</h3>
+                  <p className="accent">{formatDate(item.episode.airdate)}{item.episode.airtime ? " · " + formatTime(item.episode.airtime) : ""}</p>
+                  <p className="muted">{item.episode.name} · S{item.episode.season} E{item.episode.number}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
 
       <section className="home-priority-feature home-upcoming-feature panel">
         <div>
