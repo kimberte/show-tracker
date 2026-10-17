@@ -13,7 +13,7 @@ async function getShow(id: string) {
         "https://api.tvmaze.com/shows/" +
           encodeURIComponent(id) +
           "?embed[]=episodes&embed[]=cast",
-        { next: { revalidate: 3600 } }
+        { next: { revalidate: 3600 }, signal: AbortSignal.timeout(8000) }
       );
 
       if (!r.ok) {
