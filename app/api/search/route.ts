@@ -19,15 +19,18 @@ export async function GET(req: Request) {
       terms.map((term) =>
         fetch("https://api.tvmaze.com/search/shows?q=" + encodeURIComponent(term), {
           next: { revalidate: 3600 },
+          signal: AbortSignal.timeout(8000),
         })
       )
     );
     const [singleResponse, scheduleResponse] = await Promise.all([
       fetch("https://api.tvmaze.com/singlesearch/shows?q=" + encodeURIComponent(q), {
         next: { revalidate: 3600 },
+          signal: AbortSignal.timeout(8000),
       }),
       fetch("https://api.tvmaze.com/schedule/full", {
         next: { revalidate: 86400 },
+        signal: AbortSignal.timeout(8000),
       }),
     ]);
 
