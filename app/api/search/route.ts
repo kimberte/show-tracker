@@ -12,45 +12,28 @@ const searchableStatuses = new Set(["Running", "In Development"]);
 export async function GET(req: Request) {
   const q = new URL(req.url).searchParams.get("q")?.trim();
   if (!q) return NextResponse.json([]);
-
+  
   try {
-    const terms = Array.from(new Set([q, ...q.split(/\s+/g).filter((term) => term.length >= 3)]));
-    const searchResponses = await Promise.all(
-      terms.map((term) =>
-        fetch("https://api.tvmaze.com/search/shows?q=" + encodeURIComponent(term), {
-          next: { revalidate: 3600 },
-          signal: AbortSignal.timeout(8000),
-        })
-      )
+    // Keep search to one TVMaze request. The previous implementation also
+    // waited for a full TV schedule and several redundant searches, making
+    // every query slow or completely empty when any one upstream call stalled.
+    const response = await fetch(
+      "https://api.tvmaze.com/search/shows?q=" + encodeURIComponent(q),
+      { next: { revalidate: 3600 }, signal: AbortSignal.timeout(6000) }
     );
-    const [singleResponse, scheduleResponse] = await Promise.all([
-      fetch("https://api.tvmaze.com/singlesearch/shows?q=" + encodeURIComponent(q), {
-        next: { revalidate: 3600 },
-          signal: AbortSignal.timeout(8000),
-      }),
-      fetch("https://api.tvmaze.com/schedule/full", {
-        next: { revalidate: 86400 },
-        signal: AbortSignal.timeout(8000),
-      }),
-    ]);
+    
+    if (!response.ok) {
+      return NextResponse.json({ error: "TV service unavailable" }, { status: 502 });
+    }
 
-    const searchDataSets = await Promise.all(
-      searchResponses
-        .filter((response) => response.ok)
-        .map((response) => response.json())
-    );
-    const searchData = searchDataSets.flat();
-    const exactShow = singleResponse.ok ? await singleResponse.json() : null;
-    const scheduleEpisodes = scheduleResponse.ok ? await scheduleResponse.json() : [];
-    const today = new Date().toLocaleDateString("en-CA");
-
-    // Only active shows are searchable. A Running show remains searchable
-    // between seasons even when it has no future episode scheduled yet.
+    const data = await response.json();
     const uniqueShows = new Map<number, Show>();
-    for (const item of searchData) {
+    
+    for (const item of data) {
       const show = item?.show;
       if (
         show?.id &&
+        typeof show.name === "string" &&
         typeof show.status === "string" &&
         searchableStatuses.has(show.status)
       ) {
@@ -59,47 +42,19 @@ export async function GET(req: Request) {
     }
 
     const queryWords = q.toLowerCase().split(/\s+/g).filter(Boolean);
-    const matches: Show[] = Array.from(uniqueShows.values()).sort((a, b) => {
+    const matches = Array.from(uniqueShows.values()).sort((a, b) => {
       const score = (show: Show) => {
         const name = show.name.toLowerCase();
-        const allWords = queryWords.every((word) => name.includes(word));
-        const phrase = name.includes(q.toLowerCase());
-        if (phrase) return 0;
-        if (allWords) return 1;
+        if (name.includes(q.toLowerCase())) return 0;
+        if (queryWords.every((word) => name.includes(word))) return 1;
         return 2;
       };
       return score(a) - score(b) || a.name.localeCompare(b.name);
     });
 
-    // TVMaze's single-search endpoint helps exact/near-exact titles such as
-    // "Star Trek: Strange New Worlds" when regular search ranking omits it.
-    if (
-      exactShow &&
-      typeof exactShow.status === "string" && searchableStatuses.has(exactShow.status) &&
-      !matches.some((item) => item.id === exactShow.id)
-    ) {
-      matches.unshift(exactShow);
-    }
-
-    // Keep the schedule fallback for active shows that appear in the schedule
-    // but aren't returned by TVMaze's search endpoint.
-    for (const episode of scheduleEpisodes) {
-      const show = episode?.show || episode?._embedded?.show;
-      if (
-        show?.id &&
-        searchableStatuses.has(show.status) &&
-        episode?.airdate &&
-        episode.airdate >= today &&
-        typeof show.name === "string" &&
-        show.name.toLowerCase().includes(q.toLowerCase()) &&
-        !matches.some((item) => item.id === show.id)
-      ) {
-        matches.push(show);
-      }
-    }
-
     return NextResponse.json(matches);
-  } catch {
-    return NextResponse.json({ error: "TV service unavailable" }, { status: 502 });
+  } catch (error) {
+    console.error("TVMaze search failed:", error);
+    return NextResponse.json({ error: "Search is temporarily unavailable. Please try again." }, { status: 502 });
   }
 }
