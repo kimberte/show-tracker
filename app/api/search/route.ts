@@ -7,8 +7,6 @@ type Show = {
   [key: string]: any;
 };
 
-const searchableStatuses = new Set(["Running", "In Development"]);
-
 export async function GET(req: Request) {
   const q = new URL(req.url).searchParams.get("q")?.trim();
   if (!q) return NextResponse.json([]);
@@ -31,12 +29,9 @@ export async function GET(req: Request) {
     
     for (const item of data) {
       const show = item?.show;
-      if (
-        show?.id &&
-        typeof show.name === "string" &&
-        typeof show.status === "string" &&
-        searchableStatuses.has(show.status)
-      ) {
+      // Search should find shows regardless of status. Discover can apply its
+      // own active-show defaults, but explicit searches must include ended shows.
+      if (show?.id && typeof show.name === "string") {
         uniqueShows.set(show.id, show);
       }
     }
