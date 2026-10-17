@@ -50,6 +50,7 @@ export default function Home() {
   const [results, setResults] = useState<Show[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [searchError, setSearchError] = useState("");
   const [today, setToday] = useState<TodayItem[]>([]);
   const [upcoming, setUpcoming] = useState<TodayItem[]>([]);
   const [todayLoading, setTodayLoading] = useState(true);
@@ -167,6 +168,7 @@ export default function Home() {
     if (!q.trim()) return;
 
     setLoading(true);
+    setSearchError("");
     setSearched(true);
     trackEvent("search", { search_term: q.trim() });
     setVisibleResults(10);
@@ -180,6 +182,9 @@ export default function Home() {
 
       const data = await r.json();
       setResults(Array.isArray(data) ? data : []);
+    } catch {
+      setResults([]);
+      setSearchError("Search is temporarily unavailable. Please try again in a moment.");
     } finally {
       setLoading(false);
     }
@@ -281,7 +286,8 @@ export default function Home() {
               {loading ? "Searching…" : "Search"}
             </button>
         </form>
-        {searched && !loading && results.length === 0 && (
+        {searchError && <p className="muted home-search-error">{searchError}</p>}
+        {searched && !searchError && !loading && results.length === 0 && (
           <div className="home-search-empty">
             <h3>No active or upcoming shows found</h3>
             <p className="muted">Try another title. We include currently airing shows and shows with announced upcoming episodes.</p>
