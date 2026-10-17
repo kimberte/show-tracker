@@ -4,6 +4,7 @@ export async function GET() {
   try {
     const r = await fetch("https://api.tvmaze.com/schedule/full", {
       next: { revalidate: 21600 },
+      signal: AbortSignal.timeout(8000),
     });
     if (!r.ok) return NextResponse.json({ error: "TV service unavailable" }, { status: 502 });
 
