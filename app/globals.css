@@ -627,3 +627,43 @@ button{cursor:pointer}
   .home-tool-card h3{font-size:17px}
 }
 @media(prefers-reduced-motion:reduce){.home-feature-slide.active{animation:none}}
+
+
+/* Full-bleed featured hero with touch-swipe navigation */
+.home-featured-slider{
+  width:100vw;
+  max-width:none;
+  margin-left:calc(50% - 50vw);
+  margin-top:0;
+  min-height:clamp(430px,52vw,620px);
+  border-left:0;
+  border-right:0;
+  border-radius:0;
+  touch-action:pan-y;
+}
+.home-feature-slide{
+  min-height:clamp(430px,52vw,620px);
+  padding:clamp(28px,6vw,82px);
+  background-position:center 30%;
+}
+.home-feature-copy{width:min(600px,68vw)}
+.home-feature-copy h2{font-size:clamp(36px,5vw,64px)}
+.home-feature-controls{right:clamp(24px,6vw,82px);bottom:22px}
+.home-feature-controls>span{background:rgba(8,9,11,.42);padding:8px 10px;border-radius:8px}
+@media(max-width:700px){
+  .home-featured-slider{
+    min-height:490px;
+    margin-bottom:22px;
+  }
+  .home-feature-slide{
+    min-height:490px;
+    padding:24px 18px 76px;
+    align-items:flex-end;
+    background-position:center center;
+  }
+  .home-feature-slide[aria-hidden="true"]{pointer-events:none}
+  .home-feature-copy{width:100%}
+  .home-feature-copy h2{font-size:clamp(32px,9vw,42px);max-width:95%}
+  .home-feature-summary{-webkit-line-clamp:3}
+  .home-feature-controls{left:18px;right:18px;bottom:15px}
+}
