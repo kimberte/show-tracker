@@ -11,15 +11,12 @@ type Show = {
   id: number;
   name: string;
   premiered?: string | null;
-  image?: { medium?: string } | null;
-  network?: { name: string } | null;
-  webChannel?: { name: string } | null;
-  status?: string | null;
-  image?: { original?: string; medium?: string } | null;
-  summary?: string | null;
-  language?: string | null;
+  image?: { medium?: string; original?: string } | null;
   network?: { name?: string; country?: { name?: string } | null } | null;
   webChannel?: { name?: string; country?: { name?: string } | null } | null;
+  status?: string | null;
+  summary?: string | null;
+  language?: string | null;
   _nextAirdate?: string;
   _nextAirtime?: string | null;
   _nextEpisode?: { name?: string; season?: number; number?: number };
@@ -196,20 +193,39 @@ export default function Home() {
       />
       <SiteNav />
 
-      <header className="home-hero">
-        <div className="home-hero-copy">
-          <div className="accent home-brand">MY TV TRACKER</div>
-          <h1 className="hero-title home-title">
-            Never miss
-            <br />
-            when your shows are on.
-          </h1>
-          <p className="muted">Track your shows. See what’s airing. Know what to watch.</p>
-        </div>
-        <div className="home-hero-visual" aria-hidden="true">
-          <img src="/my-tv-tracker-hero.svg" alt="" />
-        </div>
-      </header>
+      {heroShows.length > 0 && (
+        <section className="home-featured-slider" aria-label="Featured new and upcoming shows">
+          {heroShows.map((show, index) => (
+            <article
+              key={show.id}
+              className={"home-feature-slide" + (index === heroIndex ? " active" : "")}
+              style={{ backgroundImage: `linear-gradient(90deg, rgba(7,9,13,.97) 0%, rgba(7,9,13,.8) 44%, rgba(7,9,13,.2) 100%), linear-gradient(0deg, rgba(7,9,13,.75), transparent 55%), url("${show.image?.original || show.image?.medium || ""}")` }}
+              aria-hidden={index !== heroIndex}
+            >
+              <div className="home-feature-copy">
+                <div className="accent eyebrow">{show._isNew ? "NEW SERIES" : "COMING BACK SOON"}</div>
+                <h2>{show.name}</h2>
+                <p className="home-feature-meta">{show.network?.name || show.webChannel?.name || "TV"}{show.premiered ? " · " + show.premiered.slice(0, 4) : ""}</p>
+                {show._nextAirdate && <p className="accent home-feature-date">Next episode · {formatDate(show._nextAirdate)}{show._nextAirtime ? " · " + formatTime(show._nextAirtime) : ""}</p>}
+                {show.summary && <p className="home-feature-summary muted">{show.summary.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").slice(0, 190)}…</p>}
+                <div className="home-feature-actions">
+                  <TrackButton showId={show.id} title={show.name} compact />
+                  <Link href={"/show/" + show.id} className="nav-pill home-feature-view">Show details</Link>
+                </div>
+              </div>
+            </article>
+          ))}
+          <div className="home-feature-controls">
+            <span className="muted">FEATURED · {heroIndex + 1} / {heroShows.length}</span>
+            <div>
+              <button type="button" aria-label="Previous featured show" onClick={() => setHeroIndex((i) => (i - 1 + heroShows.length) % heroShows.length)}>‹</button>
+              <button type="button" aria-label="Next featured show" onClick={() => setHeroIndex((i) => (i + 1) % heroShows.length)}>›</button>
+            </div>
+          </div>
+        </section>
+      )}
+
+
 
       
       <section className="home-search panel">
@@ -291,38 +307,6 @@ export default function Home() {
         </section>
       )}
 
-
-      {heroShows.length > 0 && (
-        <section className="home-featured-slider" aria-label="Featured new and upcoming shows">
-          {heroShows.map((show, index) => (
-            <article
-              key={show.id}
-              className={"home-feature-slide" + (index === heroIndex ? " active" : "")}
-              style={{ backgroundImage: `linear-gradient(90deg, rgba(7,9,13,.97) 0%, rgba(7,9,13,.8) 44%, rgba(7,9,13,.2) 100%), linear-gradient(0deg, rgba(7,9,13,.75), transparent 55%), url("${show.image?.original || show.image?.medium || ""}")` }}
-              aria-hidden={index !== heroIndex}
-            >
-              <div className="home-feature-copy">
-                <div className="accent eyebrow">{show._isNew ? "NEW SERIES" : "COMING BACK SOON"}</div>
-                <h2>{show.name}</h2>
-                <p className="home-feature-meta">{show.network?.name || show.webChannel?.name || "TV"}{show.premiered ? " · " + show.premiered.slice(0, 4) : ""}</p>
-                {show._nextAirdate && <p className="accent home-feature-date">Next episode · {formatDate(show._nextAirdate)}{show._nextAirtime ? " · " + formatTime(show._nextAirtime) : ""}</p>}
-                {show.summary && <p className="home-feature-summary muted">{show.summary.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").slice(0, 190)}…</p>}
-                <div className="home-feature-actions">
-                  <TrackButton showId={show.id} title={show.name} compact />
-                  <Link href={"/show/" + show.id} className="nav-pill home-feature-view">Show details</Link>
-                </div>
-              </div>
-            </article>
-          ))}
-          <div className="home-feature-controls">
-            <span className="muted">FEATURED · {heroIndex + 1} / {heroShows.length}</span>
-            <div>
-              <button type="button" aria-label="Previous featured show" onClick={() => setHeroIndex((i) => (i - 1 + heroShows.length) % heroShows.length)}>‹</button>
-              <button type="button" aria-label="Next featured show" onClick={() => setHeroIndex((i) => (i + 1) % heroShows.length)}>›</button>
-            </div>
-          </div>
-        </section>
-      )}
 
       <section className="home-rail-section home-today">
         <div className="section-heading">
@@ -412,8 +396,13 @@ export default function Home() {
             ["TV Tonight", "See episodes airing today.", "/tv-tonight", "TV GUIDE"],
             ["TV This Week", "Browse the next seven days of episodes.", "/tv-this-week", "TV GUIDE"],
             ["New Episodes", "Find new episodes across active shows.", "/new-episodes", "TV GUIDE"],
-          ].map(([title, description, href, label]) => (
-            <Link href={href} className="panel home-tool-card" key={title}>
+          ].map(([title, description, href, label], index) => (
+            <Link
+              href={href}
+              className="panel home-tool-card"
+              key={title}
+              style={{ backgroundImage: `linear-gradient(0deg, rgba(8,9,11,.97), rgba(8,9,11,.64)), url("${heroShows[index % Math.max(heroShows.length, 1)]?.image?.original || heroShows[index % Math.max(heroShows.length, 1)]?.image?.medium || "/my-tv-tracker-hero.svg"}")` }}
+            >
               <div className="accent eyebrow">{label}</div>
               <h3>{title}</h3>
               <p className="muted">{description}</p>
