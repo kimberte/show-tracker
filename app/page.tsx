@@ -81,6 +81,7 @@ export default function Home() {
 
   useEffect(() => {
     async function loadToday() {
+      try {
       const supabase = getSupabase();
       const {
         data: { user },
@@ -109,7 +110,8 @@ export default function Home() {
             const r = await fetch(
               "https://api.tvmaze.com/shows/" +
                 show.tvmaze_id +
-                "?embed[]=episodes"
+                "?embed[]=episodes",
+              { signal: AbortSignal.timeout(8000) }
             );
             if (!r.ok) return;
 
@@ -149,7 +151,13 @@ export default function Home() {
       setToday(found);
       nextFound.sort((a, b) => (a.episode.airdate + (a.episode.airtime || "99:99")).localeCompare(b.episode.airdate + (b.episode.airtime || "99:99")));
       setUpcoming(nextFound.slice(0, 10));
-      setTodayLoading(false);
+      } catch (error) {
+        console.error("Unable to load today’s schedule:", error);
+        setToday([]);
+        setUpcoming([]);
+      } finally {
+        setTodayLoading(false);
+      }
     }
 
     loadToday();
