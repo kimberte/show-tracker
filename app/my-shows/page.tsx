@@ -86,6 +86,7 @@ export default function MyShows() {
     setLoading(true);
     setMessage("");
 
+    try {
     const supabase = getSupabase();
     const { data: { user: currentUser } } = await supabase.auth.getUser();
     const { data: { session } } = await supabase.auth.getSession();
@@ -116,7 +117,7 @@ export default function MyShows() {
       list.map(async (item) => {
         if (!item.show || item.show.poster_url) return item;
         try {
-          const r = await fetch("https://api.tvmaze.com/shows/" + item.show.tvmaze_id);
+          const r = await fetch("https://api.tvmaze.com/shows/" + item.show.tvmaze_id, { signal: AbortSignal.timeout(8000) });
           if (!r.ok) return item;
           const tv = await r.json();
           return {
@@ -156,7 +157,8 @@ export default function MyShows() {
           const r = await fetch(
             "https://api.tvmaze.com/shows/" +
               item.show.tvmaze_id +
-              "?embed[]=episodes"
+              "?embed[]=episodes",
+            { signal: AbortSignal.timeout(8000) }
           );
 
           if (!r.ok) {
@@ -208,7 +210,12 @@ export default function MyShows() {
         details.map(([id, _value, p]) => [id, p || { aired: 0, watched: 0, behind: [], seasons: [] }])
       )
     );
-    setLoading(false);
+    } catch (error) {
+      console.error("Unable to load My Shows:", error);
+      setMessage("We couldn’t load your shows right now. Please refresh and try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
