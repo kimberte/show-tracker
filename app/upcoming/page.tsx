@@ -54,6 +54,7 @@ export default function Upcoming() {
 
   useEffect(() => {
     async function load() {
+      try {
       const supabase = getSupabase();
       const {
         data: { user },
@@ -83,7 +84,7 @@ export default function Upcoming() {
         list.map(async (item) => {
           if (!item.show || item.show.poster_url) return item;
           try {
-            const r = await fetch("https://api.tvmaze.com/shows/" + item.show.tvmaze_id);
+            const r = await fetch("https://api.tvmaze.com/shows/" + item.show.tvmaze_id, { signal: AbortSignal.timeout(8000) });
             if (!r.ok) return item;
             const tv = await r.json();
             return {
@@ -113,7 +114,8 @@ export default function Upcoming() {
             const r = await fetch(
               "https://api.tvmaze.com/shows/" +
                 item.show.tvmaze_id +
-                "?embed[]=episodes"
+                "?embed[]=episodes",
+              { signal: AbortSignal.timeout(8000) }
             );
             if (!r.ok) return;
 
@@ -139,7 +141,12 @@ export default function Upcoming() {
       );
 
       setItems(found);
-      setLoading(false);
+      } catch (error) {
+        console.error("Unable to load Upcoming:", error);
+        setItems([]);
+      } finally {
+        setLoading(false);
+      }
     }
 
     load();
