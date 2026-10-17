@@ -606,7 +606,8 @@ button{cursor:pointer}
 .home-rail-empty{padding:18px;display:flex;align-items:center;justify-content:space-between;gap:14px}
 .home-rail-empty p{margin:0}
 .home-tool-card{position:relative;overflow:hidden;background-size:cover;background-position:center 30%;background-repeat:no-repeat;isolation:isolate;border-color:rgba(255,255,255,.12);min-height:170px}
-.home-tool-card::before{content:none}
+.home-tool-card::before{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(135deg,rgba(8,9,11,.18),rgba(8,9,11,.42));pointer-events:none}
+.home-tool-card>*{position:relative;z-index:1}
 .home-tool-card .eyebrow{letter-spacing:1.5px}
 .home-tool-card h3{font-size:20px}
 .home-tool-card p{color:#c3c8d1}
