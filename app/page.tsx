@@ -392,7 +392,7 @@ export default function Home() {
               href={href}
               className="panel home-tool-card"
               key={title}
-              style={{ backgroundImage: `linear-gradient(0deg, rgba(8,9,11,.97), rgba(8,9,11,.64)), url("${heroShows[index % Math.max(heroShows.length, 1)]?.image?.original || heroShows[index % Math.max(heroShows.length, 1)]?.image?.medium || "/my-tv-tracker-hero.svg"}")` }}
+              style={{ backgroundImage: `linear-gradient(0deg, rgba(8,9,11,.82) 0%, rgba(8,9,11,.18) 100%), url("${heroShows[index % Math.max(heroShows.length, 1)]?.image?.original || heroShows[index % Math.max(heroShows.length, 1)]?.image?.medium || "/my-tv-tracker-hero.svg"}")` }}
             >
               <div className="accent eyebrow">{label}</div>
               <h3>{title}</h3>
