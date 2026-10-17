@@ -1,34 +1,25 @@
 import Link from "next/link";
+import { cache } from "react";
 import TrackButton from "@/components/track-button";
 import SiteNav from "@/components/site-nav";
 import EpisodeWatchList from "@/components/episode-watch-list";
 import type { Metadata } from "next";
 
-async function getShow(id: string) {
-  // TVMaze can occasionally reset connections. Retry once, and never let a
-  // third-party API outage crash the entire show-detail route.
-  for (let attempt = 0; attempt < 2; attempt++) {
-    try {
-      const r = await fetch(
-        "https://api.tvmaze.com/shows/" +
-          encodeURIComponent(id) +
-          "?embed[]=episodes&embed[]=cast",
-        { next: { revalidate: 3600 }, signal: AbortSignal.timeout(8000) }
-      );
-
-      if (!r.ok) {
-        if (r.status === 404) return null;
-        continue;
-      }
-
-      return await r.json();
-    } catch (error) {
-      console.error(`TVMaze show request failed for ${id} (attempt ${attempt + 1}/2):`, error);
-    }
+const getShow = cache(async (id: string) => {
+  // Use one bounded request and share its result between page rendering and metadata.
+  // Embedded cast is not required for the core show page and increases payload size.
+  try {
+    const r = await fetch(
+      "https://api.tvmaze.com/shows/" + encodeURIComponent(id) + "?embed[]=episodes",
+      { next: { revalidate: 3600 }, signal: AbortSignal.timeout(6000) }
+    );
+    if (!r.ok) return null;
+    return await r.json();
+  } catch (error) {
+    console.error(`TVMaze show request failed for ${id}:`, error);
+    return null;
   }
-
-  return null;
-}
+});
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
@@ -113,7 +104,7 @@ export default async function ShowPage({
     )
     .slice(0, 5);
 
-  const cast = (s._embedded?.cast || []).slice(0, 6);
+  const cast: any[] = [];
   const network = s.network?.name || s.webChannel?.name || "TV";
   const status = getStatus(s.status, upcoming, today);
 
