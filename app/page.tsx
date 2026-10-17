@@ -362,15 +362,6 @@ export default function Home() {
         )}
       </section>
 
-      <section className="home-priority-feature home-upcoming-feature panel">
-        <div>
-          <div className="accent eyebrow">UP NEXT</div>
-          <h2>Upcoming episodes</h2>
-          <p className="muted">See what’s next across your tracked shows and plan your viewing.</p>
-        </div>
-        <Link href="/upcoming" className="primary-button">View upcoming episodes →</Link>
-      </section>
-
       <section className="home-priority-feature home-alerts-feature panel">
         <div>
           <div className="accent eyebrow">DAILY TV ALERTS</div>
