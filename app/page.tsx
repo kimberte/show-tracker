@@ -214,6 +214,7 @@ export default function Home() {
             }
             setHeroTouchStart(null);
           }}
+        >
           {heroShows.map((show, index) => (
             <article
               key={show.id}
