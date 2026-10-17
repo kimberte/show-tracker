@@ -571,3 +571,58 @@ button{cursor:pointer}
   .home-tool-card p{font-size:13px}
 }
 @media(max-width:380px){.home-tools-grid{grid-template-columns:1fr}}
+
+
+/* Homepage visual refresh: featured slider, poster rails, artwork-backed guide tiles */
+.home-featured-slider{position:relative;min-height:390px;margin:0 0 22px;overflow:hidden;border:1px solid var(--line);border-radius:20px;background:linear-gradient(120deg,#141821,#08090b)}
+.home-feature-slide{display:none;min-height:390px;background-size:cover;background-position:center 30%;background-repeat:no-repeat;align-items:center;padding:36px 42px}
+.home-feature-slide.active{display:flex;animation:home-slide-in .35s ease-out}
+.home-feature-copy{width:min(560px,100%);min-width:0}
+.home-feature-copy .eyebrow{margin:0 0 12px}
+.home-feature-copy h2{font-size:clamp(30px,4.3vw,48px);line-height:1.04;letter-spacing:-1.3px;margin:0 0 10px;text-wrap:balance}
+.home-feature-meta{margin:0 0 10px;color:#d4d7de;font-weight:700}
+.home-feature-date{font-weight:800;margin:0 0 12px}
+.home-feature-summary{max-width:520px;line-height:1.55;margin:0 0 18px;color:#e0e3e9}
+.home-feature-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.home-feature-view{color:var(--text);background:rgba(8,9,11,.55)}
+.home-feature-controls{position:absolute;bottom:18px;right:20px;display:flex;align-items:center;gap:12px}
+.home-feature-controls>span{font-size:11px;letter-spacing:1px;font-weight:800}
+.home-feature-controls>div{display:flex;gap:7px}
+.home-feature-controls button{width:38px;height:38px;border:1px solid rgba(255,255,255,.25);border-radius:50%;background:rgba(8,9,11,.6);color:white;font-size:25px;line-height:1;cursor:pointer}
+.home-feature-controls button:hover{border-color:var(--accent);color:var(--accent)}
+.home-rail-section{margin:0 0 28px;min-width:0}
+.home-rail-section .section-heading{margin-bottom:14px}
+.home-rail-section .section-heading h2{margin:4px 0}
+.home-rail-section .section-heading p{margin:5px 0 0}
+.home-poster-rail{display:grid;grid-auto-columns:clamp(160px,18vw,205px);grid-auto-flow:column;gap:15px;overflow-x:auto;overflow-y:hidden;padding:2px 2px 13px;scroll-snap-type:x mandatory;scrollbar-width:thin;scrollbar-color:#383d48 transparent}
+.home-poster-card{display:flex;flex-direction:column;min-width:0;overflow:hidden;border:1px solid var(--line);border-radius:14px;background:linear-gradient(180deg,#151820,#0d0f13);scroll-snap-align:start;transition:transform .16s,border-color .16s,background .16s}
+.home-poster-card:hover{transform:translateY(-3px);border-color:rgba(245,158,11,.45);background:#151820}
+.home-poster-card>img,.home-poster-fallback{display:block;width:100%;aspect-ratio:2/3;object-fit:cover;background:#11151c}
+.home-poster-fallback{display:grid;place-items:center;color:var(--muted);font-size:48px;font-weight:900}
+.home-poster-info{padding:12px;min-width:0;flex:1}
+.home-poster-info h3{font-size:15px;line-height:1.3;margin:0 0 7px;overflow-wrap:anywhere}
+.home-poster-info p{font-size:12px;line-height:1.45;margin:0 0 5px}
+.home-poster-info p:last-child{margin-bottom:0}
+.home-rail-empty{padding:18px;display:flex;align-items:center;justify-content:space-between;gap:14px}
+.home-rail-empty p{margin:0}
+.home-tool-card{position:relative;overflow:hidden;background-size:cover;background-position:center 30%;background-repeat:no-repeat;isolation:isolate;border-color:rgba(255,255,255,.12);min-height:170px}
+.home-tool-card::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(135deg,rgba(8,9,11,.82),rgba(8,9,11,.95))}
+.home-tool-card .eyebrow{letter-spacing:1.5px}
+.home-tool-card h3{font-size:20px}
+.home-tool-card p{color:#c3c8d1}
+@keyframes home-slide-in{from{opacity:.55;transform:scale(1.01)}to{opacity:1;transform:scale(1)}}
+@media(max-width:700px){
+  .home-featured-slider{min-height:390px;border-radius:15px;margin-bottom:18px}
+  .home-feature-slide{min-height:390px;padding:22px 17px 70px;background-position:center top}
+  .home-feature-copy h2{font-size:31px;letter-spacing:-.6px}
+  .home-feature-summary{font-size:13px;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+  .home-feature-controls{left:17px;right:15px;bottom:13px;justify-content:space-between}
+  .home-feature-controls button{width:34px;height:34px}
+  .home-poster-rail{grid-auto-columns:158px;gap:11px;margin-right:-12px;padding-right:12px}
+  .home-poster-info{padding:10px}
+  .home-poster-info h3{font-size:14px}
+  .home-rail-empty{align-items:flex-start;flex-direction:column}
+  .home-tool-card{min-height:158px;padding:14px}
+  .home-tool-card h3{font-size:17px}
+}
+@media(prefers-reduced-motion:reduce){.home-feature-slide.active{animation:none}}
