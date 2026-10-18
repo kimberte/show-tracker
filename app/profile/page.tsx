@@ -27,7 +27,7 @@ export default function ProfilePage() {
 
       setSignedIn(true);
 
-      const [{ count: showCount }, { data: trackedRows }, { data: watchRows }] = await Promise.all([
+      const [{ count: showCount }, { data: trackedRows }] = await Promise.all([
         supabase
           .from("tracked_shows")
           .select("id", { count: "exact", head: true })
@@ -36,20 +36,37 @@ export default function ProfilePage() {
           .from("tracked_shows")
           .select("show_id,show:shows(tvmaze_id)")
           .eq("user_id", user.id),
-        supabase
-          .from("episode_watches")
-          .select("show_id,tvmaze_episode_id")
-          .eq("user_id", user.id),
       ]);
 
       setShows(showCount || 0);
 
+      // Supabase REST responses are capped (often at 1,000 rows). Fetch every
+      // page so users with long watch histories don't appear hundreds of
+      // episodes behind simply because older watch records were truncated.
+      const pageSize = 1000;
+      const watchRows: { show_id: number; tvmaze_episode_id: number | null }[] = [];
+      for (let offset = 0; ; offset += pageSize) {
+        const { data, error } = await supabase
+          .from("episode_watches")
+          .select("show_id,tvmaze_episode_id")
+          .eq("user_id", user.id)
+          .order("id", { ascending: true })
+          .range(offset, offset + pageSize - 1);
+
+        if (error) {
+          console.error("Could not load episode watch history:", error);
+          break;
+        }
+        watchRows.push(...(data || []));
+        if (!data || data.length < pageSize) break;
+      }
+
       // Count saved watch records only for shows in the current tracker.
       const currentShowIds = new Set((trackedRows || []).map((row: any) => Number(row.show_id)));
       const watchedByShow = new Map<number, Set<number>>();
-      for (const row of watchRows || []) {
+      for (const row of watchRows) {
         const showId = Number(row.show_id);
-        if (!currentShowIds.has(showId)) continue;
+        if (!currentShowIds.has(showId) || row.tvmaze_episode_id == null) continue;
         const ids = watchedByShow.get(showId) || new Set<number>();
         ids.add(Number(row.tvmaze_episode_id));
         watchedByShow.set(showId, ids);
