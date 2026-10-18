@@ -15,13 +15,39 @@ export async function GET(req: Request) {
     // Keep search to one TVMaze request. The previous implementation also
     // waited for a full TV schedule and several redundant searches, making
     // every query slow or completely empty when any one upstream call stalled.
-    const response = await fetch(
-      "https://api.tvmaze.com/search/shows?q=" + encodeURIComponent(q),
-      { next: { revalidate: 3600 }, signal: AbortSignal.timeout(6000) }
-    );
-    
-    if (!response.ok) {
-      return NextResponse.json({ error: "TV service unavailable" }, { status: 502 });
+    let response: Response | null = null;
+    let lastError: unknown = null;
+
+    // TVMaze occasionally resets or stalls requests under load. Retry once
+    // with a short backoff so transient upstream failures don't break search.
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        response = await fetch(
+          "https://api.tvmaze.com/search/shows?q=" + encodeURIComponent(q),
+          {
+            next: { revalidate: 3600 },
+            signal: AbortSignal.timeout(7000),
+            headers: { Accept: "application/json" },
+          }
+        );
+        if (response.ok) break;
+        if (response.status !== 429 && response.status < 500) break;
+        lastError = new Error(`TVMaze returned HTTP ${response.status}`);
+      } catch (error) {
+        lastError = error;
+      }
+
+      if (attempt === 0) {
+        await new Promise((resolve) => setTimeout(resolve, 350));
+      }
+    }
+
+    if (!response?.ok) {
+      console.error("TVMaze search unavailable:", lastError || response?.status);
+      return NextResponse.json(
+        { error: "Search is temporarily unavailable. Please try again in a moment." },
+        { status: 502 }
+      );
     }
 
     const data = await response.json();
