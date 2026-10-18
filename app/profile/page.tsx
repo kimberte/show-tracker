@@ -27,13 +27,9 @@ export default function ProfilePage() {
 
       setSignedIn(true);
 
-      const [{ count: showCount }, { count: episodeCount }, { data: trackedRows }, { data: watchRows }] = await Promise.all([
+      const [{ count: showCount }, { data: trackedRows }, { data: watchRows }] = await Promise.all([
         supabase
           .from("tracked_shows")
-          .select("id", { count: "exact", head: true })
-          .eq("user_id", user.id),
-        supabase
-          .from("episode_watches")
           .select("id", { count: "exact", head: true })
           .eq("user_id", user.id),
         supabase
@@ -47,15 +43,18 @@ export default function ProfilePage() {
       ]);
 
       setShows(showCount || 0);
-      setEpisodes(episodeCount || 0);
 
+      // Count saved watch records only for shows in the current tracker.
+      const currentShowIds = new Set((trackedRows || []).map((row: any) => Number(row.show_id)));
       const watchedByShow = new Map<number, Set<number>>();
       for (const row of watchRows || []) {
         const showId = Number(row.show_id);
+        if (!currentShowIds.has(showId)) continue;
         const ids = watchedByShow.get(showId) || new Set<number>();
         ids.add(Number(row.tvmaze_episode_id));
         watchedByShow.set(showId, ids);
       }
+      setEpisodes(Array.from(watchedByShow.values()).reduce((total, ids) => total + ids.size, 0));
 
       const today = new Date().toLocaleDateString("en-CA");
       const progressRows = await Promise.all(
