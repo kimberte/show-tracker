@@ -96,14 +96,6 @@ export default async function ShowPage({
     )
     .slice(0, 8);
 
-  const recent = episodes
-    .filter((e: any) => e.airdate && e.airdate < today)
-    .sort(
-      (a: any, b: any) =>
-        new Date(b.airdate).getTime() - new Date(a.airdate).getTime()
-    )
-    .slice(0, 5);
-
   const cast: any[] = [];
   const network = s.network?.name || s.webChannel?.name || "TV";
   const status = getStatus(s.status, upcoming, today);
@@ -267,21 +259,6 @@ export default async function ShowPage({
 
       <EpisodeWatchList tvmazeShowId={s.id} title={s.name} episodes={episodes} />
 
-      {recent.length > 0 && (
-        <section className="show-section">
-          <h2>Recent episodes</h2>
-          <div className="episode-list">
-            {recent.map((e: any) => (
-              <div className="panel recent-episode" key={e.id}>
-                <strong>S{e.season} E{e.number} — {e.name}</strong>
-                <div className="muted">
-                  {e.airdate ? formatDate(e.airdate) : "Date TBA"}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
     </main>
   );
 }
