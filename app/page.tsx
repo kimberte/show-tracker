@@ -174,14 +174,29 @@ export default function Home() {
     setVisibleResults(10);
 
     try {
-      const r = await fetch("/api/search?q=" + encodeURIComponent(q));
+      const query = q.trim();
+      const r = await fetch("/api/search?q=" + encodeURIComponent(query), {
+        signal: AbortSignal.timeout(15000),
+      });
+      const data = await r.json().catch(() => null);
+
       if (!r.ok) {
         setResults([]);
+        setSearchError(
+          typeof data?.error === "string"
+            ? data.error
+            : "Search is temporarily unavailable. Please try again in a moment."
+        );
         return;
       }
 
-      const data = await r.json();
-      setResults(Array.isArray(data) ? data : []);
+      if (!Array.isArray(data)) {
+        setResults([]);
+        setSearchError("We couldn't read the search results. Please try again.");
+        return;
+      }
+
+      setResults(data);
     } catch {
       setResults([]);
       setSearchError("Search is temporarily unavailable. Please try again in a moment.");
@@ -265,7 +280,7 @@ export default function Home() {
         <div className="home-search-copy">
           <div className="accent eyebrow">FIND A SHOW</div>
           <h2>What do you want to watch?</h2>
-          <p className="muted">Search active shows and add them to your tracker.</p>
+          <p className="muted">Search TV shows by title, with any capitalization, including ended and currently airing shows.</p>
         </div>
 
         <form
@@ -289,8 +304,8 @@ export default function Home() {
         {searchError && <p className="muted home-search-error">{searchError}</p>}
         {searched && !searchError && !loading && results.length === 0 && (
           <div className="home-search-empty">
-            <h3>No active or upcoming shows found</h3>
-            <p className="muted">Try another title. We include currently airing shows and shows with announced upcoming episodes.</p>
+            <h3>No shows found</h3>
+            <p className="muted">Try a shorter title or a different spelling.</p>
           </div>
         )}
       </section>
