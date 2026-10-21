@@ -185,17 +185,16 @@ export async function GET(request: Request) {
       .sort((a, b) => b.episodes.length - a.episodes.length);
 
     const catchUpHtml = catchUpEntries.length
-      ? '<div style="font-size:12px;font-weight:800;letter-spacing:1.4px;color:#f59e0b;text-transform:uppercase;margin:28px 0 12px;">Catch up</div>' +
+      ? '<div style="font-size:12px;font-weight:800;letter-spacing:1.4px;color:#f59e0b;text-transform:uppercase;margin:28px 0 10px;">Catch-up</div>' +
+        '<div style="background:#ffffff;border:1px solid #e7e9ee;border-radius:10px;padding:12px 16px;">' +
         catchUpEntries.map(({ show, episodes }) =>
-          '<div style="background:#ffffff;border:1px solid #e7e9ee;border-radius:12px;padding:14px 16px;margin-bottom:8px;">' +
-          '<div style="font-size:16px;font-weight:800;color:#151820;">' + escapeHtml(show.title) + ' <span style="font-size:12px;color:#68707e;">· ' + episodes.length + (episodes.length === 1 ? ' episode' : ' episodes') + ' behind</span></div>' +
-          '<div style="font-size:13px;line-height:1.5;color:#68707e;margin-top:5px;">' +
-          episodes.sort((a, b) => (a.airdate || "").localeCompare(b.airdate || "")).slice(-3).map((episode) =>
-            'S' + episode.season + ' E' + episode.number + ' · ' + escapeHtml(episode.name)
-          ).join('<br>') +
-          (episodes.length > 3 ? '<br>+' + (episodes.length - 3) + ' more' : '') +
-          '</div></div>'
-        ).join("")
+          '<div style="font-size:14px;line-height:1.5;color:#151820;padding:4px 0;">' +
+          '<a href="https://mytvtracker.app/show/' + show.tvmaze_id + '" style="color:#151820;text-decoration:none;font-weight:800;">' + escapeHtml(show.title) + '</a>' +
+          '<span style="color:#68707e;"> · ' + episodes.length + (episodes.length === 1 ? ' episode' : ' episodes') + ' behind</span>' +
+          '</div>'
+        ).join("") +
+        '<div style="font-size:12px;line-height:1.5;color:#68707e;margin-top:8px;">Only aired, unwatched episodes are counted.</div>' +
+        '</div>'
       : "";
 
     const hero = '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background:#151820;border-radius:16px;overflow:hidden;">' +
@@ -209,7 +208,7 @@ export async function GET(request: Request) {
       '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:680px;border-collapse:collapse;">' +
       '<tr><td style="padding:0 4px 14px;"><div style="font-size:12px;font-weight:900;letter-spacing:2px;color:#151820;">MY TV TRACKER <span style="color:#f59e0b;">●</span></div></td></tr>' +
       "<tr><td>" + hero + "</td></tr>" +
-      '<tr><td style="padding-top:20px;">' + catchUpHtml + todayHtml + upcomingHtml + "</td></tr>" +
+      '<tr><td style="padding-top:20px;">' + todayHtml + upcomingHtml + catchUpHtml + "</td></tr>" +
       '<tr><td style="padding-top:22px;"><a href="https://mytvtracker.app/my-shows" style="display:block;text-align:center;background:#f59e0b;color:#151820;text-decoration:none;font-size:14px;font-weight:900;padding:13px 18px;border-radius:9px;">VIEW MY SHOWS</a></td></tr>' +
       '<tr><td style="padding:26px 4px 4px;font-size:12px;line-height:1.6;color:#7a818e;">You’re receiving this because daily email notifications are enabled in My TV Tracker.' +
       '<br><a href="https://mytvtracker.app/settings/notifications" style="color:#7a818e;">Manage email preferences</a> · <a href="https://mytvtracker.app" style="color:#7a818e;">Open My TV Tracker</a>' +
