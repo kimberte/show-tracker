@@ -69,8 +69,7 @@ export default async function TvPreview() {
     </article>
   ));
 
-  return <main className="shell">
-    <SiteNav />
+  return <><Home /><main className="shell">
     <section style={{marginTop: 32}}> 
       <div className="accent eyebrow">LIVE TV GUIDE · US EASTERN SCHEDULE</div>
       <h2>What's on tonight</h2>
