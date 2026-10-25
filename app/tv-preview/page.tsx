@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import SiteNav from "@/components/site-nav";
+import Home from "@/app/page";
 
 export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "TV Discovery Preview | My TV Tracker",
-  description: "Review a proposed My TV Tracker discovery homepage with tonight's TV schedule, this week's episodes and original viewing guides.",
+  description: "Review additional TV discovery content alongside the existing My TV Tracker homepage experience.",
   robots: { index: false, follow: false },
 };
 
@@ -44,6 +44,7 @@ function time(value?: string) {
   return `${hour % 12 || 12}:${String(minute).padStart(2, "0")} ${hour >= 12 ? "PM" : "AM"}`;
 }
 
+
 export default async function TvPreview() {
   const date = new Intl.DateTimeFormat("en-CA", {
     timeZone: "America/New_York", year: "numeric", month: "2-digit", day: "2-digit",
@@ -70,17 +71,7 @@ export default async function TvPreview() {
 
   return <main className="shell">
     <SiteNav />
-    <section className="panel" style={{padding: "clamp(24px, 5vw, 54px)", marginTop: 24, background: "linear-gradient(120deg, #211b15, #11141a 70%)"}}>
-      <div className="accent eyebrow">PROPOSED HOMEPAGE · REVIEW ONLY</div>
-      <h1 className="page-title" style={{maxWidth: 780, marginTop: 12}}>Know what's on. Never miss what matters.</h1>
-      <p className="muted" style={{maxWidth: 680, fontSize: "1.1rem", lineHeight: 1.7}}>Discover new episodes, see what's airing tonight, plan your week and keep your personal watchlist organized — all in one place.</p>
-      <div style={{display: "flex", flexWrap: "wrap", gap: 12, marginTop: 22}}>
-        <Link className="primary-button" href="/discover">Discover TV shows</Link>
-        <Link className="nav-pill" href="/my-shows">My tracked shows</Link>
-      </div>
-    </section>
-
-    <section style={{marginTop: 32}}>
+    <section style={{marginTop: 32}}> 
       <div className="accent eyebrow">LIVE TV GUIDE · US EASTERN SCHEDULE</div>
       <h2>What's on tonight</h2>
       <p className="muted">New episodes listed for {date}. Air times are shown as provided by TVMaze and may vary by location or streaming service.</p>
@@ -116,5 +107,5 @@ export default async function TvPreview() {
         <article className="panel" style={{padding: 24}}><h3>Why episodes sometimes go missing</h3><p className="muted">Understand regional schedules, streaming releases and changing air dates.</p><Link className="view-link" href="/guides">Learn more →</Link></article>
       </div>
     </section>
-  </main>;
+  </main></>;
 }
