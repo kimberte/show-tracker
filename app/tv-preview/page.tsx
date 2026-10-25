@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Home from "@/app/page";
+import Home from "@/components/home-original";
 
 export const revalidate = 3600;
 export const metadata: Metadata = {
