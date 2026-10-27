@@ -91,21 +91,11 @@ export async function GET(request: Request) {
       continue;
     }
 
-    const { data: watchedRows } = await supabase
-      .from("episode_watches")
-      .select("tvmaze_episode_id")
-      .eq("user_id", pref.user_id);
-
-    const watchedIds = new Set(
-      (watchedRows || []).map((row: { tvmaze_episode_id: number }) => Number(row.tvmaze_episode_id))
-    );
-
     const today = new Date().toLocaleDateString("en-CA");
     const horizon = new Date();
     horizon.setDate(horizon.getDate() + Math.max(1, Math.min(14, pref.days_ahead || 7)));
     const horizonKey = horizon.toLocaleDateString("en-CA");
     const byDate = new Map<string, Array<{ show: Show; episode: Episode }>>();
-    const catchUp = new Map<number, { show: Show; episodes: Episode[] }>();
 
     await Promise.all(shows.map(async (show) => {
       try {
@@ -118,12 +108,6 @@ export async function GET(request: Request) {
         const data = await r.json();
         for (const episode of (data._embedded?.episodes || []) as Episode[]) {
           if (!episode.airdate) continue;
-
-          if (episode.airdate < today && !watchedIds.has(Number((episode as Episode & { id: number }).id))) {
-            const current = catchUp.get(show.id) || { show, episodes: [] };
-            current.episodes.push(episode);
-            catchUp.set(show.id, current);
-          }
 
           if (episode.airdate < today || episode.airdate > horizonKey) continue;
           const list = byDate.get(episode.airdate) || [];
@@ -180,22 +164,13 @@ export async function GET(request: Request) {
         "</td>"
       : '<td valign="middle" style="padding-left:18px;"><div style="font-size:12px;font-weight:800;letter-spacing:1.5px;color:#f59e0b;text-transform:uppercase;">Your TV roundup</div><div style="font-size:28px;line-height:1.15;font-weight:900;color:#ffffff;margin-top:6px;">Stay on top of your shows.</div></td>';
 
-    const catchUpEntries = Array.from(catchUp.values())
-      .filter((item) => item.episodes.length)
-      .sort((a, b) => b.episodes.length - a.episodes.length);
-
-    const catchUpHtml = catchUpEntries.length
-      ? '<div style="font-size:12px;font-weight:800;letter-spacing:1.4px;color:#f59e0b;text-transform:uppercase;margin:28px 0 10px;">Catch-up</div>' +
-        '<div style="background:#ffffff;border:1px solid #e7e9ee;border-radius:10px;padding:12px 16px;">' +
-        catchUpEntries.map(({ show, episodes }) =>
-          '<div style="font-size:14px;line-height:1.5;color:#151820;padding:4px 0;">' +
-          '<a href="https://mytvtracker.app/show/' + show.tvmaze_id + '" style="color:#151820;text-decoration:none;font-weight:800;">' + escapeHtml(show.title) + '</a>' +
-          '<span style="color:#68707e;"> · ' + episodes.length + (episodes.length === 1 ? ' episode' : ' episodes') + ' behind</span>' +
-          '</div>'
-        ).join("") +
-        '<div style="font-size:12px;line-height:1.5;color:#68707e;margin-top:8px;">Only aired, unwatched episodes are counted.</div>' +
-        '</div>'
-      : "";
+    // Do not infer a catch-up count from every historical TVMaze episode.
+    // Older episodes may have been watched before tracking was enabled, so
+    // an inferred count is misleading. Users manage watched state on show pages.
+    const catchUpHtml = '<div style="margin-top:28px;background:#ffffff;border:1px solid #e7e9ee;border-radius:10px;padding:14px 16px;">' +
+      '<div style="font-size:12px;font-weight:800;letter-spacing:1.2px;color:#f59e0b;text-transform:uppercase;">Catch up on your shows</div>' +
+      '<div style="font-size:13px;line-height:1.5;color:#68707e;margin-top:6px;">Review episodes and mark what you have watched in My TV Tracker.</div>' +
+      '<a href="https://mytvtracker.app/my-shows" style="font-size:13px;color:#151820;font-weight:800;">Manage watched episodes →</a></div>';
 
     const hero = '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background:#151820;border-radius:16px;overflow:hidden;">' +
       "<tr>" + (heroImage ? '<td width="96" valign="middle" style="padding:18px 0 18px 18px;">' + heroImage + "</td>" : "") +
