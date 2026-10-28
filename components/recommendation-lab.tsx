@@ -97,16 +97,17 @@ export default function RecommendationLab() {
   <section className="panel" style={{padding:24}}>
    <h2 style={{marginTop:0}}>How should we find your next show?</h2>
    <div style={{display:"flex",flexWrap:"wrap",gap:10,marginBottom:18}}>
-    {signedIn&&<button type="button" onClick={()=>{setMode("tracked");setShowMore(false)}} className="nav-pill" style={{border:mode==="tracked"?"2px solid #f59e0b":"1px solid #777",padding:"10px 16px",cursor:"pointer"}}>Based on My Shows ({tracked.length})</button>}
-    <button type="button" onClick={()=>{setMode("pick");setShowMore(false)}} className="nav-pill" style={{border:mode==="pick"?"2px solid #f59e0b":"1px solid #777",padding:"10px 16px",cursor:"pointer"}}>Choose shows I love</button>
+    {signedIn&&<button type="button" onClick={()=>{setMode("tracked");setShowMore(false)}} className="nav-pill" style={{border:mode==="tracked"?"2px solid #f59e0b":"1px solid #777",padding:"10px 16px",cursor:"pointer"}}>Based on Shows I’m Watching Now ({tracked.length})</button>}
+    <button type="button" onClick={()=>{setMode("pick");setShowMore(false)}} className="nav-pill" style={{border:mode==="pick"?"2px solid #f59e0b":"1px solid #777",padding:"10px 16px",cursor:"pointer"}}>Based on Shows I Love(d)</button>
    </div>
    {mode==="pick"?<div>
-    <p className="muted">Search and select 3–5 favourites. No account required.</p>
+    <p className="muted">Choose 3–5 shows you love or loved, including series that have ended. These are taste preferences, not shows you’re tracking.</p>
     <input aria-label="Search favourite TV shows" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search a show, e.g. Breaking Bad" style={{width:"100%",maxWidth:520,padding:13,borderRadius:10,border:"1px solid #777",background:"var(--panel)",color:"inherit"}}/>
     {searching&&<p className="muted">Searching…</p>}
     {query.length>=2&&<div style={{display:"grid",gap:6,maxWidth:600,marginTop:10}}>{searchResults.filter(s=>!selected.some(x=>x.id===s.id)).slice(0,8).map(s=><button key={s.id} type="button" onClick={()=>{setSelected(a=>[...a,s]);setQuery("");setSearchResults([]);setShowMore(false)}} style={{display:"flex",gap:12,alignItems:"center",textAlign:"left",padding:9,border:"1px solid var(--line)",borderRadius:9,background:"var(--panel)",color:"inherit",cursor:"pointer"}}>{s.image?.medium&&<img src={s.image.medium} alt="" width={32} height={44} style={{objectFit:"cover",borderRadius:4}}/>}<span>{s.name} <span className="muted">· {(s.genres||[]).slice(0,2).join(", ")}</span></span><strong style={{marginLeft:"auto"}}>+ Add</strong></button>)}</div>}
+    {selected.length>0&&<p className="muted" style={{fontSize:13,marginTop:12}}>These picks are just for recommendations — they won’t be added to My Shows. Want alerts and episode tracking for a currently airing series? <Link href="/login" className="accent">Sign in or create an account</Link> and track it from its show page.</p>}
     <div style={{display:"flex",flexWrap:"wrap",gap:8,marginTop:16}}>{selected.map(s=><button type="button" key={s.id} onClick={()=>setSelected(a=>a.filter(x=>x.id!==s.id))} style={{padding:"9px 12px",border:"1px solid #f59e0b",borderRadius:30,background:"var(--panel)",color:"inherit",cursor:"pointer"}}>{s.name} ×</button>)}</div>
-   </div>:<p className="muted">Using your tracked series to find related shows. Already-tracked titles are excluded from results. <Link href="/my-shows" className="accent">Manage My Shows</Link></p>}
+   </div>:<p className="muted">Using shows you currently track to find related series. Already-tracked titles are excluded from results. <Link href="/my-shows" className="accent">Manage My Shows</Link></p>}
    {loading&&<p className="muted">Loading your shows and recommendations…</p>}
    {error&&<p role="alert" className="muted">{error}</p>}
   </section>
@@ -116,7 +117,7 @@ export default function RecommendationLab() {
    {feedback&&<p role="alert" className="muted">{feedback}</p>}
    {hiddenLoaded&&hidden.length>0&&<div style={{marginBottom:18}}><button type="button" onClick={()=>setShowHidden(v=>!v)} className="nav-pill" style={{padding:"9px 13px",cursor:"pointer"}}>{showHidden?"Hide list":"Manage hidden shows"} ({hidden.length})</button>
     {showHidden&&<div className="panel" style={{marginTop:10,padding:15,display:"flex",gap:10,flexWrap:"wrap"}}>{hidden.map(s=><button type="button" key={s.id} onClick={()=>restore(s)} style={{padding:"9px 12px",border:"1px solid var(--line)",borderRadius:9,background:"var(--panel)",color:"inherit",cursor:"pointer"}}>{s.name} · Restore</button>)}</div>}</div>}
-   {!seeds.length&&<p className="muted">{mode==="tracked"?"No tracked shows were found. Choose a few favourites instead.":"Pick a few shows above to start discovering similar series."}</p>}
+   {!seeds.length&&<p className="muted">{mode==="tracked"?"No tracked shows were found. Choose a few favourites instead.":"Choose shows you love or loved above to discover similar series — whether they are still airing or have ended."}</p>}
    {!!seeds.length&&!loading&&<p className="muted">Based on {seeds.length} {seeds.length===1?"show":"shows"} you like. Matching genres and story themes; results are suggestions, not viewing-history predictions.</p>}
    {!!seeds.length&&!loading&&!recommendations.length&&<p className="muted">No close matches in our current discovery catalogue. Try choosing shows with different genres.</p>}
    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(190px,1fr))",gap:16}}>
