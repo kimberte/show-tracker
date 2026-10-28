@@ -30,6 +30,29 @@ export default function RecommendationLab() {
  const [error,setError]=useState("");
  const [mode,setMode]=useState<"tracked"|"pick">("pick");
  const [showMore,setShowMore]=useState(false);
+ const [hidden,setHidden]=useState<{id:number;name:string}[]>([]);
+ const [lastHidden,setLastHidden]=useState<{id:number;name:string}|null>(null);
+ const [showHidden,setShowHidden]=useState(false);
+ const [feedback,setFeedback]=useState("");
+ const [hiddenLoaded,setHiddenLoaded]=useState(false);
+ useEffect(()=>{try{const stored=JSON.parse(localStorage.getItem("mytvtracker:recommendation-hidden")||"[]");if(Array.isArray(stored))setHidden(stored.filter(x=>Number.isInteger(x.id)&&typeof x.name==="string"));}catch{}setHiddenLoaded(true)},[]);
+ async function dismiss(show:Show) {
+  const next=[...hidden.filter(x=>x.id!==show.id),{id:show.id,name:show.name}];
+  setHidden(next);setLastHidden({id:show.id,name:show.name});setFeedback("");
+  if(signedIn){
+   const db=getSupabase();const {data:{user}}=await db.auth.getUser();
+   if(user){const {error}=await db.from("recommendation_dismissals").upsert({user_id:user.id,tvmaze_show_id:show.id,show_title:show.name},{onConflict:"user_id,tvmaze_show_id"});
+    if(error){setHidden(hidden);setLastHidden(null);setFeedback("Could not save your dismissal. Please try again.");}}
+  }else{localStorage.setItem("mytvtracker:recommendation-hidden",JSON.stringify(next));}
+ }
+ async function restore(show:{id:number;name:string}) {
+  const previous=hidden;setHidden(a=>a.filter(x=>x.id!==show.id));setLastHidden(null);setFeedback("");
+  if(signedIn){
+   const db=getSupabase();const {data:{user}}=await db.auth.getUser();
+   if(user){const {error}=await db.from("recommendation_dismissals").delete().eq("user_id",user.id).eq("tvmaze_show_id",show.id);
+    if(error){setHidden(previous);setFeedback("Could not restore this show. Please try again.");}}
+  }else{localStorage.setItem("mytvtracker:recommendation-hidden",JSON.stringify(previous.filter(x=>x.id!==show.id)));}
+ }
  useEffect(()=>{
   let active=true;
   async function load(){
@@ -48,7 +71,8 @@ export default function RecommendationLab() {
      const loaded=await Promise.all(ids.slice(0,35).map(async(id:number)=>{
       try{const r=await fetch("/api/lab/recommendation-show?id="+id);return r.ok?await r.json():null;}catch{return null;}
      }));
-     if(active){setSignedIn(true);setTracked(loaded.filter(Boolean));if(ids.length)setMode("tracked");}
+     const {data:excluded,error:excludedError}=await supabase.from("recommendation_dismissals").select("tvmaze_show_id,show_title").eq("user_id",user.id);
+     if(active){setSignedIn(true);setTracked(loaded.filter(Boolean));if(ids.length)setMode("tracked");if(!excludedError)setHidden((excluded||[]).map((x:any)=>({id:Number(x.tvmaze_show_id),name:x.show_title||"Unknown show"})));else setFeedback("Could not load saved hidden shows.");}
     }
    }catch{ /* Guests can still choose shows. */ }
    if(active)setLoading(false);
@@ -64,11 +88,11 @@ export default function RecommendationLab() {
  const seeds=mode==="tracked"?tracked:selected;
  const recommendations=useMemo(()=>{
   if(!seeds.length)return [];
-  const excluded=new Set([...tracked,...selected].map(s=>s.id));
+  const excluded=new Set([...tracked,...selected,...hidden].map(s=>s.id));
   return candidates.filter(s=>!excluded.has(s.id)&&s.language==="English"&&(s.genres||[]).length>0)
    .map(s=>({...s,...rank(s,seeds)})).filter(s=>s.score>=5)
    .sort((a,b)=>b.score-a.score).slice(0,showMore?36:12);
- },[candidates,seeds,selected,tracked,showMore]);
+ },[candidates,seeds,selected,tracked,hidden,showMore]);
  return <div style={{display:"grid",gap:22,margin:"22px 0 44px"}}>
   <section className="panel" style={{padding:24}}>
    <h2 style={{marginTop:0}}>How should we find your next show?</h2>
@@ -88,6 +112,10 @@ export default function RecommendationLab() {
   </section>
   <section>
    <h2>{seeds.length?"Recommended for you":"Your recommendations will appear here"}</h2>
+   {lastHidden&&<p role="status" className="muted">Hidden <strong>{lastHidden.name}</strong>. <button type="button" onClick={()=>restore(lastHidden)} className="accent" style={{background:"none",border:0,cursor:"pointer",fontWeight:800}}>Undo</button></p>}
+   {feedback&&<p role="alert" className="muted">{feedback}</p>}
+   {hiddenLoaded&&hidden.length>0&&<div style={{marginBottom:18}}><button type="button" onClick={()=>setShowHidden(v=>!v)} className="nav-pill" style={{padding:"9px 13px",cursor:"pointer"}}>{showHidden?"Hide list":"Manage hidden shows"} ({hidden.length})</button>
+    {showHidden&&<div className="panel" style={{marginTop:10,padding:15,display:"flex",gap:10,flexWrap:"wrap"}}>{hidden.map(s=><button type="button" key={s.id} onClick={()=>restore(s)} style={{padding:"9px 12px",border:"1px solid var(--line)",borderRadius:9,background:"var(--panel)",color:"inherit",cursor:"pointer"}}>{s.name} · Restore</button>)}</div>}</div>}
    {!seeds.length&&<p className="muted">{mode==="tracked"?"No tracked shows were found. Choose a few favourites instead.":"Pick a few shows above to start discovering similar series."}</p>}
    {!!seeds.length&&!loading&&<p className="muted">Based on {seeds.length} {seeds.length===1?"show":"shows"} you like. Matching genres and story themes; results are suggestions, not viewing-history predictions.</p>}
    {!!seeds.length&&!loading&&!recommendations.length&&<p className="muted">No close matches in our current discovery catalogue. Try choosing shows with different genres.</p>}
@@ -97,11 +125,11 @@ export default function RecommendationLab() {
      <div style={{fontSize:12,color:"#f59e0b",fontWeight:700}}>Because you like {s.reason}</div>
      <p className="muted" style={{fontSize:13,lineHeight:1.5,margin:0,flex:1}}>{clean(s.summary).slice(0,145)}{clean(s.summary).length>145?"…":""}</p>
      <div style={{fontSize:12}}>{(s.genres||[]).slice(0,3).join(" · ")}</div>
-     <TrackButton showId={s.id} title={s.name} compact/>
+     <TrackButton showId={s.id} title={s.name} compact/><button type="button" onClick={()=>dismiss(s)} aria-label={"Not interested in "+s.name} style={{padding:"9px 12px",border:"1px solid var(--line)",borderRadius:9,background:"transparent",color:"inherit",cursor:"pointer",fontWeight:700}}>✕ Not interested</button>
     </article>)}
    </div>
    {recommendations.length>=12&&!showMore&&<button type="button" onClick={()=>setShowMore(true)} className="nav-pill" style={{marginTop:20,padding:12,cursor:"pointer"}}>Show more recommendations</button>}
   </section>
-  <p className="muted" style={{fontSize:13}}>Experimental recommendation engine · Powered by TVMaze show metadata. The candidate pool currently prioritizes shows in the public discovery catalogue, not every show ever produced. No favourite-show selections are saved to your account.</p>
+  <p className="muted" style={{fontSize:13}}>Experimental recommendation engine · Powered by TVMaze show metadata. The candidate pool currently prioritizes shows in the public discovery catalogue, not every show ever produced. No favourite-show selections are saved to your account. Hidden shows are saved to your account when signed in, or locally in this browser for guests.</p>
  </div>;
 }
