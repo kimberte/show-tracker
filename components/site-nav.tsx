@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { getSupabase } from "@/lib/supabase";
 
 const links = [
   { href: "/today", label: "Today" },
@@ -16,6 +17,15 @@ const links = [
 export default function SiteNav() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [authenticated, setAuthenticated] = useState<boolean | null>(null);
+  useEffect(() => {
+    const supabase = getSupabase();
+    supabase.auth.getUser().then(({data})=>setAuthenticated(!!data.user)).catch(()=>setAuthenticated(false));
+    const {data:{subscription}}=supabase.auth.onAuthStateChange((_event,session)=>setAuthenticated(!!session?.user));
+    return ()=>subscription.unsubscribe();
+  }, []);
+  const gated = (href:string)=>["/my-shows","/settings/notifications","/profile"].includes(href);
+  const navHref = (href:string)=>authenticated===false&&gated(href)?"/login?next="+encodeURIComponent(href):href;
 
   useEffect(() => {
     if (!open) return;
@@ -50,11 +60,14 @@ export default function SiteNav() {
           <Link
             key={link.href}
             className={`nav-pill${isActive(link.href) ? " active" : ""}`}
-            href={link.href}
+            href={navHref(link.href)}
+            title={authenticated===false&&gated(link.href)?"Sign in to use "+link.label:undefined}
+            style={authenticated===false&&gated(link.href)?{opacity:.56}:undefined}
           >
             {link.label}
           </Link>
         ))}
+        {authenticated===false&&<Link href="/login" className="nav-pill" style={{border:"1px solid var(--accent)",color:"var(--accent)"}}>Sign in / Join</Link>}
       </div>
 
       <button
@@ -93,13 +106,15 @@ export default function SiteNav() {
                 <Link
                   key={link.href}
                   className={`mobile-nav-link${isActive(link.href) ? " active" : ""}`}
-                  href={link.href}
+                  href={navHref(link.href)}
+                  style={authenticated===false&&gated(link.href)?{opacity:.6}:undefined}
                   onClick={() => setOpen(false)}
                 >
-                  <span>{link.label}</span>
+                  <span>{link.label}{authenticated===false&&gated(link.href)?" · Sign in required":""}</span>
                   <span className="mobile-nav-arrow">›</span>
                 </Link>
               ))}
+              {authenticated===false&&<Link href="/login" className="mobile-nav-link" onClick={()=>setOpen(false)}>Sign in / Create account</Link>}
             </div>
           </div>
         </div>
