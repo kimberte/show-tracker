@@ -35,6 +35,8 @@ export default function RecommendationLab() {
  const [showHidden,setShowHidden]=useState(false);
  const [feedback,setFeedback]=useState("");
  const [hiddenLoaded,setHiddenLoaded]=useState(false);
+ const [refreshCycle,setRefreshCycle]=useState(0);
+ useEffect(()=>{try{const key="mytvtracker:recommendation-visits";const count=Number(localStorage.getItem(key)||"0")+1;localStorage.setItem(key,String(count));setRefreshCycle(Math.floor(count/5));}catch{}},[]);
  useEffect(()=>{try{const stored=JSON.parse(localStorage.getItem("mytvtracker:recommendation-hidden")||"[]");if(Array.isArray(stored))setHidden(stored.filter(x=>Number.isInteger(x.id)&&typeof x.name==="string"));}catch{}setHiddenLoaded(true)},[]);
  async function dismiss(show:Show) {
   const next=[...hidden.filter(x=>x.id!==show.id),{id:show.id,name:show.name}];
@@ -57,7 +59,7 @@ export default function RecommendationLab() {
   let active=true;
   async function load(){
    try{
-    const r=await fetch("/api/discover");
+    const r=await fetch("/api/discover"+(refreshCycle>0?"?refresh="+refreshCycle:""),{cache:"no-store"});
     if(!r.ok)throw new Error("Recommendations are temporarily unavailable.");
     const data=await r.json();if(active)setCandidates(Array.isArray(data)?data:[]);
    }catch(e){if(active)setError(e instanceof Error?e.message:"Could not load shows.");}
@@ -78,7 +80,7 @@ export default function RecommendationLab() {
    if(active)setLoading(false);
   }
   load();return()=>{active=false};
- },[]);
+ },[refreshCycle]);
  useEffect(()=>{
   if(query.trim().length<2){setSearchResults([]);setSearching(false);return;}
   const controller=new AbortController();setSearching(true);
@@ -91,8 +93,8 @@ export default function RecommendationLab() {
   const excluded=new Set([...tracked,...selected,...hidden].map(s=>s.id));
   return candidates.filter(s=>!excluded.has(s.id)&&s.language==="English"&&(s.genres||[]).length>0)
    .map(s=>({...s,...rank(s,seeds)})).filter(s=>s.score>=5)
-   .sort((a,b)=>b.score-a.score).slice(0,showMore?36:12);
- },[candidates,seeds,selected,tracked,hidden,showMore]);
+   .sort((a,b)=>((b.score+(refreshCycle%4)*((b.id%7)/20))-(a.score+(refreshCycle%4)*((a.id%7)/20)))).slice(0,showMore?36:12);
+ },[candidates,seeds,selected,tracked,hidden,showMore,refreshCycle]);
  return <div style={{display:"grid",gap:22,margin:"22px 0 44px"}}>
   <section className="panel" style={{padding:24}}>
    <h2 style={{marginTop:0}}>How should we find your next show?</h2>
@@ -118,7 +120,7 @@ export default function RecommendationLab() {
    {hiddenLoaded&&hidden.length>0&&<div style={{marginBottom:18}}><button type="button" onClick={()=>setShowHidden(v=>!v)} className="nav-pill" style={{padding:"9px 13px",cursor:"pointer"}}>{showHidden?"Hide list":"Manage hidden shows"} ({hidden.length})</button>
     {showHidden&&<div className="panel" style={{marginTop:10,padding:15,display:"flex",gap:10,flexWrap:"wrap"}}>{hidden.map(s=><button type="button" key={s.id} onClick={()=>restore(s)} style={{padding:"9px 12px",border:"1px solid var(--line)",borderRadius:9,background:"var(--panel)",color:"inherit",cursor:"pointer"}}>{s.name} · Restore</button>)}</div>}</div>}
    {!seeds.length&&<p className="muted">{mode==="tracked"?"No tracked shows were found. Choose a few favourites instead.":"Choose shows you love or loved above to discover similar series — whether they are still airing or have ended."}</p>}
-   {!!seeds.length&&!loading&&<p className="muted">Based on {seeds.length} {seeds.length===1?"show":"shows"} you like. Matching genres and story themes; results are suggestions, not viewing-history predictions.</p>}
+   {!!seeds.length&&!loading&&<p className="muted">Based on {seeds.length} {seeds.length===1?"show":"shows"} you like. Matching genres and story themes. We refresh the mix every fifth visit, while keeping dismissed titles hidden.</p>}
    {!!seeds.length&&!loading&&!recommendations.length&&<p className="muted">No close matches in our current discovery catalogue. Try choosing shows with different genres.</p>}
    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(190px,1fr))",gap:16}}>
     {recommendations.map(s=><article key={s.id} className="panel" style={{padding:12,display:"flex",flexDirection:"column",gap:9}}>
