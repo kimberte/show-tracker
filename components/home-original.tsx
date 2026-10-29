@@ -5,6 +5,7 @@ import Link from "next/link";
 import TrackButton from "@/components/track-button";
 import SiteNav from "@/components/site-nav";
 import TvBotLoader from "@/components/tv-bot-loader";
+import ExpertPicks from "@/components/expert-picks";
 import { getSupabase } from "@/lib/supabase";
 import { trackEvent } from "@/lib/analytics";
 
@@ -380,6 +381,7 @@ export default function Home() {
       )}
 
 
+      <ExpertPicks />
       <section className="home-rail-section home-today">
         <div className="section-heading">
           <div>
