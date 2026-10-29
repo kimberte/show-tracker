@@ -97,8 +97,8 @@ export default function RecommendationLab() {
    .map(s=>({...s,...rank(s,seeds)})).filter(s=>s.score>=5)
    .sort((a,b)=>((b.score+(refreshCycle%4)*((b.id%7)/20))-(a.score+(refreshCycle%4)*((a.id%7)/20)))).slice(0,showMore?36:12);
  },[candidates,seeds,selected,tracked,hidden,showMore,refreshCycle,yearFilter]);
- return <div style={{display:"grid",gap:22,margin:"22px 0 44px"}}>
-  <section className="panel" style={{padding:24}}>
+ return <div className="recommendation-lab-layout">
+  <section className="panel recommendation-controls" style={{padding:24}}>
    <h2 style={{marginTop:0}}>Find your next show</h2>
    <div style={{display:"flex",flexWrap:"wrap",gap:10,marginBottom:18}}>
     {signedIn&&<button type="button" onClick={()=>{setMode("tracked");setShowMore(false)}} className="nav-pill" style={{border:mode==="tracked"?"2px solid #f59e0b":"1px solid #777",padding:"10px 16px",cursor:"pointer"}}>Based on Shows I’m Watching Now ({tracked.length})</button>}
