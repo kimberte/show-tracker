@@ -381,6 +381,19 @@ export default function Home() {
       )}
 
 
+      <section className="home-discover-feature" aria-labelledby="home-discover-title">
+        <div className="home-discover-feature-content">
+          <div className="accent eyebrow">FIND YOUR NEXT OBSESSION</div>
+          <h2 id="home-discover-title">What should you watch next?</h2>
+          <p>Discover great shows, get recommendations based on what you love, or browse what's popular right now.</p>
+          <div className="home-discover-feature-actions">
+            <Link href="/discover" className="primary-button">Explore shows & recommendations →</Link>
+            <span>Personalized picks · Trending shows · Browse by genre</span>
+          </div>
+        </div>
+        <div className="home-discover-feature-art" aria-hidden="true"><span>✦</span><span>TV</span></div>
+      </section>
+
       <ExpertPicks />
       <section className="home-rail-section home-today">
         <div className="section-heading">
