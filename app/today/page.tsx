@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import SiteNav from "@/components/site-nav";
+import TvBotLoader from "@/components/tv-bot-loader";
 import { getSupabase } from "@/lib/supabase";
 
 type Show = {
@@ -140,7 +141,7 @@ export default function Today() {
       </header>
 
       {loading ? (
-        <p className="muted">Checking your shows…</p>
+        <TvBotLoader label="Checking today’s episodes…"/>
        ) : !signedIn ? (
         <section className="panel empty-state">
           <h2>Sign in to see your TV schedule</h2>
