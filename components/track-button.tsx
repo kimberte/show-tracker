@@ -18,6 +18,7 @@ export default function TrackButton({
   const [message, setMessage] = useState("");
   const [tracked, setTracked] = useState(false);
   const [checked, setChecked] = useState(false);
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -29,10 +30,11 @@ export default function TrackButton({
       } = await supabase.auth.getUser();
 
       if (!user) {
-        if (active) setChecked(true);
+        if (active) { setSignedIn(false); setChecked(true); }
         return;
       }
 
+      if (active) setSignedIn(true);
       const { data: show } = await supabase
         .from("shows")
         .select("id")
@@ -170,6 +172,10 @@ export default function TrackButton({
     fontWeight: 800,
     opacity: busy || !checked ? 0.7 : 1,
   };
+
+  if (signedIn === false) {
+    return <Link href={"/login?next=" + encodeURIComponent("/show/" + showId)} className="track-signin-link">Sign in to track</Link>;
+  }
 
   if (tracked) {
     return (
