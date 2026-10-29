@@ -305,6 +305,7 @@ export default function Home() {
               {loading ? "Searching…" : "Search"}
             </button>
         </form>
+        {loading && <div style={{marginTop:14}}><TvBotLoader label="Searching the TV universe…"/></div>}
         {searchError && <p className="muted home-search-error">{searchError}</p>}
         {searched && !searchError && !loading && results.length === 0 && (
           <div className="home-search-empty">
@@ -314,7 +315,7 @@ export default function Home() {
         )}
       </section>
 
-      {results.length > 0 && (
+      {!loading && results.length > 0 && (
         <section className="home-results" aria-live="polite">
           <div className="section-heading">
             <h2>Search results</h2>
