@@ -675,3 +675,5 @@ button{cursor:pointer}
 @keyframes tvbot-bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-7px) rotate(2deg)}}
 @keyframes tvbot-blink{0%,43%,47%,100%{transform:scaleY(1)}45%{transform:scaleY(.12)}}
 @media(prefers-reduced-motion:reduce){.tvbot,.tvbot-eyes{animation:none}}
+
+@media(max-width:640px){.home-live-schedule-grid>.panel:nth-child(n+4){display:none}}
