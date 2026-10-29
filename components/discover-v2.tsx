@@ -19,11 +19,11 @@ export default function DiscoverV2({episodes}:{episodes:GuideEpisode[]}){
  const filtered=useMemo(()=>shows.filter(s=>s.language==="English"&&(genre==="All"||s.genres?.includes(genre))&&(airing==="All"||(airing==="Airing soon"?!!s._nextAirdate:!s._nextAirdate))&&(!q.trim()||(s.name+" "+(s.network?.name||s.webChannel?.name||"")).toLowerCase().includes(q.trim().toLowerCase()))),[shows,genre,airing,q]);
  const tabs=[{id:"for-you",title:"Recommendations",sub:"Find your next favourite"},{id:"browse",title:"Browse shows",sub:"Explore by genre and title"},{id:"schedule",title:"TV schedule",sub:"What's airing this week"}] as const;
  return <div style={{paddingBottom:50}}>
- <div role="tablist" aria-label="Discover TV" style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(170px,1fr))",gap:10,margin:"24px 0"}}>
- {tabs.map(t=><button key={t.id} type="button" role="tab" aria-selected={tab===t.id} onClick={()=>setTab(t.id)} style={{textAlign:"left",padding:"17px 18px",borderRadius:14,border:tab===t.id?"2px solid var(--accent)":"1px solid var(--line)",background:"var(--panel)",color:"inherit",cursor:"pointer",boxShadow:tab===t.id?"0 0 0 1px rgba(255,150,0,.15)":"none"}}><strong style={{display:"block",fontSize:17}}>{t.title}</strong><span className="muted" style={{fontSize:13}}>{t.sub}</span></button>)}
+ <div role="tablist" aria-label="Discover TV" className="discover-mode-tabs">
+ {tabs.map(t=><button key={t.id} type="button" role="tab" aria-selected={tab===t.id} onClick={()=>setTab(t.id)} className="discover-mode-tab"><strong style={{display:"block",fontSize:17}}>{t.title}</strong><span className="muted" style={{fontSize:13}}>{t.sub}</span></button>)}
  </div>
  <div role="tabpanel">
- {tab==="for-you"&&<><section className="panel" style={{padding:"18px 22px",marginBottom:12}}><div className="accent eyebrow">MADE FOR YOUR TASTE</div><h2 style={{margin:"8px 0"}}>Your next favourite is waiting</h2><p className="muted" style={{margin:0}}>Your taste, your picks. Dismiss what doesn't click.</p></section><RecommendationLab/></>}
+ {tab==="for-you"&&<RecommendationLab/>}
  {tab==="browse"&&<section><div className="panel" style={{padding:20,display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12}}>
  <label style={{display:"grid",gap:7}}>Search shows<input value={q} onChange={e=>{setQ(e.target.value);setLimit(36)}} placeholder="Title or network" style={{padding:12,borderRadius:9}}/></label>
  <label style={{display:"grid",gap:7}}>Genre<select value={genre} onChange={e=>{setGenre(e.target.value);setLimit(36)}} style={{padding:12,borderRadius:9}}>{genres.map(g=><option key={g}>{g}</option>)}</select></label>
