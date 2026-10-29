@@ -4,6 +4,7 @@ import {useRouter} from "next/navigation";
 import Link from "next/link";
 import {getSupabase} from "@/lib/supabase";
 import {trackEvent} from "@/lib/analytics";
+import TvBotLoader from "@/components/tv-bot-loader";
 const SITE_URL=process.env.NEXT_PUBLIC_SITE_URL||"https://www.mytvtracker.app";
 function destination(){if(typeof window==="undefined")return "/";const path=new URLSearchParams(window.location.search).get("next")||"/";return path.startsWith("/")&&!path.startsWith("//")?path:"/";}
 export default function Login(){
@@ -24,6 +25,7 @@ export default function Login(){
  <input id="email" required type="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="you@example.com" autoComplete="email" style={{padding:15,borderRadius:10,border:"1px solid var(--line)",background:"var(--panel)",color:"inherit",fontSize:16}}/>
  <button disabled={busy} style={{padding:15,border:0,borderRadius:10,background:"var(--accent)",fontWeight:800,fontSize:16,opacity:busy?.7:1,cursor:busy?"wait":"pointer"}}>{busy?"Sending secure link…":"Continue with email"}</button>
  </form>
+ {busy&&<TvBotLoader label="Sending your sign-in link…"/>}
  {message&&<p role="status" style={{marginTop:16,lineHeight:1.5}}>{message}</p>}
  <p className="muted" style={{fontSize:13,marginTop:20}}>New here? Continuing with your email creates your account if you don't have one. No password required.</p>
  </section>
