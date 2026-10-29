@@ -179,7 +179,7 @@ export default function ProfilePage() {
             <Link href="/my-shows" className="accent">Review My Shows →</Link>
           </section>
 
-          <section className="panel" style={{padding:24,marginBottom:20}}><h2>Install My TV Tracker</h2><p className="muted">Add the app to your home screen.</p><Link href="/install" className="nav-pill">Installation guide</Link></section>
+          <section className="panel profile-install-panel"><h2>Install My TV Tracker</h2><p className="muted">Add the app to your home screen.</p><div className="profile-install-actions"><Link href="/install" className="nav-pill">Installation guide</Link></div></section>
           <section className="panel account-panel">
             <div>
               <div className="accent eyebrow">ACCOUNT</div>
