@@ -752,3 +752,9 @@ button{cursor:pointer}
  .discover-mode-tabs>.discover-mode-tab strong{font-size:clamp(10px,2.85vw,13px)!important;white-space:nowrap!important}
  .discover-mode-tabs>.discover-mode-tab .muted{display:none!important}
 }
+
+/* Keep trailer and tracking actions together on recommendation cards. */
+.recommendation-card-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px}
+.recommendation-card-actions>*{min-width:0}
+.recommendation-trailer-link{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-size:13px;font-weight:700;padding:9px 11px;white-space:nowrap}
+@media(max-width:640px){.recommendation-card-actions{gap:7px}.recommendation-trailer-link{font-size:12px;padding:9px}}
