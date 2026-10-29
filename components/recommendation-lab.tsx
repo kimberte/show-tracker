@@ -4,7 +4,7 @@ import Link from "next/link";
 import TrackButton from "@/components/track-button";
 import { getSupabase } from "@/lib/supabase";
 
-type Show = { id:number; name:string; genres?:string[]; summary?:string|null; language?:string|null; status?:string|null; rating?:{average?:number|null}; weight?:number; image?:{medium?:string;original?:string}|null; network?:{name?:string;country?:{name?:string}}|null; webChannel?:{name?:string;country?:{name?:string}}|null; _nextAirdate?:string|null };
+type Show = { id:number; name:string; premiered?:string|null; genres?:string[]; summary?:string|null; language?:string|null; status?:string|null; rating?:{average?:number|null}; weight?:number; image?:{medium?:string;original?:string}|null; network?:{name?:string;country?:{name?:string}}|null; webChannel?:{name?:string;country?:{name?:string}}|null; _nextAirdate?:string|null };
 const clean = (s?:string|null) => (s||"").replace(/<[^>]+>/g," ").replace(/&[^;]+;/g," ").replace(/\s+/g," ").trim();
 const tokens = (s:string) => new Set(clean(s).toLowerCase().split(/[^a-z]+/).filter(w=>w.length>4&&!["about","their","these","which","after","before","where","while","there","series","story","shows","young","world","family"].includes(w)));
 function rank(candidate:Show, liked:Show[]) {
@@ -30,6 +30,7 @@ export default function RecommendationLab() {
  const [error,setError]=useState("");
  const [mode,setMode]=useState<"tracked"|"pick">("pick");
  const [showMore,setShowMore]=useState(false);
+ const [yearFilter,setYearFilter]=useState("all");
  const [hidden,setHidden]=useState<{id:number;name:string}[]>([]);
  const [lastHidden,setLastHidden]=useState<{id:number;name:string}|null>(null);
  const [showHidden,setShowHidden]=useState(false);
@@ -91,10 +92,10 @@ export default function RecommendationLab() {
  const recommendations=useMemo(()=>{
   if(!seeds.length)return [];
   const excluded=new Set([...tracked,...selected,...hidden].map(s=>s.id));
-  return candidates.filter(s=>!excluded.has(s.id)&&s.language==="English"&&(s.genres||[]).length>0)
+  return candidates.filter(s=>!excluded.has(s.id)&&s.language==="English"&&(s.genres||[]).length>0&&(yearFilter==="all"||(s.premiered&&Number(s.premiered.slice(0,4))>=Number(yearFilter))))
    .map(s=>({...s,...rank(s,seeds)})).filter(s=>s.score>=5)
    .sort((a,b)=>((b.score+(refreshCycle%4)*((b.id%7)/20))-(a.score+(refreshCycle%4)*((a.id%7)/20)))).slice(0,showMore?36:12);
- },[candidates,seeds,selected,tracked,hidden,showMore,refreshCycle]);
+ },[candidates,seeds,selected,tracked,hidden,showMore,refreshCycle,yearFilter]);
  return <div style={{display:"grid",gap:22,margin:"22px 0 44px"}}>
   <section className="panel" style={{padding:24}}>
    <h2 style={{marginTop:0}}>How should we find your next show?</h2>
@@ -122,9 +123,10 @@ export default function RecommendationLab() {
    {!seeds.length&&<p className="muted">{mode==="tracked"?"No tracked shows were found. Choose a few favourites instead.":"Choose shows you love or loved above to discover similar series — whether they are still airing or have ended."}</p>}
    {!!seeds.length&&!loading&&<p className="muted">Based on {seeds.length} {seeds.length===1?"show":"shows"} you like. Matching genres and story themes. We refresh the mix every fifth visit, while keeping dismissed titles hidden.</p>}
    {!!seeds.length&&!loading&&!recommendations.length&&<p className="muted">No close matches in our current discovery catalogue. Try choosing shows with different genres.</p>}
+   <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",margin:"14px 0 20px"}}><label htmlFor="recommendation-year" className="muted">Originally premiered</label><select id="recommendation-year" value={yearFilter} onChange={e=>{setYearFilter(e.target.value);setShowMore(false)}} style={{padding:"10px 12px",borderRadius:9}}><option value="all">Any year</option><option value="2020">2020 or newer</option><option value="2023">2023 or newer</option><option value="2025">2025 or newer</option></select></div>
    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(190px,1fr))",gap:16}}>
     {recommendations.map(s=><article key={s.id} className="panel" style={{padding:12,display:"flex",flexDirection:"column",gap:9}}>
-     <Link href={"/show/"+s.id} style={{textDecoration:"none",color:"inherit"}}>{s.image?.medium?<img src={s.image.original||s.image.medium} alt={s.name+" poster"} loading="lazy" style={{width:"100%",aspectRatio:"2/3",objectFit:"cover",borderRadius:10}}/>:<div style={{aspectRatio:"2/3",display:"grid",placeItems:"center",background:"#1b2635",borderRadius:10}}>No poster</div>}<h3 style={{margin:"10px 0 0",fontSize:17}}>{s.name}</h3></Link>
+     <Link href={"/show/"+s.id} style={{textDecoration:"none",color:"inherit"}}>{s.image?.medium?<img src={s.image.original||s.image.medium} alt={s.name+" poster"} loading="lazy" style={{width:"100%",aspectRatio:"2/3",objectFit:"cover",borderRadius:10}}/>:<div style={{aspectRatio:"2/3",display:"grid",placeItems:"center",background:"#1b2635",borderRadius:10}}>No poster</div>}<h3 style={{margin:"10px 0 0",fontSize:17}}>{s.name}</h3><span className="muted" style={{display:"block",fontSize:13,marginTop:4}}>First aired: {s.premiered?.slice(0,4)||"Year unknown"}</span></Link>
      <div style={{fontSize:12,color:"#f59e0b",fontWeight:700}}>Because you like {s.reason}</div>
      <p className="muted" style={{fontSize:13,lineHeight:1.5,margin:0,flex:1}}>{clean(s.summary).slice(0,145)}{clean(s.summary).length>145?"…":""}</p>
      <div style={{fontSize:12}}>{(s.genres||[]).slice(0,3).join(" · ")}</div>
