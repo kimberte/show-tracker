@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import SiteNav from "@/components/site-nav";
+import TvBotLoader from "@/components/tv-bot-loader";
 import { getSupabase } from "@/lib/supabase";
 
 type Show = {
@@ -295,7 +296,7 @@ export default function MyShows() {
       </header>
 
       {loading ? (
-        <p className="muted">Loading your shows…</p>
+        <TvBotLoader label="Finding your shows…"/>
        ) : !signedIn ? (
         <section className="panel empty-state">
           <h2>Your TV library starts here</h2>
