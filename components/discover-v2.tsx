@@ -2,6 +2,7 @@
 import {useEffect,useMemo,useState} from "react";
 import Link from "next/link";
 import RecommendationLab from "@/components/recommendation-lab";
+import TvBotLoader from "@/components/tv-bot-loader";
 import DiscoveryFilters,{type GuideEpisode} from "@/components/discovery-lab-filters";
 type Show={id:number;name:string;genres?:string[];language?:string;image?:{medium?:string}|null;network?:{name?:string}|null;webChannel?:{name?:string}|null;_nextAirdate?:string|null;status?:string};
 export default function DiscoverV2({episodes}:{episodes:GuideEpisode[]}){
@@ -22,13 +23,13 @@ export default function DiscoverV2({episodes}:{episodes:GuideEpisode[]}){
  {tabs.map(t=><button key={t.id} type="button" role="tab" aria-selected={tab===t.id} onClick={()=>setTab(t.id)} style={{textAlign:"left",padding:"17px 18px",borderRadius:14,border:tab===t.id?"2px solid var(--accent)":"1px solid var(--line)",background:"var(--panel)",color:"inherit",cursor:"pointer",boxShadow:tab===t.id?"0 0 0 1px rgba(255,150,0,.15)":"none"}}><strong style={{display:"block",fontSize:17}}>{t.title}</strong><span className="muted" style={{fontSize:13}}>{t.sub}</span></button>)}
  </div>
  <div role="tabpanel">
- {tab==="for-you"&&<><section className="panel" style={{padding:"18px 22px",marginBottom:12}}><div className="accent eyebrow">MADE FOR YOUR TASTE</div><h2 style={{margin:"8px 0"}}>Better suggestions, less scrolling</h2><p className="muted" style={{margin:0}}>Start with shows you're watching or pick favourites from any era. Hide suggestions you don't like and we'll remember them.</p></section><RecommendationLab/></>}
+ {tab==="for-you"&&<><section className="panel" style={{padding:"18px 22px",marginBottom:12}}><div className="accent eyebrow">MADE FOR YOUR TASTE</div><h2 style={{margin:"8px 0"}}>Your next favourite is waiting</h2><p className="muted" style={{margin:0}}>Your taste, your picks. Dismiss what doesn't click.</p></section><RecommendationLab/></>}
  {tab==="browse"&&<section><div className="panel" style={{padding:20,display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12}}>
  <label style={{display:"grid",gap:7}}>Search shows<input value={q} onChange={e=>{setQ(e.target.value);setLimit(36)}} placeholder="Title or network" style={{padding:12,borderRadius:9}}/></label>
  <label style={{display:"grid",gap:7}}>Genre<select value={genre} onChange={e=>{setGenre(e.target.value);setLimit(36)}} style={{padding:12,borderRadius:9}}>{genres.map(g=><option key={g}>{g}</option>)}</select></label>
  <label style={{display:"grid",gap:7}}>Availability<select value={airing} onChange={e=>{setAiring(e.target.value);setLimit(36)}} style={{padding:12,borderRadius:9}}><option value="All">All airing statuses</option><option value="Airing soon">Airing soon</option><option value="On hiatus">No upcoming episode</option></select></label>
  </div><p className="muted" style={{marginTop:15}}>Browsing English-language series in our discovery catalogue. For a broader search, use the site's main show search.</p>
- {loading&&<p role="status">Loading shows…</p>}{error&&<p role="alert">{error}</p>}
+ {loading&&<TvBotLoader label="Scanning the channels…"/>}{error&&<p role="alert">{error}</p>}
  <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:16,marginTop:18}}>{filtered.slice(0,limit).map(s=><Link href={"/show/"+s.id} key={s.id} className="panel" style={{padding:10,color:"inherit",textDecoration:"none"}}>{s.image?.medium?<img src={s.image.medium} alt={s.name+" poster"} loading="lazy" style={{width:"100%",aspectRatio:"2/3",objectFit:"cover",borderRadius:9}}/>:<div style={{aspectRatio:"2/3",background:"#202431",borderRadius:9}}/>}<h3 style={{fontSize:15,margin:"9px 0 4px"}}>{s.name}</h3><p className="muted" style={{fontSize:12,margin:0}}>{(s.genres||[]).slice(0,2).join(" · ")}</p></Link>)}</div>
  {!loading&&!error&&filtered.length===0&&<p className="muted">No shows match those filters.</p>}
  {filtered.length>limit&&<button className="nav-pill" style={{padding:12,marginTop:20,cursor:"pointer"}} onClick={()=>setLimit(v=>v+36)}>Load more shows</button>}
