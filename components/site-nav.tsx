@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import TvBotMark from "@/components/tv-bot-mark";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getSupabase } from "@/lib/supabase";
@@ -51,8 +52,8 @@ export default function SiteNav() {
 
   return (
     <nav className="site-nav">
-      <Link href="/" className="site-brand" onClick={() => setOpen(false)}>
-        <span className="accent">MY TV</span> TRACKER
+      <Link href="/" className="site-brand" style={{display:"inline-flex",alignItems:"center",gap:9}} onClick={() => setOpen(false)}>
+        <TvBotMark size={31}/><span><span className="accent">MY TV</span> TRACKER</span>
       </Link>
 
       <div className="site-nav-links">
