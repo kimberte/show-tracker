@@ -667,3 +667,11 @@ button{cursor:pointer}
   .home-feature-summary{-webkit-line-clamp:3}
   .home-feature-controls{left:18px;right:18px;bottom:15px}
 }
+
+/* Small loading mascot: lightweight CSS motion, no animation library */
+.tvbot-loading{display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;min-height:132px;color:var(--muted);font-size:14px}
+.tvbot{color:var(--accent);animation:tvbot-bob 1.8s ease-in-out infinite;filter:drop-shadow(0 9px 18px rgba(245,158,11,.16))}
+.tvbot-eyes{transform-origin:48px 44px;animation:tvbot-blink 4.8s infinite}
+@keyframes tvbot-bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-7px) rotate(2deg)}}
+@keyframes tvbot-blink{0%,43%,47%,100%{transform:scaleY(1)}45%{transform:scaleY(.12)}}
+@media(prefers-reduced-motion:reduce){.tvbot,.tvbot-eyes{animation:none}}
