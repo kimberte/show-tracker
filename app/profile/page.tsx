@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import SiteNav from "@/components/site-nav";
+import TvBotLoader from "@/components/tv-bot-loader";
 import { getSupabase } from "@/lib/supabase";
 
 export default function ProfilePage() {
@@ -142,7 +143,7 @@ export default function ProfilePage() {
       </header>
 
       {loading ? (
-        <p className="muted">Loading your stats…</p>
+        <TvBotLoader label="Counting your TV milestones…"/>
       ) : !signedIn ? (
         <section className="panel empty-state">
           <h2>Sign in to see your stats</h2>
