@@ -758,3 +758,12 @@ button{cursor:pointer}
 .recommendation-card-actions>*{min-width:0}
 .recommendation-trailer-link{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;font-size:13px;font-weight:700;padding:9px 11px;white-space:nowrap}
 @media(max-width:640px){.recommendation-card-actions{gap:7px}.recommendation-trailer-link{font-size:12px;padding:9px}}
+
+/* Recommendation actions: prevent floating/overlapping controls at all widths. */
+.recommendation-card-actions{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:stretch!important;gap:10px!important;width:100%;margin:4px 0 0}
+.recommendation-card-actions>*{min-width:0!important;width:100%!important;max-width:100%!important;box-sizing:border-box!important;margin:0!important;position:static!important;transform:none!important;float:none!important}
+.recommendation-card-actions button,.recommendation-card-actions a{display:flex!important;align-items:center!important;justify-content:center!important;min-height:44px!important;height:auto!important;padding:10px 8px!important;text-align:center!important;line-height:1.25!important;white-space:normal!important;border-radius:10px!important}
+.recommendation-card-actions>div{display:flex!important;align-items:stretch!important}
+.recommendation-card-actions>div>*{width:100%!important;max-width:100%!important;box-sizing:border-box!important}
+.recommendation-trailer-link{border:1px solid var(--line,#343540)!important;background:transparent!important;color:inherit!important}
+@media(max-width:360px){.recommendation-card-actions{grid-template-columns:1fr!important}}
