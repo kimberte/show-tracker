@@ -131,11 +131,10 @@ export default function RecommendationLab() {
      <div style={{fontSize:12,color:"#f59e0b",fontWeight:700}}>Because you like {s.reason}</div>
      <p className="muted" style={{fontSize:13,lineHeight:1.5,margin:0,flex:1}}>{clean(s.summary).slice(0,145)}{clean(s.summary).length>145?"…":""}</p>
      <div style={{fontSize:12}}>{(s.genres||[]).slice(0,3).join(" · ")}</div>
-     <TrackButton showId={s.id} title={s.name} compact/><button type="button" onClick={()=>dismiss(s)} aria-label={"Not interested in "+s.name} style={{padding:"9px 12px",border:"1px solid var(--line)",borderRadius:9,background:"transparent",color:"inherit",cursor:"pointer",fontWeight:700}}>✕ Not interested</button>
+     <div className="recommendation-card-actions"><TrackButton showId={s.id} title={s.name} compact/><a className="nav-pill recommendation-trailer-link" href={"https://www.youtube.com/results?search_query="+encodeURIComponent(s.name+" official trailer")} target="_blank" rel="noopener noreferrer" aria-label={"Find trailer for "+s.name}>▶ Find Trailer</a></div><button type="button" onClick={()=>dismiss(s)} aria-label={"Not interested in "+s.name} style={{padding:"9px 12px",border:"1px solid var(--line)",borderRadius:9,background:"transparent",color:"inherit",cursor:"pointer",fontWeight:700}}>✕ Not interested</button>
     </article>)}
    </div>
    {recommendations.length>=12&&!showMore&&<button type="button" onClick={()=>setShowMore(true)} className="nav-pill" style={{marginTop:20,padding:12,cursor:"pointer"}}>Show more recommendations</button>}
   </section>
-  <p className="muted" style={{fontSize:13}}>Experimental recommendation engine · Powered by TVMaze show metadata. The candidate pool currently prioritizes shows in the public discovery catalogue, not every show ever produced. No favourite-show selections are saved to your account. Hidden shows are saved to your account when signed in, or locally in this browser for guests.</p>
  </div>;
 }
