@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import TrackButton from "@/components/track-button";
 import SiteNav from "@/components/site-nav";
+import TvBotLoader from "@/components/tv-bot-loader";
 import { getSupabase } from "@/lib/supabase";
 import { trackEvent } from "@/lib/analytics";
 
@@ -55,6 +56,7 @@ export default function Home() {
   const [upcoming, setUpcoming] = useState<TodayItem[]>([]);
   const [todayLoading, setTodayLoading] = useState(true);
   const [heroShows, setHeroShows] = useState<Show[]>([]);
+  const [heroLoading, setHeroLoading] = useState(true);
   const [heroIndex, setHeroIndex] = useState(0);
   const [heroTouchStart, setHeroTouchStart] = useState<{ x: number; y: number } | null>(null);
   const [visibleResults, setVisibleResults] = useState(10);
@@ -69,7 +71,8 @@ export default function Home() {
         });
         setHeroShows(eligible.slice(0, 10));
       })
-      .catch(() => setHeroShows([]));
+      .catch(() => setHeroShows([]))
+      .finally(() => setHeroLoading(false));
   }, []);
 
   useEffect(() => {
@@ -222,6 +225,7 @@ export default function Home() {
       />
       <SiteNav />
 
+      {heroLoading && <div className="panel" style={{minHeight:260,display:"grid",placeItems:"center",marginBottom:24}}><TvBotLoader label="Getting the spotlight ready…"/></div>}
       {heroShows.length > 0 && (
         <section
           className="home-featured-slider"
@@ -280,7 +284,7 @@ export default function Home() {
         <div className="home-search-copy">
           <div className="accent eyebrow">FIND A SHOW</div>
           <h2>What do you want to watch?</h2>
-          <p className="muted">Search TV shows by title, with any capitalization, including ended and currently airing shows.</p>
+          <p className="muted">Search shows, past and present.</p>
         </div>
 
         <form
