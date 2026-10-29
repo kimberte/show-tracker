@@ -1,5 +1,5 @@
-const CACHE_NAME = "my-tv-tracker-v4";
-const APP_SHELL = ["/","/icon.svg","/manifest.webmanifest"];
+const CACHE_NAME = "my-tv-tracker-v5";
+const APP_SHELL = ["/","/icon.svg","/icon.png","/icon-192.png","/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
@@ -17,8 +17,8 @@ self.addEventListener("push", (event) => {
   const title = data.title || "My TV Tracker";
   const options = {
     body: data.body || "You have TV updates.",
-    icon: "/icon.svg",
-    badge: "/icon.svg",
+    icon: "/icon-192.png",
+    badge: "/icon-192.png",
     tag: data.tag || "my-tv-tracker",
     data: { url: data.url || "/my-shows" },
   };
