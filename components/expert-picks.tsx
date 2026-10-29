@@ -23,15 +23,25 @@ export default function ExpertPicks(){
  const [loading,setLoading]=useState(true);
  useEffect(()=>{
   let active=true;
-  Promise.all(picks.map(async p=>{
-   try{
-    const r=await fetch("/api/search?q="+encodeURIComponent(p.query));
-    if(!r.ok)return null;
-    const data=await r.json();
-    if(!Array.isArray(data))return null;
-    return (data as Show[]).find(s=>normalized(s.name)===normalized(p.name))||null;
-   }catch{return null;}
-  })).then(result=>{if(active)setShows(result)}).finally(()=>{if(active)setLoading(false)});
+  async function load(){
+   const result:(Show|null)[]=Array(picks.length).fill(null);
+   // Small batches avoid hammering TVMaze through the search endpoint.
+   for(let start=0;start<picks.length;start+=2){
+    if(!active)break;
+    await Promise.all(picks.slice(start,start+2).map(async(p,offset)=>{
+     try{
+      const r=await fetch("/api/search?q="+encodeURIComponent(p.query));
+      if(!r.ok)return;
+      const data=await r.json();
+      if(!Array.isArray(data))return;
+      result[start+offset]=(data as Show[]).find(s=>normalized(s.name)===normalized(p.name))||null;
+     }catch{/* Keep already loaded picks visible. */}
+    }));
+    if(active){setShows([...result]);setLoading(false);}
+   }
+   if(active)setLoading(false);
+  }
+  void load();
   return()=>{active=false};
  },[]);
  const visible=picks.map((pick,i)=>({...pick,show:shows[i]})).filter(p=>p.show?.id);
