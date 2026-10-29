@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import TrackButton from "@/components/track-button";
 import SiteNav from "@/components/site-nav";
@@ -48,6 +48,8 @@ function formatDate(value: string) {
 
 export default function Home() {
   const [q, setQ] = useState("");
+  const searchRequest = useRef(0);
+  const searchController = useRef<AbortController | null>(null);
   const [results, setResults] = useState<Show[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
@@ -167,46 +169,62 @@ export default function Home() {
     loadToday();
   }, []);
 
-  async function search() {
-    if (!q.trim()) return;
-
+  async function search(queryInput: string = q) {
+    const query = queryInput.trim();
+    const requestId = ++searchRequest.current;
+    searchController.current?.abort();
+    if (query.length < 2) {
+      setLoading(false);
+      setSearched(false);
+      setSearchError("");
+      setResults([]);
+      return;
+    }
+    const controller = new AbortController();
+    searchController.current = controller;
     setLoading(true);
     setSearchError("");
     setSearched(true);
-    trackEvent("search", { search_term: q.trim() });
     setVisibleResults(10);
-
     try {
-      const query = q.trim();
       const r = await fetch("/api/search?q=" + encodeURIComponent(query), {
-        signal: AbortSignal.timeout(15000),
+        signal: AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]),
       });
       const data = await r.json().catch(() => null);
-
+      if (requestId !== searchRequest.current) return;
       if (!r.ok) {
         setResults([]);
-        setSearchError(
-          typeof data?.error === "string"
-            ? data.error
-            : "Search is temporarily unavailable. Please try again in a moment."
-        );
-        return;
-      }
-
-      if (!Array.isArray(data)) {
+        setSearchError(typeof data?.error === "string" ? data.error : "Search is temporarily unavailable.");
+      } else if (Array.isArray(data)) {
+        setResults(data);
+      } else {
         setResults([]);
-        setSearchError("We couldn't read the search results. Please try again.");
-        return;
+        setSearchError("Could not read search results.");
       }
-
-      setResults(data);
-    } catch {
+    } catch (error) {
+      if (requestId !== searchRequest.current || controller.signal.aborted) return;
       setResults([]);
-      setSearchError("Search is temporarily unavailable. Please try again in a moment.");
+      setSearchError("Search is temporarily unavailable. Please try again.");
     } finally {
-      setLoading(false);
+      if (requestId === searchRequest.current) setLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (q.trim().length < 2) {
+      searchRequest.current++;
+      searchController.current?.abort();
+      setResults([]);
+      setLoading(false);
+      setSearched(false);
+      setSearchError("");
+      return;
+    }
+    const timer = window.setTimeout(() => { void search(q); }, 300);
+    return () => window.clearTimeout(timer);
+    // Search is intentionally triggered by changes to the query only.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [q]);
 
   const homeStructuredData = {
     "@context": "https://schema.org",
@@ -291,12 +309,12 @@ export default function Home() {
           className="home-search-row"
             onSubmit={(e) => {
               e.preventDefault();
-              search();
+              void search(q);
             }}
           >
             <input
               value={q}
-              onChange={(e) => setQ(e.target.value)}
+              onChange={(e) => { searchRequest.current++; searchController.current?.abort(); setLoading(false); setResults([]); setQ(e.target.value); }}
               placeholder="Search TV shows..."
               aria-label="Search TV shows"
               autoComplete="off"
@@ -305,9 +323,9 @@ export default function Home() {
               {loading ? "Searching…" : "Search"}
             </button>
         </form>
-        {loading && <div style={{marginTop:14}}><TvBotLoader label="Searching the TV universe…"/></div>}
+        {loading && <div style={{marginTop:14}}><TvBotLoader label="Finding matching shows…"/></div>}
         {searchError && <p className="muted home-search-error">{searchError}</p>}
-        {searched && !searchError && !loading && results.length === 0 && (
+        {searched && q.trim().length >= 2 && !searchError && !loading && results.length === 0 && (
           <div className="home-search-empty">
             <h3>No shows found</h3>
             <p className="muted">Try a shorter title or a different spelling.</p>
