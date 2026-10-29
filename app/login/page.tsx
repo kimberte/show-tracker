@@ -31,11 +31,11 @@ export default function Login(){
     if(data.session){router.replace(destination());router.refresh();}
     else setMessage("Check your inbox to confirm your email, then sign in with your password.");
    }else if(mode==="reset"){
-    const {error}=await supabase.auth.resetPasswordForEmail(email.trim(),{redirectTo:SITE_URL+"/auth/reset-password"});
+    const {error}=await supabase.auth.resetPasswordForEmail(email.trim(),{redirectTo:SITE_URL+"/auth/callback?next="+encodeURIComponent("/auth/reset-password")});
     if(error)throw error;
     setMessage("If this email has an account, you'll receive a password reset link.");
    }else{
-    const {error}=await supabase.auth.signInWithOtp({email:email.trim(),options:{shouldCreateUser:false,emailRedirectTo:SITE_URL+"/auth/set-password"}});
+    const {error}=await supabase.auth.signInWithOtp({email:email.trim(),options:{shouldCreateUser:false,emailRedirectTo:SITE_URL+"/auth/callback?next="+encodeURIComponent("/auth/set-password")}});
     if(error)throw error;
     setMessage("Check your inbox for a secure link to set your password. Your existing shows and watch history will stay on the same account.");
    }
