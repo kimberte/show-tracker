@@ -677,3 +677,18 @@ button{cursor:pointer}
 @media(prefers-reduced-motion:reduce){.tvbot,.tvbot-eyes{animation:none}}
 
 @media(max-width:640px){.home-live-schedule-grid>.panel:nth-child(n+4){display:none}}
+
+/* Search result cards: keep guest actions contained on narrow screens. */
+.home-result-card{min-width:0}
+.home-result-card>a:has(img){flex:0 0 auto}
+.home-result-actions{flex:0 0 auto;max-width:100%}
+.home-result-actions button{max-width:100%;white-space:normal;text-align:center}
+.track-signin-link{display:inline-flex;align-items:center;justify-content:center;padding:9px 11px;border:1px solid var(--accent);border-radius:9px;color:var(--accent);font-size:13px;font-weight:700;text-decoration:none;white-space:nowrap}
+@media(max-width:640px){
+ .home-result-card{display:grid;grid-template-columns:64px minmax(0,1fr);align-items:start;gap:12px}
+ .home-result-card>a:has(img){grid-column:1;grid-row:1 / span 2}
+ .home-result-card>a img{max-width:100%;height:auto;border-radius:8px}
+ .home-result-info{grid-column:2;grid-row:1;min-width:0;overflow-wrap:anywhere}
+ .home-result-actions{grid-column:2;grid-row:2;justify-content:flex-start;margin:0;align-self:start;flex-wrap:wrap;min-width:0}
+ .home-result-actions>div{min-width:0;max-width:100%}
+}
