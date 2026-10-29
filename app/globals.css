@@ -717,3 +717,24 @@ button{cursor:pointer}
 .home-discover-feature-actions>span{font-size:12px;color:#b6bdcb}
 .home-discover-feature-art{position:absolute;right:4%;top:12%;font-size:100px;font-weight:900;color:rgba(245,158,11,.13);transform:rotate(-12deg);pointer-events:none;display:flex;flex-direction:column;line-height:1}
 @media(max-width:640px){.home-discover-feature{min-height:0;padding:26px 22px;margin:22px 0}.home-discover-feature-art{right:-12px;top:18%;font-size:72px;opacity:.5}.home-discover-feature-actions{align-items:stretch}.home-discover-feature-actions .primary-button{text-align:center;width:100%;justify-content:center}}
+
+/* Discover: keep the actual recommendations visible early on mobile. */
+.discover-mode-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:20px 0}
+.discover-mode-tab{min-width:0;text-align:left;padding:15px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:inherit;cursor:pointer}
+.discover-mode-tab[aria-selected="true"]{border:2px solid var(--accent);padding:14px;box-shadow:0 0 0 1px rgba(255,150,0,.15)}
+.discover-mode-tab strong{font-size:15px!important}
+.recommendation-lab-layout{display:grid;gap:16px;margin:16px 0 36px}
+@media(max-width:640px){
+ .discover-page-header{margin:12px 0 8px!important;padding:0!important}
+ .discover-page-header .eyebrow{font-size:11px}
+ .discover-page-header .page-title{font-size:clamp(27px,7vw,34px)!important;line-height:1.13!important;margin:8px 0!important}
+ .discover-page-header .page-subtitle{font-size:14px!important;line-height:1.4!important;margin:5px 0!important}
+ .discover-mode-tabs{display:flex;gap:6px;margin:14px 0 12px}
+ .discover-mode-tab,.discover-mode-tab[aria-selected="true"]{flex:1 1 0;text-align:center;padding:10px 5px;border-radius:9px;min-height:43px}
+ .discover-mode-tab strong{font-size:12px!important;line-height:1.2}
+ .discover-mode-tab .muted{display:none!important}
+ .recommendation-lab-layout{gap:12px;margin:10px 0 25px}
+ .recommendation-controls{padding:14px!important}
+ .recommendation-controls h2{font-size:20px;margin-bottom:12px!important}
+ .recommendation-controls .nav-pill{font-size:12px;padding:9px 10px!important;white-space:normal}
+}
