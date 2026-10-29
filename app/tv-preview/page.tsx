@@ -4,9 +4,9 @@ import Home from "@/components/home-original";
 
 export const revalidate = 3600;
 export const metadata: Metadata = {
-  title: "TV Discovery Preview | My TV Tracker",
-  description: "Review additional TV discovery content alongside the existing My TV Tracker homepage experience.",
-  robots: { index: false, follow: false },
+  title: "TV Schedule & Show Discovery | My TV Tracker",
+  description: "Discover TV shows, explore tonight’s schedule, and track your favourite series.",
+  robots: { index: true, follow: true },
 };
 
 type Episode = {
@@ -53,10 +53,11 @@ export default async function TvPreview() {
   tomorrow.setUTCDate(tomorrow.getUTCDate() + 1);
   const nextDate = tomorrow.toISOString().slice(0, 10);
   const [tonight, next] = await Promise.all([schedule(date), schedule(nextDate)]);
-  const active = (items: Episode[]) => items.filter(e => e.show && ["Running", "In Development"].includes(e.show.status || ""));
+  const active = (items: Episode[]) => items.filter(e => e.show?.id && e.show?.name);
   const easternTime = new Intl.DateTimeFormat("en-GB", {timeZone:"America/New_York",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).format(new Date());
   const currentHour = Number(easternTime.slice(0,2));
-  const todayItems = active(tonight).filter(e=>e.airtime && /^\\d{2}:\\d{2}$/.test(e.airtime) && Number(e.airtime.slice(0,2)) >= currentHour).sort((a,b)=>(a.airtime||"").localeCompare(b.airtime||"")).slice(0, 6);
+  const upcomingToday = active(tonight).filter(e=>!e.airtime || !/^\d{2}:\d{2}$/.test(e.airtime) || Number(e.airtime.slice(0,2)) >= currentHour).sort((a,b)=>(a.airtime||"99:99").localeCompare(b.airtime||"99:99"));
+  const todayItems = upcomingToday.slice(0, 6);
   const nextItems = active(next).slice(0, 4);
 
   const episodeCards = (items: Episode[]) => items.map(e => (
@@ -76,7 +77,7 @@ export default async function TvPreview() {
       <div className="accent eyebrow">LIVE TV GUIDE · US EASTERN SCHEDULE</div>
       <h2>What's on tonight</h2>
       <p className="muted">Airing this hour and later · US Eastern time</p>
-      {todayItems.length ? <div className="home-live-schedule-grid" style={{display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))", gap: 12}}>{episodeCards(todayItems)}</div> : <p className="panel" style={{padding: 20}}>No more scheduled episodes for the rest of this evening. See the full guide for earlier listings.</p>}
+      {todayItems.length ? <div className="home-live-schedule-grid" style={{display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))", gap: 12}}>{episodeCards(todayItems)}</div> : <p className="panel" style={{padding: 20}}>No upcoming listings available right now. Check the full TV schedule.</p>}
       <p style={{marginTop: 16}}><Link className="view-link" href="/tv-tonight">Explore the full TV Tonight schedule →</Link></p>
     </section>
 
