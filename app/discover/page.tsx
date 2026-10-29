@@ -18,5 +18,5 @@ export default async function Page() {
  const days = await Promise.all(dates.map(schedule));
  const unique = new Map<number,GuideEpisode>();
  for(const e of days.flat())if(!unique.has(e.id))unique.set(e.id,e);
- return <main className="shell"><SiteNav/><header className="page-header"><div><div className="accent eyebrow">FIND YOUR NEXT WATCH</div><h1 className="page-title">Discover your next favourite show</h1><p className="muted page-subtitle">Personalized recommendations, shows worth watching and upcoming TV in one place.</p></div></header><DiscoverV2 episodes={[...unique.values()]}/></main>;
+ return <main className="shell"><SiteNav/><header className="page-header discover-page-header"><div><div className="accent eyebrow">FIND YOUR NEXT WATCH</div><h1 className="page-title">Discover your next favourite show</h1><p className="muted page-subtitle">Personalized recommendations, shows worth watching and upcoming TV in one place.</p></div></header><DiscoverV2 episodes={[...unique.values()]}/></main>;
 }
