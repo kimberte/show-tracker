@@ -738,3 +738,17 @@ button{cursor:pointer}
  .recommendation-controls h2{font-size:20px;margin-bottom:12px!important}
  .recommendation-controls .nav-pill{font-size:12px;padding:9px 10px!important;white-space:normal}
 }
+
+/* Discover tabs: explicit button appearance survives global button resets */
+.discover-mode-tabs{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px!important;width:100%;margin:18px 0!important}
+.discover-mode-tabs>.discover-mode-tab{appearance:none!important;-webkit-appearance:none!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:center!important;min-width:0!important;padding:14px!important;background:var(--panel,#16171e)!important;border:1px solid var(--line,#343540)!important;border-radius:12px!important;color:inherit!important;text-align:left!important;box-shadow:none!important;cursor:pointer!important}
+.discover-mode-tabs>.discover-mode-tab[aria-selected="true"]{border:2px solid var(--accent,#f59e0b)!important;padding:13px!important;background:rgba(245,158,11,.08)!important}
+.discover-mode-tabs>.discover-mode-tab strong{display:block!important;font-size:15px!important;line-height:1.3!important}
+.discover-mode-tabs>.discover-mode-tab .muted{display:block!important;font-size:12px!important;margin-top:4px!important}
+@media(max-width:640px){
+ .discover-mode-tabs{gap:7px!important;margin:12px 0 16px!important}
+ .discover-mode-tabs>.discover-mode-tab{min-height:52px!important;padding:9px 5px!important;align-items:center!important;text-align:center!important;border-radius:10px!important}
+ .discover-mode-tabs>.discover-mode-tab[aria-selected="true"]{padding:8px 4px!important}
+ .discover-mode-tabs>.discover-mode-tab strong{font-size:clamp(10px,2.85vw,13px)!important;white-space:nowrap!important}
+ .discover-mode-tabs>.discover-mode-tab .muted{display:none!important}
+}
