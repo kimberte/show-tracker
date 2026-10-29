@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import TrackButton from "@/components/track-button";
+import TvBotLoader from "@/components/tv-bot-loader";
 import { getSupabase } from "@/lib/supabase";
 
 type Show = { id:number; name:string; premiered?:string|null; genres?:string[]; summary?:string|null; language?:string|null; status?:string|null; rating?:{average?:number|null}; weight?:number; image?:{medium?:string;original?:string}|null; network?:{name?:string;country?:{name?:string}}|null; webChannel?:{name?:string;country?:{name?:string}}|null; _nextAirdate?:string|null };
@@ -98,20 +99,20 @@ export default function RecommendationLab() {
  },[candidates,seeds,selected,tracked,hidden,showMore,refreshCycle,yearFilter]);
  return <div style={{display:"grid",gap:22,margin:"22px 0 44px"}}>
   <section className="panel" style={{padding:24}}>
-   <h2 style={{marginTop:0}}>How should we find your next show?</h2>
+   <h2 style={{marginTop:0}}>Find your next show</h2>
    <div style={{display:"flex",flexWrap:"wrap",gap:10,marginBottom:18}}>
     {signedIn&&<button type="button" onClick={()=>{setMode("tracked");setShowMore(false)}} className="nav-pill" style={{border:mode==="tracked"?"2px solid #f59e0b":"1px solid #777",padding:"10px 16px",cursor:"pointer"}}>Based on Shows I’m Watching Now ({tracked.length})</button>}
     <button type="button" onClick={()=>{setMode("pick");setShowMore(false)}} className="nav-pill" style={{border:mode==="pick"?"2px solid #f59e0b":"1px solid #777",padding:"10px 16px",cursor:"pointer"}}>Based on Shows I Love(d)</button>
    </div>
    {mode==="pick"?<div>
-    <p className="muted">Choose 3–5 shows you love or loved, including series that have ended. These are taste preferences, not shows you’re tracking.</p>
+    <p className="muted">Pick 3–5 favourites — old or new.</p>
     <input aria-label="Search favourite TV shows" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search a show, e.g. Breaking Bad" style={{width:"100%",maxWidth:520,padding:13,borderRadius:10,border:"1px solid #777",background:"var(--panel)",color:"inherit"}}/>
     {searching&&<p className="muted">Searching…</p>}
     {query.length>=2&&<div style={{display:"grid",gap:6,maxWidth:600,marginTop:10}}>{searchResults.filter(s=>!selected.some(x=>x.id===s.id)).slice(0,8).map(s=><button key={s.id} type="button" onClick={()=>{setSelected(a=>[...a,s]);setQuery("");setSearchResults([]);setShowMore(false)}} style={{display:"flex",gap:12,alignItems:"center",textAlign:"left",padding:9,border:"1px solid var(--line)",borderRadius:9,background:"var(--panel)",color:"inherit",cursor:"pointer"}}>{s.image?.medium&&<img src={s.image.medium} alt="" width={32} height={44} style={{objectFit:"cover",borderRadius:4}}/>}<span>{s.name} <span className="muted">· {(s.genres||[]).slice(0,2).join(", ")}</span></span><strong style={{marginLeft:"auto"}}>+ Add</strong></button>)}</div>}
     {selected.length>0&&<p className="muted" style={{fontSize:13,marginTop:12}}>These picks are just for recommendations — they won’t be added to My Shows. Want alerts and episode tracking for a currently airing series? <Link href="/login" className="accent">Sign in or create an account</Link> and track it from its show page.</p>}
     <div style={{display:"flex",flexWrap:"wrap",gap:8,marginTop:16}}>{selected.map(s=><button type="button" key={s.id} onClick={()=>setSelected(a=>a.filter(x=>x.id!==s.id))} style={{padding:"9px 12px",border:"1px solid #f59e0b",borderRadius:30,background:"var(--panel)",color:"inherit",cursor:"pointer"}}>{s.name} ×</button>)}</div>
-   </div>:<p className="muted">Using shows you currently track to find related series. Already-tracked titles are excluded from results. <Link href="/my-shows" className="accent">Manage My Shows</Link></p>}
-   {loading&&<p className="muted">Loading your shows and recommendations…</p>}
+   </div>:<p className="muted">Inspired by your tracked shows. <Link href="/my-shows" className="accent">Manage My Shows</Link></p>}
+   {loading&&<TvBotLoader label="Tuning your recommendations…"/>}
    {error&&<p role="alert" className="muted">{error}</p>}
   </section>
   <section>
