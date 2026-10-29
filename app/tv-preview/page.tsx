@@ -54,8 +54,10 @@ export default async function TvPreview() {
   const nextDate = tomorrow.toISOString().slice(0, 10);
   const [tonight, next] = await Promise.all([schedule(date), schedule(nextDate)]);
   const active = (items: Episode[]) => items.filter(e => e.show && ["Running", "In Development"].includes(e.show.status || ""));
-  const todayItems = active(tonight).slice(0, 12);
-  const nextItems = active(next).slice(0, 8);
+  const easternTime = new Intl.DateTimeFormat("en-GB", {timeZone:"America/New_York",hour:"2-digit",minute:"2-digit",hourCycle:"h23"}).format(new Date());
+  const currentHour = Number(easternTime.slice(0,2));
+  const todayItems = active(tonight).filter(e=>e.airtime && /^\\d{2}:\\d{2}$/.test(e.airtime) && Number(e.airtime.slice(0,2)) >= currentHour).sort((a,b)=>(a.airtime||"").localeCompare(b.airtime||"")).slice(0, 6);
+  const nextItems = active(next).slice(0, 4);
 
   const episodeCards = (items: Episode[]) => items.map(e => (
     <article key={e.id} className="panel" style={{padding: 18, display: "flex", gap: 14, alignItems: "flex-start"}}>
@@ -73,8 +75,8 @@ export default async function TvPreview() {
     <section style={{marginTop: 32}}> 
       <div className="accent eyebrow">LIVE TV GUIDE · US EASTERN SCHEDULE</div>
       <h2>What's on tonight</h2>
-      <p className="muted">New episodes listed for {date}. Air times are shown as provided by TVMaze and may vary by location or streaming service.</p>
-      {todayItems.length ? <div style={{display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))", gap: 12}}>{episodeCards(todayItems)}</div> : <p className="panel" style={{padding: 20}}>No scheduled episodes are available right now. Browse the full TV guide instead.</p>}
+      <p className="muted">Airing this hour and later · US Eastern time</p>
+      {todayItems.length ? <div className="home-live-schedule-grid" style={{display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))", gap: 12}}>{episodeCards(todayItems)}</div> : <p className="panel" style={{padding: 20}}>No more scheduled episodes for the rest of this evening. See the full guide for earlier listings.</p>}
       <p style={{marginTop: 16}}><Link className="view-link" href="/tv-tonight">Explore the full TV Tonight schedule →</Link></p>
     </section>
 
