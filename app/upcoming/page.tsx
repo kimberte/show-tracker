@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import SiteNav from "@/components/site-nav";
+import TvBotLoader from "@/components/tv-bot-loader";
 import { getSupabase } from "@/lib/supabase";
 
 type Show = {
@@ -181,7 +182,7 @@ export default function Upcoming() {
       </header>
 
       {loading ? (
-        <p className="muted">Loading your upcoming schedule…</p>
+        <TvBotLoader label="Checking what’s coming up…"/>
        ) : !signedIn ? (
         <section className="panel empty-state">
           <h2>Sign in to see what’s coming up</h2>
