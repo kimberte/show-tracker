@@ -1,5 +1,5 @@
-const CACHE_NAME = "my-tv-tracker-v5";
-const APP_SHELL = ["/","/icon.svg","/icon.png","/icon-192.png","/manifest.webmanifest"];
+const CACHE_NAME = "my-tv-tracker-v6";
+const APP_SHELL = ["/","/icon.svg","/icon.png","/icon-192.png","/maskable-icon.png","/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL)).then(() => self.skipWaiting()));
