@@ -797,3 +797,10 @@ button{cursor:pointer}
 .show-share-trigger:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .show-share-trigger svg{flex:none}
 @media(max-width:600px){.my-show-actions .show-share-trigger{min-height:44px;padding:10px 14px}}
+
+/* Full-width brand-orange share CTA on mobile show cards and detail pages */
+@media(max-width:600px){
+  .my-show-actions .show-share-container,.show-action-row .show-share-container{display:flex!important;flex:0 0 100%;width:100%;max-width:none!important;align-items:stretch!important;box-sizing:border-box}
+  .my-show-actions .show-share-trigger,.show-action-row .show-share-trigger{display:flex;width:100%;min-height:48px;background:#f59e0b;border-color:#f59e0b;color:#17120a;box-sizing:border-box}
+  .my-show-actions .show-share-container .panel,.show-action-row .show-share-container .panel{width:100%!important;box-sizing:border-box}
+}
