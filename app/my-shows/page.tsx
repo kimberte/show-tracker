@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import SiteNav from "@/components/site-nav";
+import ShareShowButton from "@/components/share-show-button";
 import TvBotLoader from "@/components/tv-bot-loader";
 import { getSupabase } from "@/lib/supabase";
 
@@ -376,6 +377,7 @@ export default function MyShows() {
                   )}
 
                   <div className="my-show-actions">
+                    <ShareShowButton showId={s.tvmaze_id} title={s.title} compact />
                     <Link href={"/show/" + s.tvmaze_id} className="muted my-show-open-hint">Open show details</Link>
                     <button
                       onClick={() => remove(item.id)}
