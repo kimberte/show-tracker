@@ -144,6 +144,30 @@ export default function NotificationSettings() {
     return true;
   }
 
+  async function saveRecommendationPreference(field: "weekly_recommendations" | "weekly_expert_picks", enabled: boolean) {
+    const supabase = getSupabase();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setMessage("Sign in to save your notification preferences."); return false; }
+    const { error } = await supabase.from("notification_preferences").upsert({
+      user_id: user.id,
+      [field]: enabled,
+      updated_at: new Date().toISOString(),
+    }, { onConflict: "user_id" });
+    if (error) { setMessage("Could not save recommendation preference: " + error.message); return false; }
+    setMessage("Recommendation preference saved.");
+    return true;
+  }
+
+  async function changeRecommendationPreference(field: "weekly_recommendations" | "weekly_expert_picks", enabled: boolean) {
+    if (field === "weekly_recommendations") setWeeklyRecommendations(enabled);
+    else setWeeklyExpertPicks(enabled);
+    const saved = await saveRecommendationPreference(field, enabled);
+    if (!saved) {
+      if (field === "weekly_recommendations") setWeeklyRecommendations(!enabled);
+      else setWeeklyExpertPicks(!enabled);
+    }
+  }
+
   async function save() {
     setSaving(true); setMessage("");
     const supabase = getSupabase();
@@ -247,7 +271,7 @@ export default function NotificationSettings() {
             {!pushSupported && <p className="muted" style={{ fontSize: 13 }}>Web push is unavailable in this browser/session. Open mytvtracker.app in Chrome over HTTPS and allow notifications for the site.</p>}
           </div>
 
-          <div style={{borderTop:"1px solid var(--line)",paddingTop:20,display:"grid",gap:16}}><div className="accent eyebrow">SHOW RECOMMENDATIONS</div><label style={{display:"flex",gap:12,alignItems:"flex-start"}}><input type="checkbox" checked={weeklyRecommendations} onChange={e=>setWeeklyRecommendations(e.target.checked)} style={{marginTop:4}}/><span><strong>Recommended for you</strong><span className="muted" style={{display:"block",marginTop:4}}>Shows picked for you based on your watchlist.</span></span></label><label style={{display:"flex",gap:12,alignItems:"flex-start"}}><input type="checkbox" checked={weeklyExpertPicks} onChange={e=>setWeeklyExpertPicks(e.target.checked)} style={{marginTop:4}}/><span><strong>Expert Picks</strong><span className="muted" style={{display:"block",marginTop:4}}>Handpicked shows worth adding to your watchlist.</span></span></label></div>
+          <div style={{borderTop:"1px solid var(--line)",paddingTop:20,display:"grid",gap:16}}><div className="accent eyebrow">SHOW RECOMMENDATIONS</div><label style={{display:"flex",gap:12,alignItems:"flex-start"}}><input type="checkbox" checked={weeklyRecommendations} onChange={e=>changeRecommendationPreference("weekly_recommendations",e.target.checked)} style={{marginTop:4}}/><span><strong>Recommended for you</strong><span className="muted" style={{display:"block",marginTop:4}}>Shows picked for you based on your watchlist.</span></span></label><label style={{display:"flex",gap:12,alignItems:"flex-start"}}><input type="checkbox" checked={weeklyExpertPicks} onChange={e=>changeRecommendationPreference("weekly_expert_picks",e.target.checked)} style={{marginTop:4}}/><span><strong>Expert Picks</strong><span className="muted" style={{display:"block",marginTop:4}}>Handpicked shows worth adding to your watchlist.</span></span></label></div>
           <label style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
             <input type="checkbox" checked={dailyPush} onChange={(e) => setDailyPush(e.target.checked)} disabled={false} style={{ marginTop: 4 }} />
             <span><strong>Daily TV notification</strong><span className="muted" style={{ display: "block", marginTop: 4 }}>A simple daily list of what’s airing from your tracked shows, plus what’s coming next.</span></span>
