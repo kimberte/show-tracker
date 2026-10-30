@@ -274,10 +274,10 @@ export default function Home() {
               aria-hidden={index !== heroIndex}
             >
               <div className="home-feature-copy">
-                <div className="accent eyebrow">{show._isNew ? "NEW SERIES" : "COMING BACK SOON"}</div>
+                <div className="accent eyebrow">{show._isNew ? "NEW SERIES" : show._nextEpisode?.number === 1 ? "NEW SEASON" : "FEATURED SERIES"}</div>
                 <h2>{show.name}</h2>
                 <p className="home-feature-meta">{show.network?.name || show.webChannel?.name || "TV"}{show.premiered ? " · " + show.premiered.slice(0, 4) : ""}</p>
-                {show._nextAirdate && <p className="accent home-feature-date">Next episode · {formatDate(show._nextAirdate)}{show._nextAirtime ? " · " + formatTime(show._nextAirtime) : ""}</p>}
+                {show._nextAirdate && <p className="accent home-feature-date">Coming up · {formatDate(show._nextAirdate)}{show._nextAirtime ? " · " + formatTime(show._nextAirtime) : ""}</p>}
                 {show.summary && <p className="home-feature-summary muted">{show.summary.replace(/<[^>]*>/g, "").replace(/&nbsp;/g, " ").slice(0, 190)}…</p>}
                 <div className="home-feature-actions">
                   <TrackButton showId={show.id} title={show.name} compact />
