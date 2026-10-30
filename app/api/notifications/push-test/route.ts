@@ -31,6 +31,18 @@ export async function POST() {
         url: "/my-shows",
         tag: "my-tv-tracker-test",
       });
+      await sendWebPush(subscription, {
+        title: "Shows recommended for you",
+        body: "Discover shows chosen for you based on your watchlist. Explore your recommendations.",
+        url: "/discover",
+        tag: "my-tv-tracker-recommendations-test",
+      });
+      await sendWebPush(subscription, {
+        title: "What our experts are watching",
+        body: "MobLand · Dark Matter · Slow Horses — discover our Expert Picks.",
+        url: "/",
+        tag: "my-tv-tracker-experts-test",
+      });
       sent++;
     } catch (error: any) {
       if (error?.statusCode === 404 || error?.statusCode === 410) {
@@ -40,5 +52,5 @@ export async function POST() {
   }
 
   if (!sent) return NextResponse.json({ error: "The notification could not be delivered. Try enabling notifications again." }, { status: 502 });
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ success: true, previews: 3 });
 }
