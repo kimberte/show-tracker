@@ -22,6 +22,30 @@ export async function POST() {
   const { data: subscriptions } = await supabase.from("push_subscriptions").select("endpoint,p256dh,auth").eq("user_id", user.id);
   if (!subscriptions?.length) return NextResponse.json({ error: "Enable browser notifications on this device first." }, { status: 400 });
 
+  const [{data:tracked},{data:dismissals}]=await Promise.all([
+    supabase.from("tracked_shows").select("show:shows(tvmaze_id)").eq("user_id",user.id),
+    supabase.from("recommendation_dismissals").select("tvmaze_show_id").eq("user_id",user.id)
+  ]);
+  const trackedIds=new Set((tracked||[]).map((r:any)=>Number(r.show?.tvmaze_id)));
+  const dismissedIds=new Set((dismissals||[]).map(r=>Number(r.tvmaze_show_id)));
+  let recommended:string[]=[];
+  try{
+    const response=await fetch("https://api.tvmaze.com/schedule/full",{next:{revalidate:3600},signal:AbortSignal.timeout(12000)});
+    if(response.ok){
+      const episodes=await response.json();
+      const seen=new Set<number>();
+      for(const episode of episodes){
+        const show=episode?.show||episode?._embedded?.show;
+        if(!show?.id||seen.has(show.id)||trackedIds.has(show.id)||dismissedIds.has(show.id)||show.language!=="English"||show.status!=="Running"||!show.image?.medium||!((show.genres||[]).some((g:string)=>/drama|comedy|crime|thriller|mystery|fantasy|science-fiction|horror/i.test(g))))continue;
+        seen.add(show.id);
+        recommended.push(show.name);
+        if(recommended.length===3)break;
+      }
+    }
+  }catch{}
+  const recommendationBody=recommended.length
+    ? recommended.join(" · ")+" — See all your recommendations and dismiss shows you’re not interested in."
+    : "Explore your recommendations and dismiss shows you’re not interested in.";
   let sent = 0;
   for (const subscription of subscriptions) {
     try {
@@ -33,7 +57,7 @@ export async function POST() {
       });
       await sendWebPush(subscription, {
         title: "Shows recommended for you",
-        body: "Discover shows chosen for you based on your watchlist. Explore your recommendations.",
+        body: recommendationBody,
         url: "/discover",
         tag: "my-tv-tracker-recommendations-test",
       });
