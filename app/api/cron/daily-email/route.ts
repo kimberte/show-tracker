@@ -106,12 +106,13 @@ export async function GET(request: Request) {
         if (!r.ok) return;
 
         const data = await r.json();
+        const showWithPoster = { ...show, poster_url: show.poster_url || data.image?.medium || data.image?.original || null };
         for (const episode of (data._embedded?.episodes || []) as Episode[]) {
           if (!episode.airdate) continue;
 
           if (episode.airdate < today || episode.airdate > horizonKey) continue;
           const list = byDate.get(episode.airdate) || [];
-          list.push({ show, episode });
+          list.push({ show: showWithPoster, episode });
           byDate.set(episode.airdate, list);
         }
       } catch {}
