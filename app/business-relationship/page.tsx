@@ -22,11 +22,11 @@ export default function BusinessRelationshipPage() {
         <h2>Website and operator</h2>
         <p><strong>Website:</strong> <a href="https://www.mytvtracker.app/">www.mytvtracker.app</a></p>
         <p><strong>App / brand:</strong> My TV Tracker</p>
-        <p><strong>Website operator:</strong> Kimbert William</p>
-        <p><strong>Relationship:</strong> Kimbert William operates and manages the My TV Tracker website and app, including its advertising and marketing activities.</p>
+        <p><strong>Website operator:</strong> Kimburte William</p>
+        <p><strong>Relationship:</strong> Kimburte William operates and manages the My TV Tracker website and app, including its advertising and marketing activities.</p>
         <h2>Advertising verification</h2>
-        <p className="muted">This page identifies the relationship between the website operator, Kimbert William, and My TV Tracker for advertising account and business-relationship verification purposes.</p>
-        <p className="muted">For questions about this website or its operator, please use the <Link href="/contact">contact form</Link>.</p>
+        <p className="muted">This page identifies the relationship between the website operator, Kimburte William, and My TV Tracker for advertising account and business-relationship verification purposes.</p>
+        <p className="muted">For questions about this website or its operator, please use the <Link href="/contact">My TV Tracker contact form</Link>.</p>
       </section>
     </main>
   );
