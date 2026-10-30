@@ -790,3 +790,10 @@ button{cursor:pointer}
 .profile-install-panel p{margin:0;line-height:1.5}
 .profile-install-actions{display:flex;align-items:center;min-height:44px;margin-top:4px}
 .profile-install-actions .nav-pill{display:inline-flex;position:static;height:auto;min-height:44px;line-height:1.35;box-sizing:border-box}
+
+/* Distinctive, touch-friendly individual show sharing */
+.show-share-trigger{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:44px;padding:10px 17px;border-radius:12px;border:1px solid #f59e0b;background:#f59e0b;color:#17120a;font-size:14px;font-weight:800;line-height:1.2;white-space:nowrap;box-shadow:0 4px 16px rgba(245,158,11,.2);transition:background .15s ease,transform .15s ease,box-shadow .15s ease}
+.show-share-trigger:hover{background:#fbbf24;transform:translateY(-1px);box-shadow:0 6px 20px rgba(245,158,11,.3)}
+.show-share-trigger:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.show-share-trigger svg{flex:none}
+@media(max-width:600px){.my-show-actions .show-share-trigger{min-height:44px;padding:10px 14px}}
