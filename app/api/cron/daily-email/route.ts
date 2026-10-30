@@ -172,6 +172,11 @@ export async function GET(request: Request) {
       '<div style="font-size:13px;line-height:1.5;color:#68707e;margin-top:6px;">Review episodes and mark what you have watched in My TV Tracker.</div>' +
       '<a href="https://mytvtracker.app/my-shows" style="font-size:13px;color:#151820;font-weight:800;">Manage watched episodes →</a></div>';
 
+    const expertPicksHtml = '<div style="margin-top:28px;background:#ffffff;border:1px solid #e7e9ee;border-radius:12px;padding:18px;">' +
+      '<div style="font-size:12px;font-weight:800;letter-spacing:1.2px;color:#f59e0b;text-transform:uppercase;">What our experts are watching this week</div>' +
+      '<div style="font-size:14px;line-height:1.8;color:#151820;margin-top:8px;">MobLand · Crystal Lake · Dark Matter · From · The Diplomat</div>' +
+      '<a href="https://mytvtracker.app/#expert-picks-heading" style="font-size:13px;font-weight:800;color:#151820;">Explore Expert Picks →</a></div>';
+
     const hero = '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;background:#151820;border-radius:16px;overflow:hidden;">' +
       "<tr>" + (heroImage ? '<td width="96" valign="middle" style="padding:18px 0 18px 18px;">' + heroImage + "</td>" : "") +
       heroText + "</tr></table>";
@@ -183,7 +188,7 @@ export async function GET(request: Request) {
       '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:680px;border-collapse:collapse;">' +
       '<tr><td style="padding:0 4px 14px;"><div style="font-size:12px;font-weight:900;letter-spacing:2px;color:#151820;">MY TV TRACKER <span style="color:#f59e0b;">●</span></div></td></tr>' +
       "<tr><td>" + hero + "</td></tr>" +
-      '<tr><td style="padding-top:20px;">' + todayHtml + upcomingHtml + catchUpHtml + "</td></tr>" +
+      '<tr><td style="padding-top:20px;">' + todayHtml + upcomingHtml + catchUpHtml + expertPicksHtml + "</td></tr>" +
       '<tr><td style="padding-top:22px;"><a href="https://mytvtracker.app/my-shows" style="display:block;text-align:center;background:#f59e0b;color:#151820;text-decoration:none;font-size:14px;font-weight:900;padding:13px 18px;border-radius:9px;">VIEW MY SHOWS</a></td></tr>' +
       '<tr><td style="padding:26px 4px 4px;font-size:12px;line-height:1.6;color:#7a818e;">You’re receiving this because daily email notifications are enabled in My TV Tracker.' +
       '<br><a href="https://mytvtracker.app/settings/notifications" style="color:#7a818e;">Manage email preferences</a> · <a href="https://mytvtracker.app" style="color:#7a818e;">Open My TV Tracker</a>' +
