@@ -804,3 +804,15 @@ button{cursor:pointer}
   .my-show-actions .show-share-trigger,.show-action-row .show-share-trigger{display:flex;width:100%;min-height:48px;background:#f59e0b;border-color:#f59e0b;color:#17120a;box-sizing:border-box}
   .my-show-actions .show-share-container .panel,.show-action-row .show-share-container .panel{width:100%!important;box-sizing:border-box}
 }
+
+/* Subtle, accessible support form */
+.contact-form{display:grid;gap:20px}
+.contact-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.contact-form label{display:grid;gap:8px;font-weight:650;font-size:14px}
+.contact-form input,.contact-form select,.contact-form textarea{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:inherit;padding:13px;font:inherit;font-weight:400}
+.contact-form textarea{resize:vertical;min-height:145px}
+.contact-form input:focus-visible,.contact-form select:focus-visible,.contact-form textarea:focus-visible{outline:2px solid #f59e0b;outline-offset:2px}
+.contact-form .primary-button{justify-self:start;cursor:pointer;min-height:46px}
+.contact-form .primary-button:disabled{opacity:.6;cursor:wait}
+.contact-form-trap{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;overflow:hidden!important}
+@media(max-width:600px){.contact-form-grid{grid-template-columns:1fr}.contact-form .primary-button{width:100%;justify-self:stretch}}
