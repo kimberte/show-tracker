@@ -19,7 +19,7 @@ export default function NotificationSettings() {
   const [emailEnabled, setEmailEnabled] = useState(false);
   const [pushTime, setPushTime] = useState("08:00");
   const [daysAhead, setDaysAhead] = useState(7);
-  const [dailyPush, setDailyPush] = useState(true);
+  const [dailyPush, setDailyPush] = useState(true);\n  const [weeklyRecommendations, setWeeklyRecommendations] = useState(false);\n  const [weeklyExpertPicks, setWeeklyExpertPicks] = useState(false);
   const [episodeAlerts, setEpisodeAlerts] = useState(false);
   const [episodeAlertMinutes, setEpisodeAlertMinutes] = useState(0);
   const [timezone, setTimezone] = useState("UTC");
@@ -55,7 +55,7 @@ export default function NotificationSettings() {
 
       const [{ data: profile }, { data: prefs }, { data: subscription }] = await Promise.all([
         supabase.from("profiles").select("timezone").eq("id", user.id).maybeSingle(),
-        supabase.from("notification_preferences").select("email_daily,days_ahead,email_time_local,push_time_local,daily_push,episode_alerts,episode_alert_minutes").eq("user_id", user.id).maybeSingle(),
+        supabase.from("notification_preferences").select("email_daily,days_ahead,email_time_local,push_time_local,daily_push,episode_alerts,episode_alert_minutes,weekly_recommendations,weekly_expert_picks").eq("user_id", user.id).maybeSingle(),
         supabase.from("push_subscriptions").select("endpoint").eq("user_id", user.id).limit(1).maybeSingle(),
       ]);
 
@@ -64,7 +64,7 @@ export default function NotificationSettings() {
         setEmailEnabled(!!prefs.email_daily);
         setDaysAhead(prefs.days_ahead || 7);
         setPushTime(String(prefs.push_time_local || "08:00:00").slice(0, 5));
-        setDailyPush(prefs.daily_push !== false);
+        setDailyPush(prefs.daily_push !== false);\n        setWeeklyRecommendations(!!prefs.weekly_recommendations);\n        setWeeklyExpertPicks(!!prefs.weekly_expert_picks);
         setEpisodeAlerts(!!prefs.episode_alerts);
         setEpisodeAlertMinutes(Number(prefs.episode_alert_minutes || 0));
       }
@@ -162,7 +162,7 @@ export default function NotificationSettings() {
       email_daily: emailEnabled,
       days_ahead: daysAhead,
       push_time_local: pushTime + ":00",
-      daily_push: dailyPush,
+      daily_push: dailyPush,\n      weekly_recommendations: weeklyRecommendations,\n      weekly_expert_picks: weeklyExpertPicks,
       episode_alerts: episodeAlerts,
       episode_alert_minutes: episodeAlertMinutes,
       updated_at: new Date().toISOString(),
@@ -241,7 +241,7 @@ export default function NotificationSettings() {
             {!pushSupported && <p className="muted" style={{ fontSize: 13 }}>Web push is unavailable in this browser/session. Open mytvtracker.app in Chrome over HTTPS and allow notifications for the site.</p>}
           </div>
 
-          <label style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
+          <div style={{borderTop:"1px solid var(--line)",paddingTop:20,display:"grid",gap:16}}><div className="accent eyebrow">MONDAY DISCOVERIES</div><label style={{display:"flex",gap:12,alignItems:"flex-start"}}><input type="checkbox" checked={weeklyRecommendations} onChange={e=>setWeeklyRecommendations(e.target.checked)} style={{marginTop:4}}/><span><strong>Recommended for you</strong><span className="muted" style={{display:"block",marginTop:4}}>Shows based on your watchlist, every Monday.</span></span></label><label style={{display:"flex",gap:12,alignItems:"flex-start"}}><input type="checkbox" checked={weeklyExpertPicks} onChange={e=>setWeeklyExpertPicks(e.target.checked)} style={{marginTop:4}}/><span><strong>Expert Picks</strong><span className="muted" style={{display:"block",marginTop:4}}>What our experts are watching this week.</span></span></label></div>\n          <label style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
             <input type="checkbox" checked={dailyPush} onChange={(e) => setDailyPush(e.target.checked)} disabled={false} style={{ marginTop: 4 }} />
             <span><strong>Daily TV notification</strong><span className="muted" style={{ display: "block", marginTop: 4 }}>A simple daily list of what’s airing from your tracked shows, plus what’s coming next.</span></span>
           </label>
