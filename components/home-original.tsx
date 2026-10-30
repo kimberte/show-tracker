@@ -302,8 +302,8 @@ export default function Home() {
       <section className="home-search panel">
         <div className="home-search-copy">
           <div className="accent eyebrow">FIND A SHOW</div>
-          <h2>What do you want to watch?</h2>
-          <p className="muted">Search shows, past and present.</p>
+          <h2>What shows do you want to track?</h2>
+          <p className="muted">Search shows, past, present and upcoming.</p>
         </div>
 
         <form
