@@ -102,7 +102,7 @@ export default function Today() {
               if (e.airdate === today) {
                 found.push({
                   trackedId: item.id,
-                  show: item.show,
+                  show: { ...item.show, poster_url: item.show.poster_url || s.image?.medium || s.image?.original || null },
                   episode: e,
                 });
               }
@@ -161,11 +161,11 @@ export default function Today() {
               key={item.trackedId + "-" + item.episode.id}
               className="panel episode-card"
             >
-              {item.show.poster_url && (
+              {item.show.poster_url ? (
                 <Link href={"/show/" + item.show.tvmaze_id} aria-label={"View " + item.show.title}>
                   <img src={item.show.poster_url} width="78" height="108" alt="" />
                 </Link>
-              )}
+              ) : <div className="episode-poster-fallback" aria-hidden="true">TV</div>}
 
               <div className="episode-card-info">
                 <div className="accent episode-time">
