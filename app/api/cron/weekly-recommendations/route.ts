@@ -28,6 +28,8 @@ export async function GET(request:Request){
   if(!subs?.length){skipped++;continue;}
   const {data:tracked}=await db.from("tracked_shows").select("show:shows(tvmaze_id)").eq("user_id",pref.user_id);
   const ids=new Set((tracked||[]).map((r:any)=>Number(r.show?.tvmaze_id)).filter(Boolean));
+  const {data:dismissals}=await db.from("recommendation_dismissals").select("tvmaze_show_id").eq("user_id",pref.user_id);
+  const dismissed=new Set((dismissals||[]).map(r=>Number(r.tvmaze_show_id)));
   const {data:delivered}=await db.from("notification_deliveries").select("delivery_key").eq("user_id",pref.user_id).like("delivery_key","weekly:%:"+week);
   const done=new Set((delivered||[]).map(r=>r.delivery_key));
   let genres=new Set<string>();
@@ -35,9 +37,9 @@ export async function GET(request:Request){
    const selected=pool.filter(s=>ids.has(s.id));
    for(const s of selected)for(const g of s.genres||[])genres.add(g);
   }
-  const recommendations=pool.filter(s=>!ids.has(s.id)&&!expertTitles.some(n=>n.toLowerCase()===s.name.toLowerCase())).map(s=>({s,score:(s.genres||[]).filter(g=>genres.has(g)).length*30+(premium.test([s.network?.name,s.webChannel?.name].join(" "))?15:0)+(s.rating?.average||0)})).sort((a,b)=>b.score-a.score).slice(0,3).map(x=>x.s.name);
+  const recommendations=pool.filter(s=>!ids.has(s.id)&&!dismissed.has(s.id)&&!expertTitles.some(n=>n.toLowerCase()===s.name.toLowerCase())).map(s=>({s,score:(s.genres||[]).filter(g=>genres.has(g)).length*30+(premium.test([s.network?.name,s.webChannel?.name].join(" "))?15:0)+(s.rating?.average||0)})).sort((a,b)=>b.score-a.score).slice(0,3).map(x=>x.s.name);
   const messages:Array<{kind:string;title:string;body:string;url:string}>=[];
-  if(pref.weekly_recommendations&&ids.size&&recommendations.length)messages.push({kind:"personal",title:"Shows we recommend for you",body:recommendations.join(" · "),url:"/discover"});
+  if(pref.weekly_recommendations&&ids.size&&recommendations.length)messages.push({kind:"personal",title:"Shows we recommend for you",body:recommendations.join(" · ")+" — See all your recommendations and dismiss any you’re not interested in.",url:"/discover"});
   if(pref.weekly_expert_picks&&experts.length)messages.push({kind:"experts",title:"What our experts are watching",body:experts.slice(0,3).join(" · "),url:"/"});
   for(const m of messages){
    const key="weekly:"+m.kind+":"+pref.user_id+":"+week;
