@@ -200,7 +200,7 @@ export default function NotificationSettings() {
       const response = await fetch("/api/notifications/push-test", { method: "POST" });
       const data = await response.json();
       if (response.ok) trackEvent("push_test_sent");
-      setMessage(response.ok ? "Test notification sent to this device." : (data.error || "Could not send test notification."));
+      setMessage(response.ok ? "Test notifications sent: standard, recommendations, and Expert Picks." : (data.error || "Could not send test notification."));
     } catch (error: any) {
       setMessage(error?.message || "Could not send test notification.");
     }
