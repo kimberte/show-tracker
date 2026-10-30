@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { cache } from "react";
 import TrackButton from "@/components/track-button";
+import ShareShowButton from "@/components/share-show-button";
 import SiteNav from "@/components/site-nav";
 import EpisodeWatchList from "@/components/episode-watch-list";
 import type { Metadata } from "next";
@@ -188,6 +189,7 @@ export default async function ShowPage({
 
             <div className="show-action-row">
               <TrackButton showId={s.id} title={s.name} />
+              <ShareShowButton showId={s.id} title={s.name} />
               <a
                 className="nav-pill show-action-link"
                 href={"https://www.youtube.com/results?search_query=" + encodeURIComponent(s.name + " official trailer")}
