@@ -816,3 +816,11 @@ button{cursor:pointer}
 .contact-form .primary-button:disabled{opacity:.6;cursor:wait}
 .contact-form-trap{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;overflow:hidden!important}
 @media(max-width:600px){.contact-form-grid{grid-template-columns:1fr}.contact-form .primary-button{width:100%;justify-self:stretch}}
+
+/* Desktop header: keep brand and navigation in separate non-overlapping areas. */
+@media(min-width:1251px){
+  .site-nav{display:grid;grid-template-columns:max-content minmax(0,1fr);column-gap:24px;align-items:center}
+  .site-nav .site-brand{position:relative;z-index:1;min-width:max-content}
+  .site-nav .site-nav-links{min-width:0;flex-wrap:wrap;justify-content:flex-end;gap:6px 7px}
+  .site-nav .site-nav-links .nav-pill{position:relative;flex-shrink:0}
+}
