@@ -4,17 +4,19 @@ import {useEffect,useState} from "react";
 import Link from "next/link";
 import TvBotLoader from "@/components/tv-bot-loader";
 
+// TVMaze IDs are pinned to prevent similarly named series being selected.
+// Editorial review: 2026-11-02. All titles premiered by this date.
 const picks=[
- {name:"MobLand",query:"MobLand",note:"Crime"},
- {name:"Crystal Lake",query:"Crystal Lake",note:"Horror"},
- {name:"Dark Matter",query:"Dark Matter",note:"Sci-fi"},
- {name:"From",query:"From",note:"Mystery"},
- {name:"The Diplomat",query:"The Diplomat",note:"Thriller"},
- {name:"Slow Horses",query:"Slow Horses",note:"Spy drama"},
- {name:"VisionQuest",query:"VisionQuest",note:"Marvel"},
- {name:"The Lowdown",query:"The Lowdown",note:"Crime drama"},
- {name:"Abbott Elementary",query:"Abbott Elementary",note:"Comedy"},
- {name:"Tulsa King",query:"Tulsa King",note:"Crime"}
+ {id:64960,name:"Crystal Lake",query:"Crystal Lake",note:"Full season · Horror"},
+ {id:75026,name:"MobLand",query:"MobLand",note:"New episodes · Crime"},
+ {id:66811,name:"Nocturne",query:"Nocturne",note:"New series · Thriller"},
+ {id:64950,name:"VisionQuest",query:"VisionQuest",note:"New episodes · Sci-fi"},
+ {id:78665,name:"Dexter: Resurrection",query:"Dexter: Resurrection",note:"New season · Crime"},
+ {id:34685,name:"The Gilded Age",query:"The Gilded Age",note:"Season 4 · Period drama"},
+ {id:60213,name:"The Diplomat",query:"The Diplomat",note:"New season · Thriller"},
+ {id:45562,name:"Carrie",query:"Carrie",note:"New series · Horror"},
+ {id:61315,name:"Dark Matter",query:"Dark Matter",note:"Season 2 · Sci-fi"},
+ {id:45039,name:"Slow Horses",query:"Slow Horses",note:"Season 6 · Spy drama"}
 ];
 type Show={id:number;name:string;premiered?:string|null;image?:{medium?:string;original?:string}|null;status?:string|null};
 const normalized=(s:string)=>s.toLowerCase().replace(/[^a-z0-9]/g,"");
@@ -34,7 +36,7 @@ export default function ExpertPicks(){
       if(!r.ok)return;
       const data=await r.json();
       if(!Array.isArray(data))return;
-      result[start+offset]=(data as Show[]).find(s=>normalized(s.name)===normalized(p.name))||null;
+      result[start+offset]=(data as Show[]).find(s=>s.id===p.id && normalized(s.name)===normalized(p.name) && !!s.premiered && s.premiered<=new Date().toISOString().slice(0,10))||null;
      }catch{/* Keep already loaded picks visible. */}
     }));
     if(active){setShows([...result]);setLoading(false);}
