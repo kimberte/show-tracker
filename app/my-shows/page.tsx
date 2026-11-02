@@ -313,12 +313,12 @@ export default function MyShows() {
         </section>
       ) : (
         <section>
-          <div className="my-shows-sort-bar">
-            <div className="my-shows-sort-copy">
-              <span className="my-shows-sort-label">Catch-up priority</span>
-              <span className="my-shows-sort-hint">{catchUpFirst ? "Most episodes behind first" : "Currently sorted A–Z"}</span>
+          <div className="my-shows-sort-bar" style={{display:"grid",gridTemplateColumns:"minmax(0,1fr) auto",alignItems:"center",columnGap:16,padding:"14px 16px",border:"1px solid var(--line)",borderRadius:14,background:"var(--panel)",marginBottom:18}}>
+            <div className="my-shows-sort-copy" style={{display:"flex",flexDirection:"column",alignItems:"flex-start",gap:5,minWidth:0}}>
+              <span className="my-shows-sort-label" style={{display:"block",fontSize:14,fontWeight:800,lineHeight:1.3}}>Catch-up priority</span>
+              <span className="my-shows-sort-hint" style={{display:"block",fontSize:12,lineHeight:1.4,color:"var(--muted)"}}>{catchUpFirst ? "Most episodes behind first" : "Currently sorted A–Z"}</span>
             </div>
-            <button type="button" role="switch" className={`my-shows-sort-toggle${catchUpFirst ? " active" : ""}`} aria-checked={catchUpFirst} aria-label="Sort shows by most episodes to catch up on" onClick={() => setCatchUpFirst((current) => !current)}>
+            <button type="button" role="switch" className={`my-shows-sort-toggle${catchUpFirst ? " active" : ""}`} style={{display:"inline-flex",alignItems:"center",gap:8,flexShrink:0,padding:"8px 0",border:0,background:"transparent"}} aria-checked={catchUpFirst} aria-label="Sort shows by most episodes to catch up on" onClick={() => setCatchUpFirst((current) => !current)}>
               <span className="my-shows-sort-track"><span className="my-shows-sort-thumb" /></span>
               <span className="my-shows-sort-state">{catchUpFirst ? "On" : "Off"}</span>
             </button>
