@@ -824,3 +824,10 @@ button{cursor:pointer}
   .site-nav .site-nav-links{min-width:0;flex-wrap:wrap;justify-content:flex-end;gap:6px 7px}
   .site-nav .site-nav-links .nav-pill{position:relative;flex-shrink:0}
 }
+
+/* My Shows catch-up sorting */
+.my-shows-sort-bar{display:flex;align-items:center;gap:11px;flex-wrap:wrap;margin:0 0 17px}
+.my-shows-sort-toggle{border:1px solid var(--line);background:var(--panel);color:var(--text);padding:9px 14px;border-radius:999px;font-size:13px;font-weight:800;transition:background .15s,border-color .15s}
+.my-shows-sort-toggle.active{border-color:var(--accent);background:rgba(245,158,11,.15);color:var(--accent)}
+.my-shows-sort-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.my-shows-sort-hint{font-size:12px}
