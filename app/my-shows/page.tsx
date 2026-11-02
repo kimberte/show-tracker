@@ -314,11 +314,14 @@ export default function MyShows() {
       ) : (
         <section>
           <div className="my-shows-sort-bar">
-            <span className="muted">Sort shows</span>
-            <button type="button" className={`my-shows-sort-toggle${catchUpFirst ? " active" : ""}`} aria-pressed={catchUpFirst} onClick={() => setCatchUpFirst((current) => !current)}>
-              {catchUpFirst ? "✓ Catch up first" : "Catch up first"}
+            <div className="my-shows-sort-copy">
+              <span className="my-shows-sort-label">Catch-up priority</span>
+              <span className="my-shows-sort-hint">{catchUpFirst ? "Most episodes behind first" : "Currently sorted A–Z"}</span>
+            </div>
+            <button type="button" role="switch" className={`my-shows-sort-toggle${catchUpFirst ? " active" : ""}`} aria-checked={catchUpFirst} aria-label="Sort shows by most episodes to catch up on" onClick={() => setCatchUpFirst((current) => !current)}>
+              <span className="my-shows-sort-track"><span className="my-shows-sort-thumb" /></span>
+              <span className="my-shows-sort-state">{catchUpFirst ? "On" : "Off"}</span>
             </button>
-            <span className="muted my-shows-sort-hint">{catchUpFirst ? "Most unwatched episodes first, then A–Z" : "Alphabetical A–Z"}</span>
           </div>
           <div className="my-shows-grid">
           {[...shows].sort((a, b) => {
