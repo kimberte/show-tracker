@@ -83,6 +83,7 @@ export default function MyShows() {
   const [message, setMessage] = useState("");
   const [busyId, setBusyId] = useState<number | null>(null);
   const [shareMessage, setShareMessage] = useState("");
+  const [catchUpFirst, setCatchUpFirst] = useState(false);
 
   async function load() {
     setLoading(true);
@@ -311,8 +312,22 @@ export default function MyShows() {
           <Link href="/" className="primary-button">Find shows</Link>
         </section>
       ) : (
-        <section className="my-shows-grid">
-          {shows.map((item) => {
+        <section>
+          <div className="my-shows-sort-bar">
+            <span className="muted">Sort shows</span>
+            <button type="button" className={`my-shows-sort-toggle${catchUpFirst ? " active" : ""}`} aria-pressed={catchUpFirst} onClick={() => setCatchUpFirst((current) => !current)}>
+              {catchUpFirst ? "✓ Catch up first" : "Catch up first"}
+            </button>
+            <span className="muted my-shows-sort-hint">{catchUpFirst ? "Most unwatched episodes first, then A–Z" : "Alphabetical A–Z"}</span>
+          </div>
+          <div className="my-shows-grid">
+          {[...shows].sort((a, b) => {
+            if (catchUpFirst) {
+              const difference = (progress[b.id]?.behind.length || 0) - (progress[a.id]?.behind.length || 0);
+              if (difference !== 0) return difference;
+            }
+            return (a.show?.title || "").localeCompare(b.show?.title || "");
+          }).map((item) => {
             const s = item.show;
             if (!s) return null;
 
@@ -391,6 +406,7 @@ export default function MyShows() {
               </article>
             );
           })}
+          </div>
         </section>
       )}
 
