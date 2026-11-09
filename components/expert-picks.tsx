@@ -5,18 +5,18 @@ import Link from "next/link";
 import TvBotLoader from "@/components/tv-bot-loader";
 
 // TVMaze IDs are pinned to prevent similarly named series being selected.
-// Editorial review: 2026-11-02. All titles premiered by this date.
+// Editorial review: 2026-11-09. All titles have premiered; notes distinguish completed seasons from weekly releases.
 const picks=[
- {id:64960,name:"Crystal Lake",query:"Crystal Lake",note:"Full season · Horror"},
+ {id:64960,name:"Crystal Lake",query:"Crystal Lake",note:"Season 1 available · Horror"},
  {id:75026,name:"MobLand",query:"MobLand",note:"New episodes · Crime"},
  {id:66811,name:"Nocturne",query:"Nocturne",note:"New series · Thriller"},
- {id:64950,name:"VisionQuest",query:"VisionQuest",note:"New episodes · Sci-fi"},
+ {id:77778,name:"The Institute",query:"The Institute",note:"Season 2 airing · Horror"},
  {id:78665,name:"Dexter: Resurrection",query:"Dexter: Resurrection",note:"New season · Crime"},
  {id:34685,name:"The Gilded Age",query:"The Gilded Age",note:"Season 4 · Period drama"},
  {id:60213,name:"The Diplomat",query:"The Diplomat",note:"New season · Thriller"},
- {id:45562,name:"Carrie",query:"Carrie",note:"New series · Horror"},
- {id:61315,name:"Dark Matter",query:"Dark Matter",note:"Season 2 · Sci-fi"},
- {id:45039,name:"Slow Horses",query:"Slow Horses",note:"Season 6 · Spy drama"}
+ {id:68407,name:"Black Doves",query:"Black Doves",note:"Season 2 available · Spy thriller"},
+ {id:61315,name:"Dark Matter",query:"Dark Matter",note:"Season 2 complete · Sci-fi"},
+ {id:82227,name:"Stick",query:"Stick",note:"Season 2 airing · Comedy"}
 ];
 type Show={id:number;name:string;premiered?:string|null;image?:{medium?:string;original?:string}|null;status?:string|null};
 const normalized=(s:string)=>s.toLowerCase().replace(/[^a-z0-9]/g,"");
@@ -49,7 +49,7 @@ export default function ExpertPicks(){
  const visible=picks.map((pick,i)=>({...pick,show:shows[i]})).filter(p=>p.show?.id);
  return <section className="expert-picks-section" aria-labelledby="expert-picks-heading">
   <div className="section-heading">
-   <div><div className="accent eyebrow">HANDPICKED FOR YOUR WATCHLIST</div><h2 id="expert-picks-heading">My TV Tracker Expert Picks</h2><p className="muted">10 shows worth watching right now.</p></div>
+   <div><div className="accent eyebrow">HANDPICKED FOR YOUR WATCHLIST</div><h2 id="expert-picks-heading">My TV Tracker Expert Picks</h2><p className="muted">10 handpicked series to watch this week.</p></div>
   </div>
   {loading?<TvBotLoader label="Picking tonight’s favourites…"/>:visible.length?
    <div className="expert-picks-rail">
