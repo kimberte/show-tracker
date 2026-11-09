@@ -14,7 +14,7 @@ export default function SiteFooter() {
         <Link href="/contact">Contact</Link>
         <Link href="/terms">Terms</Link>
       </div>
-      <div className="site-footer-note">Independently operated by Kimberte William.</div>
+      <div className="site-footer-note">Independently operated by Kimburte William (also known as Kimberte William).</div>
     </footer>
   );
 }
