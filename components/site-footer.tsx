@@ -8,12 +8,13 @@ export default function SiteFooter() {
       </div>
       <div className="site-footer-links">
         <Link href="/about">About</Link>
+        <Link href="/business-relationship">Ownership &amp; Operator</Link>
         <Link href="/faq">FAQ</Link>
         <Link href="/privacy">Privacy Policy</Link>
         <Link href="/contact">Contact</Link>
         <Link href="/terms">Terms</Link>
       </div>
-      <div className="site-footer-note">A simple TV tracker for people who love their shows.</div>
+      <div className="site-footer-note">Independently operated by Kimberte William.</div>
     </footer>
   );
 }
