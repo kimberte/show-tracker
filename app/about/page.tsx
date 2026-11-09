@@ -26,6 +26,7 @@ export default function AboutPage() {
           <p className="muted">You can use the public TV guide pages without an account. An account is only needed for personal tracking and reminders.</p>
         </section>
       </div>
+      <section className="panel utility-card utility-wide"><h2>Ownership and operator</h2><p className="muted">My TV Tracker is independently owned and operated by Kimberte William.</p><Link href="/business-relationship" className="accent">View ownership and operator details →</Link></section>
       <section className="panel utility-card utility-wide">
         <h2>TV data</h2>
         <p className="muted">Show and episode information is provided through TVMaze. Schedules and availability can change as networks and streaming services update their listings.</p>
