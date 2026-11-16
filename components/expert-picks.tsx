@@ -5,18 +5,18 @@ import Link from "next/link";
 import TvBotLoader from "@/components/tv-bot-loader";
 
 // TVMaze IDs are pinned to prevent similarly named series being selected.
-// Editorial review: 2026-11-09. All titles have premiered; notes distinguish completed seasons from weekly releases.
+// Editorial review: 2026-11-16. All titles have premiered; notes distinguish completed seasons from weekly releases.
 const picks=[
  {id:64960,name:"Crystal Lake",query:"Crystal Lake",note:"Season 1 available · Horror"},
- {id:75026,name:"MobLand",query:"MobLand",note:"New episodes · Crime"},
- {id:66811,name:"Nocturne",query:"Nocturne",note:"New series · Thriller"},
- {id:77778,name:"The Institute",query:"The Institute",note:"Season 2 airing · Horror"},
- {id:78665,name:"Dexter: Resurrection",query:"Dexter: Resurrection",note:"New season · Crime"},
+ {id:75026,name:"MobLand",query:"MobLand",note:"Season 2 finale Nov 20 · Crime"},
+ {id:66811,name:"Nocturne",query:"Nocturne",note:"New episodes · Thriller"},
+ {id:33352,name:"The Lord of the Rings: The Rings of Power",query:"The Lord of the Rings: The Rings of Power",note:"Season 3 airing · Fantasy"},
+ {id:78665,name:"Dexter: Resurrection",query:"Dexter: Resurrection",note:"New season streaming · Crime"},
  {id:34685,name:"The Gilded Age",query:"The Gilded Age",note:"Season 4 · Period drama"},
- {id:60213,name:"The Diplomat",query:"The Diplomat",note:"New season · Thriller"},
+ {id:60213,name:"The Diplomat",query:"The Diplomat",note:"Recent season · Thriller"},
  {id:68407,name:"Black Doves",query:"Black Doves",note:"Season 2 available · Spy thriller"},
  {id:61315,name:"Dark Matter",query:"Dark Matter",note:"Season 2 complete · Sci-fi"},
- {id:82227,name:"Stick",query:"Stick",note:"Season 2 airing · Comedy"}
+ {id:84261,name:"12 12 12",query:"12 12 12",note:"Premiered Nov 13 · Heist thriller"}
 ];
 type Show={id:number;name:string;premiered?:string|null;image?:{medium?:string;original?:string}|null;status?:string|null};
 const normalized=(s:string)=>s.toLowerCase().replace(/[^a-z0-9]/g,"");
